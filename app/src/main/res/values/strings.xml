@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">Health Calendar</string>
+    <string name="app_name">Health_Calendar</string>
+    <string name="_1">Кнопка 1</string>
+    <string name="statistic_label">Твоя статистика</string>
+    <string name="save">Сохранить</string>
+    <string name="hint1">Введите давление</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

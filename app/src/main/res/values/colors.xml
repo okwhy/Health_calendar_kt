@@ -2,4 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="red">#FF0000</color>
+    <color name="header">#673AB7</color>
+    <color name="colorLowerPressure">#FF1100</color>
+    <color name="colorUpperPressure">#005EFF</color>
+    <color name="green1">#5FF436</color>
 </resources>
