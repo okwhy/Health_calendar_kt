@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="Календарь"
+        android:id="@+id/homepage"
+        android:icon="@drawable/homepage_icon"/>
+    <item
+        android:title="Статистика"
+        android:id="@+id/statisticpage"
+        android:icon="@drawable/statisticpage_icon"/>
+    <item
+        android:title="Экспорт"
+        android:id="@+id/export"
+        android:icon="@drawable/exportpage_icon"/>
+</menu>
+

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+    <TextView
+        android:id="@+id/thirdFragment"
+        android:layout_width="289dp"
+        android:layout_height="54dp"
+        android:layout_gravity="top"
+        android:layout_marginTop="26dp"
+        android:layout_marginBottom="97dp"
+
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:text="Экспорт в Excel"
+        android:textAlignment="center"
+        android:textColor="#673AB7"
+        android:textSize="34sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.037" />
+
+    <EditText
+        android:id="@+id/dateOt"
+        android:layout_width="155dp"
+        android:layout_height="54dp"
+        android:layout_centerHorizontal="true"
+        android:hint="От"
+        android:padding="15dp"
+        android:textColor="#D9D5E1"
+        android:textColorHint="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:inputType="date"
+        android:background="@drawable/rounded_edittext_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.062"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.3"
+        tools:ignore="MissingConstraints" />
+
+    <EditText
+        android:id="@+id/dateDo"
+        android:layout_width="155dp"
+        android:layout_height="54dp"
+        android:layout_centerHorizontal="true"
+        android:hint="До"
+        android:padding="15dp"
+        android:textColor="#D9D5E1"
+        android:textColorHint="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:inputType="date"
+        android:background="@drawable/rounded_edittext_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.937"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.3"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/buttonCreateExcel"
+        android:layout_width="188dp"
+        android:layout_height="63dp"
+        android:layout_gravity="center"
+        android:background="@drawable/rounded_button"
+        android:text="ЭКСПОРТИРОВАТЬ"
+        android:textColor="#fff"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.711" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
