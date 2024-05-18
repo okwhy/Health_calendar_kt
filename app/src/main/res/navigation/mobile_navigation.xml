@@ -9,6 +9,14 @@
         android:name="com.sus.calendar.CalendarFragment"
         android:label="CalendarFragment" />
     <fragment
+        android:id="@+id/nav_account"
+        android:name="com.sus.calendar.AccountFragment"
+        android:label="AccountFragment" />
+    <fragment
+        android:id="@+id/nav_statistic"
+        android:name="com.sus.calendar.StatisticFragment"
+        android:label="StatisticFragment" />
+    <fragment
         android:id="@+id/nav_export"
         android:name="com.sus.calendar.ExportFragment"
         android:label="ExportFragment" />
