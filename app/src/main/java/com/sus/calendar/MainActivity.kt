@@ -8,21 +8,36 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.sus.calendar.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
-    var bottomNavigationView: BottomNavigationView? = null
-    val Calendar_page = R.id.homepage
-    val Export_page = R.id.export
-    @SuppressLint("MissingInflatedId")
+class MainActivity : AppCompatActivity() {
+//    var bottomNavigationView: BottomNavigationView? = null
+//    val Calendar_page = R.id.homepage
+//    val Export_page = R.id.export
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var appBarConfiguration: AppBarConfiguration
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setRepeatingAlarm()
-        bottomNavigationView = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
-        bottomNavigationView!!
-            .setOnNavigationItemSelectedListener(this)
-        bottomNavigationView!!.selectedItemId = R.id.homepage
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+//        setRepeatingAlarm()
+        val navView: BottomNavigationView = binding.bottomNavigationView
+        val navController = findNavController(R.id.nav_host_fragment_activity_main)
+//        appBarConfiguration =AppBarConfiguration(
+//            setOf(
+//                R.id.nav_calendar,R.id.nav_export
+//            )
+//        )
+//        setupActionBarWithNavController(navController,appBarConfiguration)
+        navView.setupWithNavController(navController)
+
     }
 
     var calendarFragment = CalendarFragment()
@@ -51,20 +66,20 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         )
     }
 
-    @SuppressLint("NonConstantResourceId")
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId == Calendar_page) {
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.flFragment, calendarFragment)
-                .commit()
-            true
-        } else if (item.itemId == Export_page) {
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.flFragment, exportFragment)
-                .commit()
-            true
-        } else false
-    }
+//    @SuppressLint("NonConstantResourceId")
+//    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+//        return if (item.itemId == Calendar_page) {
+//            supportFragmentManager
+//                .beginTransaction()
+//                .replace(R.id.flFragment, calendarFragment)
+//                .commit()
+//            true
+//        } else if (item.itemId == Export_page) {
+//            supportFragmentManager
+//                .beginTransaction()
+//                .replace(R.id.flFragment, exportFragment)
+//                .commit()
+//            true
+//        } else false
+//    }
 }
