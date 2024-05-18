@@ -42,8 +42,9 @@ android {
     }
 }
 
-dependencies {
 
+dependencies {
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
@@ -60,4 +61,5 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
     implementation ("net.sourceforge.jexcelapi:jxl:2.6.12")
     implementation ("com.applandeo:material-calendar-view:1.9.0-rc03")
+
 }

@@ -16,9 +16,5 @@
         android:title="Экспорт"
         android:id="@+id/nav_export"
         android:icon="@drawable/exportpage_icon"/>
-    <item
-        android:title="Аккаунт"
-        android:id="@+id/account"
-        android:icon="@drawable/account"/>
 </menu>
 
