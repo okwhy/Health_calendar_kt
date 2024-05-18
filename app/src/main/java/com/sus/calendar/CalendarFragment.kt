@@ -12,14 +12,19 @@ import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.applandeo.materialcalendarview.CalendarView
 import com.applandeo.materialcalendarview.EventDay
 import com.applandeo.materialcalendarview.listeners.OnCalendarPageChangeListener
 import com.applandeo.materialcalendarview.listeners.OnDayClickListener
+import com.sus.calendar.databinding.CalendarPageBinding
 import com.sus.calendar.entities.DateSQL
 import com.sus.calendar.entities.DateWithNotes
 import com.sus.calendar.entities.Note
 import com.sus.calendar.services.DataService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -35,19 +40,21 @@ class CalendarFragment : Fragment() {
     private var dataService: DataService? = null
     private var texts: List<EditText>? = null
     private lateinit var alertDialog: AlertDialog
+    private lateinit var binding: CalendarPageBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.calendar_page, container, false)
+        binding= CalendarPageBinding.inflate(layoutInflater,container,false)
         calendar = Calendar.getInstance()
         curdate = LocalDateTime.now().toLocalDate()
         currentDay = curdate.getDayOfMonth()
         currentMonth = curdate.getMonthValue()
         currentYear = curdate.getYear()
-        val calendarView = view.findViewById<CalendarView>(R.id.calendarView)
+        val calendarView = binding.calendarView
 
         //Настройка календаря:
         calendarView.setSwipeEnabled(false)
@@ -64,13 +71,13 @@ class CalendarFragment : Fragment() {
         val days = IntArray(31)
         val months = IntArray(12)
         val years = IntArray(10)
-        val textInputHeight = view.findViewById<EditText>(R.id.textInputHeight)
-        val textInputWeight = view.findViewById<EditText>(R.id.textInputWeight)
-        val textInputPulse = view.findViewById<EditText>(R.id.textInputPulse)
-        val textInputPressure = view.findViewById<EditText>(R.id.textInputPressure)
-        val textInputAppetite = view.findViewById<EditText>(R.id.textInputAppetite)
-        val textInputSlepping = view.findViewById<EditText>(R.id.textInputSlepping)
-        val textInputHealth = view.findViewById<EditText>(R.id.textInputHealth)
+        val textInputHeight = binding.textInputHeight
+        val textInputWeight = binding.textInputWeight
+        val textInputPulse = binding.textInputPulse
+        val textInputPressure = binding.textInputPressure
+        val textInputAppetite = binding.textInputAppetite
+        val textInputSlepping = binding.textInputSlepping
+        val textInputHealth = binding.textInputHealth
         texts = ArrayList(
             Arrays.asList(
                 textInputHeight,
@@ -82,14 +89,14 @@ class CalendarFragment : Fragment() {
                 textInputHealth
             )
         )
-        val dayInfo = view.findViewById<View>(R.id.dayInfo)
-        val dayHeight = view.findViewById<View>(R.id.dayHeight)
-        val dayWeight = view.findViewById<View>(R.id.dayWeight)
-        val dayPulse = view.findViewById<View>(R.id.dayPulse)
-        val dayPressure = view.findViewById<View>(R.id.dayPressure)
-        val dayAppetite = view.findViewById<View>(R.id.dayAppetite)
-        val daySlepping = view.findViewById<View>(R.id.daySlepping)
-        val dayHealth = view.findViewById<View>(R.id.dayHealth)
+        val dayInfo = binding.dayInfo
+        val dayHeight = binding.dayHeight
+        val dayWeight = binding.dayWeight
+        val dayPulse = binding.dayPulse
+        val dayPressure = binding.dayPressure
+        val dayAppetite = binding.dayAppetite
+        val daySlepping = binding.daySlepping
+        val dayHealth = binding.dayHealth
         var notes: Map<String?, String?>? = null
         notes = try {
             fetchDate(currentYear, currentMonth, currentDay)
@@ -205,7 +212,7 @@ class CalendarFragment : Fragment() {
             "Плохой",
             "Нет аппетита"
         )
-        val spinnerAppetite = view.findViewById<Spinner>(R.id.textInputAppetite_Spiner)
+        val spinnerAppetite = binding.textInputAppetiteSpiner
         val appetiteAdapter: ArrayAdapter<Any?> =
             ArrayAdapter<Any?>(requireContext(), android.R.layout.simple_spinner_item, stateOfAppetite)
         appetiteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -218,12 +225,12 @@ class CalendarFragment : Fragment() {
             "Плохое",
             "Ужасное"
         )
-        val spinnerHealth = view.findViewById<Spinner>(R.id.textInputHealth_Spiner)
+        val spinnerHealth = binding.textInputHealthSpiner
         val appetiteHealth: ArrayAdapter<Any?> =
             ArrayAdapter<Any?>(requireContext(), android.R.layout.simple_spinner_item, stateOfHealth)
         appetiteHealth.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerHealth.adapter = appetiteHealth
-        val saveTextButton = view.findViewById<Button>(R.id.saveTextButton_1)
+        val saveTextButton = binding.saveTextButton1
         saveTextButton.setOnClickListener { v: View? ->
             val notes1: MutableMap<String, String> = HashMap()
             if (textInputHeight.text.toString() != "Нет данных") {
@@ -252,11 +259,11 @@ class CalendarFragment : Fragment() {
         }
 
         // Подключаемся к кнопке в макете вашей активности
-        val showPopupButton = view.findViewById<Button>(R.id.showPopupButton)
+        val showPopupButton = binding.showPopupButton
 
         // Устанавливаем слушателя нажатия на кнопку
         showPopupButton.setOnClickListener { showPopup() }
-        return view
+        return binding.root
     }
 
     private fun showPopup() {
@@ -329,10 +336,9 @@ class CalendarFragment : Fragment() {
         var noedit: Boolean
         var seldate: LocalDate
         val daysWithData: MutableList<Int> = ArrayList()
-        val runnable = Runnable { daysWithData.addAll(dataService!!.getDaysByMonth(year, month)) }
-        val thread = Thread(runnable)
-        thread.start()
-        thread.join()
+        CoroutineScope(Dispatchers.Main).launch {
+            daysWithData.addAll(dataService!!.getDaysByMonth(year, month))
+        }
         val events: MutableList<EventDay> = ArrayList()
         for (iter in 0 until days_amount) {
             val calendar_temp = Calendar.getInstance()
