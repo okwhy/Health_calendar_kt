@@ -1,5 +1,6 @@
 package com.sus.calendar
 
+import ApiService
 import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -15,8 +16,34 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sus.calendar.databinding.ActivityMainBinding
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
+object RetrofitClient {
+
+   // private const val BASE_URL = "http://192.168.115.110:1337/"
+
+    private const val BASE_URL = "http://10.139.51.253:1337/"
+
+    val instance: ApiService by lazy {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        retrofit.create(ApiService::class.java)
+    }
+}
+
 
 class MainActivity : AppCompatActivity() {
+
+
+
+
+
 //    var bottomNavigationView: BottomNavigationView? = null
 //    val Calendar_page = R.id.homepage
 //    val Export_page = R.id.export
