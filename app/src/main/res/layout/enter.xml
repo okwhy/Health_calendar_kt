@@ -8,6 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:id="@+id/enter_layout"
         android:padding="16dp"
         tools:layout_editor_absoluteX="-35dp"
         tools:layout_editor_absoluteY="125dp">

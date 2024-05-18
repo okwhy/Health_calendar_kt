@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="34dp"
+        android:id="@+id/account_layout"
         android:orientation="vertical">
 
 
@@ -27,11 +28,11 @@
             android:onClick="onLabelClick">
 
             <TextView
-                android:id="@+id/Regist"
+                android:id="@+id/exit"
                 android:layout_width="match_parent"
                 android:layout_height="57dp"
                 android:gravity="center"
-                android:text="Войти"
+                android:text="Выйти"
                 android:textColor="#FDFDFD"
                 android:textSize="25dp" />
         </RelativeLayout>
