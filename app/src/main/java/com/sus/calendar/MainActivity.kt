@@ -14,6 +14,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     var bottomNavigationView: BottomNavigationView? = null
     val Calendar_page = R.id.homepage
     val Export_page = R.id.export
+    val Statistic_page = R.id.statisticpage
+    var Account_page = R.id.account
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +30,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     var calendarFragment = CalendarFragment()
     var exportFragment = ExportFragment()
+    var statisticFragment = StatisticFragment()
+
     private fun setRepeatingAlarm() {
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
 
@@ -65,6 +70,18 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 .replace(R.id.flFragment, exportFragment)
                 .commit()
             true
-        } else false
+        } else if (item.itemId == Statistic_page) {
+            supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.flFragment, statisticFragment)
+                    .commit()
+            true
+        } else if (item.itemId == Account_page) {
+            supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.flFragment, accountFragment)
+                    .commit()
+            true
+        }else false
     }
 }

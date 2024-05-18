@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="34dp"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:id="@+id/Registration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/header">
+
+            <TextView
+                android:id="@+id/Regist"
+                android:layout_width="match_parent"
+                android:layout_height="57dp"
+                android:gravity="center"
+                android:text="Мои группы"
+                android:textColor="#FDFDFD"
+                android:textSize="25dp" />
+
+            <ImageButton
+                android:id="@+id/joinGroup"
+                android:layout_width="52dp"
+                android:layout_height="53dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="0dp"
+                android:background="@drawable/plus"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/MyGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:radius="16dp"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/header">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+
+                android:layout_marginTop="10dp"
+                android:gravity="start"
+                android:text="Моя группа1"
+                android:textColor="#FDFDFD"
+                android:textSize="25dp" />
+
+            <ImageButton
+                android:id="@+id/exitGroup"
+                android:layout_width="49dp"
+                android:layout_height="46dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="0dp"
+                android:background="@drawable/exit" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:radius="16dp"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/header">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+
+                android:layout_marginTop="10dp"
+                android:gravity="start"
+                android:text="Моя группа2"
+                android:textColor="#FDFDFD"
+                android:textSize="25dp" />
+            <ImageButton
+                android:layout_width="49dp"
+                android:layout_height="46dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="0dp"
+                android:background="@drawable/exit" />
+        </RelativeLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.appcompat.widget.LinearLayoutCompat>

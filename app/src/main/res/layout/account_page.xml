@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="34dp"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:id="@+id/Registration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:radius="16dp"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/header"
+            android:onClick="onLabelClick">
+
+            <TextView
+                android:id="@+id/Regist"
+                android:layout_width="match_parent"
+                android:layout_height="57dp"
+                android:gravity="center"
+                android:text="Войти"
+                android:textColor="#FDFDFD"
+                android:textSize="25dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/MyGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:radius="16dp"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/header"
+            android:onClick="onLabelClick">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="57dp"
+                android:gravity="center"
+                android:text="Моя группа"
+                android:textColor="#FDFDFD"
+                android:textSize="25dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/MyGroups"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:radius="16dp"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/header"
+            android:onClick="onLabelClick">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="57dp"
+                android:gravity="center"
+                android:text="Мои группы"
+                android:textColor="#FDFDFD"
+                android:textSize="25dp" />
+        </RelativeLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.appcompat.widget.LinearLayoutCompat>
