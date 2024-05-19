@@ -1,4 +1,6 @@
 package com.sus.calendar
+import com.sus.calendar.Group
+
 
 import com.sus.calendar.dtos.UserDTO
 import retrofit2.Call
@@ -10,6 +12,9 @@ import retrofit2.http.Query
 interface ApiService {
     @GET("api/users/login")
     fun login(@Query("login") login: String,@Query("password") password: String): Call<UserDTO>
+
+    @GET("/api/groups/byuser/{id}")
+    fun get_member_groups(@Path("id") id: Long): Call<List<Group>>
 
     @POST("api/users/register")
     fun register(@Query("login") login: String,@Query("password") password: String,@Query("name") name: String): Call<Boolean>
