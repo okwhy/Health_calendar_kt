@@ -9,7 +9,7 @@ interface ApiService {
     @GET("api/users/login")
     fun login(@Query("login") login: String,@Query("password") password: String): Call<Long>
 
-    @GET("/api/groups/users/{id}")
+    @GET("/api/groups/byuser/{id}")
     fun get_member_groups(@Path("id") id: Long): Call<List<Group>>
 
     @POST("api/users/register")
