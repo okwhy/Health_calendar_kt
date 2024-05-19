@@ -18,26 +18,20 @@
             android:background="@color/white">
 
             <TextView
-                android:id="@+id/textMygroup"
-                android:layout_width="171dp"
+                android:id="@+id/Groups"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="Моя группа"
+                android:text="Группы"
                 android:textColor="#673AB7"
                 android:textSize="25dp" />
-
-            <EditText
-                android:id="@+id/passwordOfGroup"
-                android:layout_width="173dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="64dp"
-                android:layout_toEndOf="@+id/textMygroup"
-                android:background="#FFFFFF"
-                android:gravity="start"
-                android:hint="Код"
-                android:padding="8dp"
-                android:textColor="#2A2A2A"
-                android:textSize="18dp" />
+            <ImageButton
+                android:id="@+id/createGroup"
+                android:layout_width="52dp"
+                android:layout_height="53dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="0dp"
+                android:background="@drawable/plus" />
         </RelativeLayout>
     </androidx.appcompat.widget.LinearLayoutCompat>
 
