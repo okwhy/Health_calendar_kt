@@ -1,8 +1,9 @@
 package com.sus.calendar
 
 import android.app.DatePickerDialog
-import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +16,6 @@ import android.widget.ViewFlipper
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -25,6 +25,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import com.sus.calendar.entities.DateWithNotes
 import com.sus.calendar.services.DataService
 import java.util.Calendar
 
@@ -38,14 +39,8 @@ class StatisticFragment : Fragment() {
     private var uptFellings: Boolean = false
     private var uptPressure: Boolean = false
 
-    private var byear = 0
-    private var ayear = 0
-    private var bmonth = 0
-    private var amonth = 0
-    private var bday = 0
-    private var aday = 0
-
-    private var dataService: DataService? = null
+    private val handler = Handler(Looper.getMainLooper())
+    private val dataService = this.context?.let { DataService.initial(it) }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -57,27 +52,18 @@ class StatisticFragment : Fragment() {
         val avgCHSS: LineChart = view.findViewById(R.id.averageCHSS)
         val avgPressure: LineChart = view.findViewById(R.id.averagePressure)
         val avgSleep: LineChart = view.findViewById(R.id.averageSleep)
-        /*setupBarChart(avgHeight, "Рост")
-        setBarData(avgHeight)
 
-        setupLineChart(avgWeight, "Вес")
-        setLineData(avgWeight)
 
-        setupLineChart(avgCHSS, "ЧСС")
-        setLineData(avgCHSS)
-
-        setupLineChart(avgSleep, "Сон")
-        setLineData(avgSleep)*/
 
 
         var btnNext = view.findViewById<View>(R.id.buttonNext) as Button
         var avgHeightText = view.findViewById<TextView>(R.id.AverageValueHeight)
         var avgWeightText = view.findViewById<TextView>(R.id.AverageValueWeight)
-        var avgbpmText = view.findViewById<TextView>(R.id.AverageValueCHSS)
+        var avgCHSSText = view.findViewById<TextView>(R.id.AverageValueCHSS)
         var avgSleepText = view.findViewById<TextView>(R.id.AverageValueSleep)
-        var avgfeelingsText = view.findViewById<TextView>(R.id.AverageValueHealth)
+        var avgFeelingsText = view.findViewById<TextView>(R.id.AverageValueHealth)
         var avgPressureText = view.findViewById<TextView>(R.id.AverageValuePressure)
-        var avgappetitText = view.findViewById<TextView>(R.id.AverageValueAppetite)
+        var avgAppetitText = view.findViewById<TextView>(R.id.AverageValueAppetite)
         var simpleViewFlipper = view.findViewById<ViewFlipper>(R.id.simpleViewFlipper)
 
         var dateFrom = view.findViewById<EditText>(R.id.dateOt)
@@ -92,32 +78,9 @@ class StatisticFragment : Fragment() {
             }
             try {
                 if (getbool(ref + 1)) {
-                    //update(ref, true)
-                    val myBoolean = true
-                    val cats = listOf(
-                        "HEIGHT",
-                        "WEIGHT",
-                        "PULSE",
-                        "PRESSURE",
-                        "APPETITE",
-                        "SLEEP",
-                        "HEALTH"
-                    )
-                    var realnumber = ref
-                    if (myBoolean) {
-                        realnumber = if (ref == 6) 0 else ref + 1
-                    }
-                    Log.d("dada", "$realnumber $myBoolean")
-                    when (realnumber) {
-                        3 -> showinfoPressure(avgPressure)
-                        4 -> showinfoCommon(avgfeelingsText, "HEALTH")
-                        6 -> showinfoCommon(avgfeelingsText, "HEALTH")
-                        0 -> showinfoBar(avgHeight, "Рост")
-                        1 -> showinfoLine(avgWeight, "Вес")
-                        2 -> showinfoLine(avgCHSS,"ЧСС")
-                        5 -> showinfoLine(avgSleep, "Сон")
-
-                    }
+                    update(ref, true, avgPressure, avgAppetitText, avgFeelingsText, avgHeight,
+                        avgWeight, avgCHSS, avgSleep, avgHeightText, avgWeightText, avgCHSSText,
+                        avgSleepText, avgPressureText, dateFrom, dateTo)
                 }
             } catch (e: InterruptedException) {
                 throw RuntimeException(e)
@@ -137,11 +100,10 @@ class StatisticFragment : Fragment() {
                 DatePickerDialog.OnDateSetListener { view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
                     val dateString = "$dayOfMonth-${monthOfYear + 1}-$year"
                     dateFrom.setText(dateString)
-                    byear = year
-                    bmonth = monthOfYear + 1
-                    bday = dayOfMonth
                     try {
-                        //update(simpleViewFlipper.displayedChild, false)
+                        update(simpleViewFlipper.displayedChild, false, avgPressure, avgAppetitText,
+                            avgFeelingsText, avgHeight, avgWeight, avgCHSS, avgSleep, avgHeightText,
+                            avgWeightText, avgCHSSText, avgSleepText, avgPressureText, dateFrom, dateTo)
                     } catch (e: InterruptedException) {
                         throw RuntimeException(e)
                     }
@@ -170,11 +132,10 @@ class StatisticFragment : Fragment() {
                 DatePickerDialog.OnDateSetListener { view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
                     val dateString = "$dayOfMonth-${monthOfYear + 1}-$year"
                     dateTo.setText(dateString)
-                    ayear = year
-                    amonth = monthOfYear + 1
-                    aday = dayOfMonth
                     try {
-                        //update(simpleViewFlipper.displayedChild, false)
+                        update(simpleViewFlipper.displayedChild, false, avgPressure, avgAppetitText,
+                            avgFeelingsText, avgHeight, avgWeight, avgCHSS, avgSleep, avgHeightText,
+                            avgWeightText, avgCHSSText, avgSleepText, avgPressureText, dateFrom, dateTo)
                     } catch (e: InterruptedException) {
                         throw RuntimeException(e)
                     }
@@ -228,6 +189,7 @@ class StatisticFragment : Fragment() {
         chart.data = lineData
         chart.invalidate()
     }
+
     private fun setupBarChart(chart: BarChart, text: String) {
         chart.description.isEnabled = true
         chart.description.text = text
@@ -261,36 +223,114 @@ class StatisticFragment : Fragment() {
         chart.invalidate()
     }
 
-    private fun showinfoCommon(text: TextView, cat: String) {
-        text.text = "norm"
+    fun findMostFrequent(list: List<String>): String? {
+        return list.groupBy { it }
+            .maxByOrNull { it.value.size }
+            ?.key
     }
 
-    private fun showinfoLine(line: LineChart, text: String) {
-        setupLineChart(line, text)
-        setLineData(line)
-    }
+    @Throws(InterruptedException::class)
+    private fun showinfoCommon(text: TextView, cat: String, aday: Int, amonth: Int, ayear: Int,
+                               bday: Int, bmonth: Int, byear: Int) {
+        val dateWithNotes: Array<List<DateWithNotes>?> = arrayOfNulls(1)
 
-    private fun showinfoBar(bar: BarChart, text: String) {
-        setupBarChart(bar, text)
-        setBarData(bar)
-    }
-
-    private fun showinfoPressure(pressure: LineChart) {
-        val entriesUpperPressure = mutableListOf<Entry>()
-        val entriesLowerPressure = mutableListOf<Entry>()
-        for (i in 0 until 10) {
-            entriesUpperPressure.add(Entry(i.toFloat(), (Math.random() * 20 + 110).toFloat()))
-            entriesLowerPressure.add(Entry(i.toFloat(), (Math.random() * 10 + 70).toFloat()))
+        val runnable = Runnable {
+            dateWithNotes[0] = dataService!!.getMediumByDateandtype(cat, byear, ayear, bmonth, amonth, bday, aday) as List<DateWithNotes>?
         }
-        val dataSetUpperPressure = LineDataSet(entriesUpperPressure, "Верхнее давление")
-        dataSetUpperPressure.color = Color.BLUE
-        val dataSetLowerPressure = LineDataSet(entriesLowerPressure, "Нижнее давление")
-        dataSetLowerPressure.color = Color.RED
+        val thread = Thread(runnable)
+        thread.start()
+        thread.join()
+        text.text = dateWithNotes[0].toString()
+    }
+
+    private fun showinfoLine(avgtex: TextView, line: LineChart, cat: String, text: String, aday: Int,
+                             amonth: Int, ayear: Int, bday: Int, bmonth: Int, byear: Int) {
+        /*val vals: List<Float> = java.util.ArrayList()
+        val avg = FloatArray(1)
+        val runnable = Runnable {
+            avg[0] =
+                dataService!!.getMediumByDateandtype(cat, byear, ayear, bmonth, amonth, bday, aday)
+            vals.addAll(
+                dataService!!.getNotesByDateAndTypeF(cat, byear, ayear, bmonth, amonth, bday, aday
+                )
+            )
+        }
+        val thread = Thread(runnable)
+        thread.start()
+        thread.join()
+        avgtex.text = avg[0].toString()
+
+        setupLineChart(line, text)
+        setLineData(line)*/
+    }
+
+    private fun showinfoBar(avgtex: TextView, bar: BarChart, cat: String, text: String, aday: Int,
+                            amonth: Int, ayear: Int, bday: Int, bmonth: Int, byear: Int) {
+        /*val vals: List<Float> = java.util.ArrayList()
+        val avg = FloatArray(1)
+        val runnable = Runnable {
+            avg[0] =
+                dataService!!.getMediumByDateandtype(cat, byear, ayear, bmonth, amonth, bday, aday)
+            vals.addAll(
+                dataService!!.getNotesByDateAndTypeF(cat, byear, ayear, bmonth, amonth, bday, aday
+                )
+            )
+        }
+        val thread = Thread(runnable)
+        thread.start()
+        thread.join()
+        avgtex.text = avg[0].toString()
+
+        setupBarChart(bar, text)
+        setBarData(bar)*/
+    }
+
+    private fun showinfoPressure(avgPressureText:TextView, pressure: LineChart, aday: Int,
+                                 amonth: Int, ayear: Int, bday: Int, bmonth: Int, byear: Int) {
+       /* val vals: MutableList<PressureValue> = java.util.ArrayList<PressureValue>()
+        val runnable = Runnable {
+            vals.addAll(
+                dataService!!.getPressureByDate(
+                    byear,
+                    ayear,
+                    bmonth,
+                    amonth,
+                    bday,
+                    aday
+                )
+            )
+        }
+        val thread = Thread(runnable)
+        thread.start()
+        thread.join()
+        val entriesUpperPressure: MutableList<Entry> = java.util.ArrayList()
+        val entriesLowerPressure: MutableList<Entry> = java.util.ArrayList()
+        var highsSum = 0
+        var lowsSum = 0
+        for (i in vals.indices) {
+            entriesUpperPressure.add(Entry(i.toFloat(), vals[i].high))
+            entriesLowerPressure.add(Entry(i.toFloat(), vals[i].low))
+            highsSum += vals[i].high
+            lowsSum += vals[i].low
+        }
+        val reshigh = highsSum / vals.size
+        val reslow = lowsSum / vals.size
+        val vas = "$reshigh/$reslow"
+        avgPressureText.text = vas
+        val dataSetUpperPressure: LineDataSet = createLineDataSet(
+            entriesUpperPressure,
+            "Верхнее давление",
+            resources.getColor(R.color.colorUpperPressure)
+        )
+        val dataSetLowerPressure: LineDataSet = createLineDataSet(
+            entriesLowerPressure,
+            "Нижнее давление",
+            resources.getColor(R.color.colorLowerPressure)
+        )
+
         val lineData = LineData(dataSetUpperPressure, dataSetLowerPressure)
-        pressure.data = lineData
-        val description = Description()
-        description.text = "Артериальное давление"
-        pressure.description = description
+        //setupChart(pressure)
+        pressure.setData(lineData)*/
     }
 
 
@@ -303,12 +343,12 @@ class StatisticFragment : Fragment() {
             4 -> uptAppetit = false
             5 -> uptSleep = false
             6 -> uptFellings = false
-            else ->{}
+            else -> {}
         }
     }
 
     private fun getbool(value: Int): Boolean {
-        return when (value){
+        return when (value) {
             0 -> uptHeight
             1 -> uptWeight
             2 -> uptBPM
@@ -319,33 +359,83 @@ class StatisticFragment : Fragment() {
                 uptFellings = false
                 false
             }
+
             else -> false
         }
     }
 
-    /*private fun update(page: Int, next: Boolean) {
-        val cats = listOf(
-            "HEIGHT",
-            "WEIGHT",
-            "PULSE",
-            "PRESSURE",
-            "APPETITE",
-            "SLEEP",
-            "HEALTH"
+    @Throws(InterruptedException::class)
+    private fun update(page: Int, next: Boolean, avgPressure: LineChart, avgAppetitText: TextView,
+                       avgFeelingsText: TextView, avgHeight: BarChart, avgWeight: LineChart,
+                       avgCHSS: LineChart, avgSleep: LineChart, avgHeightText: TextView,
+                       avgWeightText: TextView, avgCHSSText: TextView, avgSleepText: TextView,
+                       avgPressureText: TextView, dateFrom: EditText, dateTo: EditText) {
+        val parts1 = dateFrom.text.toString().split("-")
+        val parts2 = dateTo.text.toString().split("-")
+        val cats: List<String> = ArrayList(
+            mutableListOf(
+                "HEIGHT",
+                "WEIGHT",
+                "PULSE",
+                "PRESSURE",
+                "APPETITE",
+                "SLEEP",
+                "HEALTH"
+            )
         )
         var realnumber = page
         if (next) {
-            realnumber = if (page == 6) 0 else page + 1
+            if (page == 6) {
+                realnumber = 0
+            } else {
+                realnumber++
+            }
         }
         Log.d("dada", "$realnumber $next")
-        when (realnumber) {
-            3 -> showinfoPressure(avgPressureText, lineChartPressure, "PRESSURE")
-            4 -> showinfoCommon(avgappetitText, cats[realnumber])
-            6 -> showinfoCommon(avgfeelingsText, cats[realnumber])
-            0 -> showinfoFloats(avgHeightText, barChartHeight, cats[realnumber], "Рост")
-            1 -> showinfoFloats(avgWeightText, barChartWeight, cats[realnumber], "Вес")
-            2 -> showinfoFloats(avgbpmText, barChartCHSS, cats[realnumber], "ЧСС")
-            5 -> showinfoFloats(avgSleepText, barChartCHSS, cats[realnumber], "Сон")
+        if (realnumber == 3) {
+            showinfoPressure(avgPressureText, avgPressure,
+                parts1[0].toIntOrNull() ?: 0, parts1[1].toIntOrNull() ?: 0,
+                parts1[2].toIntOrNull() ?: 0, parts2[0].toIntOrNull() ?: 0,
+                parts2[1].toIntOrNull() ?: 0, parts2[2].toIntOrNull() ?: 0
+            )
+        } else if (realnumber == 4) {
+            showinfoCommon(
+                avgAppetitText, cats[realnumber], parts1[0].toIntOrNull() ?: 0,
+                parts1[1].toIntOrNull() ?: 0, parts1[2].toIntOrNull() ?: 0,
+                parts2[0].toIntOrNull() ?: 0, parts2[1].toIntOrNull() ?: 0,
+                parts2[2].toIntOrNull() ?: 0
+            )
+        } else if (realnumber == 6) {
+            showinfoCommon(
+                avgFeelingsText, cats[realnumber], parts1[0].toIntOrNull() ?: 0,
+                parts1[1].toIntOrNull() ?: 0, parts1[2].toIntOrNull() ?: 0,
+                parts2[0].toIntOrNull() ?: 0, parts2[1].toIntOrNull() ?: 0,
+                parts2[2].toIntOrNull() ?: 0
+            )
+        } else if (realnumber == 0) {
+            showinfoBar(avgHeightText, avgHeight,  cats[realnumber], "Рост",
+                parts1[0].toIntOrNull() ?: 0, parts1[1].toIntOrNull() ?: 0,
+                parts1[2].toIntOrNull() ?: 0, parts2[0].toIntOrNull() ?: 0,
+                parts2[1].toIntOrNull() ?: 0, parts2[2].toIntOrNull() ?: 0
+            )
+        } else if (realnumber == 1) {
+            showinfoLine(avgWeightText, avgWeight, cats[realnumber], "Вес",
+                parts1[0].toIntOrNull() ?: 0, parts1[1].toIntOrNull() ?: 0,
+                parts1[2].toIntOrNull() ?: 0, parts2[0].toIntOrNull() ?: 0,
+                parts2[1].toIntOrNull() ?: 0, parts2[2].toIntOrNull() ?: 0
+            )
+        } else if (realnumber == 2) {
+            showinfoLine(avgCHSSText, avgCHSS, cats[realnumber], "ЧСС",
+                parts1[0].toIntOrNull() ?: 0, parts1[1].toIntOrNull() ?: 0,
+                parts1[2].toIntOrNull() ?: 0, parts2[0].toIntOrNull() ?: 0,
+                parts2[1].toIntOrNull() ?: 0, parts2[2].toIntOrNull() ?: 0
+            )
+        } else if (realnumber == 5) {
+            showinfoLine(avgSleepText, avgSleep, cats[realnumber], "Сон",
+                parts1[0].toIntOrNull() ?: 0, parts1[1].toIntOrNull() ?: 0,
+                parts1[2].toIntOrNull() ?: 0, parts2[0].toIntOrNull() ?: 0,
+                parts2[1].toIntOrNull() ?: 0, parts2[2].toIntOrNull() ?: 0
+            )
         }
-    }*/
+    }
 }

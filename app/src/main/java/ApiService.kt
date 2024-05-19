@@ -8,6 +8,4 @@ interface ApiService {
     @GET("api/users/login")
     fun login(@Query("login") login: String,@Query("password") password: String): Call<Long>
 
-    @POST("api/users/register")
-    fun login(@Query("login") login: String,@Query("password") password: String): Call<Long>
 }
