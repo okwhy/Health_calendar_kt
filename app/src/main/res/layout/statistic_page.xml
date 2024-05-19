@@ -169,8 +169,13 @@
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/averageWeight"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_width="411dp"
+                android:layout_height="333dp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/AverageValueWeight"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -212,8 +217,13 @@
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/averageCHSS"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_width="411dp"
+                android:layout_height="333dp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/AverageValueCHSS"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -255,8 +265,13 @@
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/averagePressure"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_width="411dp"
+                android:layout_height="333dp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/AverageValuePressure" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -339,8 +354,13 @@
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/averageSleep"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_width="411dp"
+                android:layout_height="333dp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/AverageValueSleep"  />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout

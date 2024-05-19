@@ -12,30 +12,27 @@
         android:background="@color/white">
 
         <RelativeLayout
-            android:id="@+id/MyGroups"
+            android:id="@+id/MyGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white">
 
             <TextView
-                android:id="@+id/textMyGroups"
+                android:id="@+id/Groups"
                 android:layout_width="match_parent"
-                android:layout_height="57dp"
+                android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="Мои группы"
+                android:text="Группы"
                 android:textColor="#673AB7"
                 android:textSize="25dp" />
-
             <ImageButton
-                android:id="@+id/joinGroup"
+                android:id="@+id/createGroup"
                 android:layout_width="52dp"
                 android:layout_height="53dp"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="0dp"
                 android:background="@drawable/plus" />
         </RelativeLayout>
-
-
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 

@@ -9,7 +9,7 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@color/header">
+        android:background="@color/white">
 
         <RelativeLayout
             android:id="@+id/MyGroup"
@@ -19,15 +19,26 @@
 
             <TextView
                 android:id="@+id/textMygroup"
-                android:layout_width="match_parent"
-                android:layout_height="57dp"
+                android:layout_width="171dp"
+                android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="Моя группа"
                 android:textColor="#673AB7"
                 android:textSize="25dp" />
+
+            <EditText
+                android:id="@+id/passwordOfGroup"
+                android:layout_width="173dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="64dp"
+                android:layout_toEndOf="@+id/textMygroup"
+                android:background="#FFFFFF"
+                android:gravity="start"
+                android:hint="Код"
+                android:padding="8dp"
+                android:textColor="#2A2A2A"
+                android:textSize="18dp" />
         </RelativeLayout>
-
-
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 
