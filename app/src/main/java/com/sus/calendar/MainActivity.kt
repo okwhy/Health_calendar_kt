@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 //    val Calendar_page = R.id.homepage
 //    val Export_page = R.id.export
     private lateinit var binding: ActivityMainBinding
-    private lateinit var appBarConfiguration: AppBarConfiguration
+//    private lateinit var appBarConfiguration: AppBarConfiguration
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
