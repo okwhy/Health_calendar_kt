@@ -4,15 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp">
-    <!-- Заголовок -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Внесите данные на 22.81.33"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:paddingBottom="16dp" />
+
     <!-- Рост -->
     <TextView
         android:layout_width="wrap_content"
@@ -50,7 +42,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Давление (систолическое / диастолическое)" />
+        android:text="Давление (верхнее артериальное / нижнее сердечное)" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -60,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:inputType="number"
-            android:hint="Систолическое" />
+            android:hint="Верхнее артериальное" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -70,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:inputType="number"
-            android:hint="Диастолическое" />
+            android:hint="Нижнее сердечное" />
     </LinearLayout>
 
     <!-- Аппетит -->
