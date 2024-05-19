@@ -160,10 +160,10 @@ class AccountFragment : Fragment() {
                                 ).show()
                             }
                             val registration_layout = register_layout_binding.RegistrationLayout
-
+                            val enter_layout_embedded = enter_binding.enterLayoutEmbedded
                             enter_layout.removeView(registration_layout)
 
-                            enter_layout.addView(account_layout)
+                            enter_layout.addView(enter_layout_embedded)
                         } else {
                             Toast.makeText(
                                 requireContext(),
@@ -245,6 +245,10 @@ class AccountFragment : Fragment() {
 
             })
         }
+
+
+
+
 
         return enter_binding.root
     }
