@@ -24,7 +24,9 @@ import com.sus.calendar.entities.Note
 import com.sus.calendar.services.DataService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -48,7 +50,7 @@ class CalendarFragment : Fragment() {
     ): View? {
 
         // Inflate the layout for this fragment
-        binding= CalendarPageBinding.inflate(layoutInflater,container,false)
+        binding = CalendarPageBinding.inflate(layoutInflater, container, false)
         calendar = Calendar.getInstance()
         curdate = LocalDateTime.now().toLocalDate()
         currentDay = curdate.getDayOfMonth()
@@ -62,11 +64,8 @@ class CalendarFragment : Fragment() {
 
         //------------------------------------------------------
         dataService = this.context?.let { DataService.initial(it) }
-        try {
-            addmarks(calendarView)
-        } catch (e: InterruptedException) {
-            throw RuntimeException(e)
-        }
+        addmarks(calendarView)
+
         val calendarStrings: List<String> = ArrayList()
         val days = IntArray(31)
         val months = IntArray(12)
@@ -214,7 +213,11 @@ class CalendarFragment : Fragment() {
         )
         val spinnerAppetite = binding.textInputAppetiteSpiner
         val appetiteAdapter: ArrayAdapter<Any?> =
-            ArrayAdapter<Any?>(requireContext(), android.R.layout.simple_spinner_item, stateOfAppetite)
+            ArrayAdapter<Any?>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                stateOfAppetite
+            )
         appetiteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerAppetite.adapter = appetiteAdapter
         val stateOfHealth = arrayOf<String?>(
@@ -227,7 +230,11 @@ class CalendarFragment : Fragment() {
         )
         val spinnerHealth = binding.textInputHealthSpiner
         val appetiteHealth: ArrayAdapter<Any?> =
-            ArrayAdapter<Any?>(requireContext(), android.R.layout.simple_spinner_item, stateOfHealth)
+            ArrayAdapter<Any?>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                stateOfHealth
+            )
         appetiteHealth.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerHealth.adapter = appetiteHealth
         val saveTextButton = binding.saveTextButton1
@@ -289,36 +296,38 @@ class CalendarFragment : Fragment() {
     }
 
     private fun insertorupdateDate(notes: Map<String, String>, year: Int, month: Int, date: Int) {
-        val ref = arrayOfNulls<DateSQL>(1)
-        val id = LongArray(1)
+        var ref: DateSQL?
+        var id: Long?
         val noteslist: MutableList<Note> = ArrayList()
-        val runnable = Runnable {
-            ref[0] = dataService!!.getDateNoNotes(year, month, date)
-            if (ref[0] == null) {
-                id[0] = dataService!!.insertDate(year, month, date)
-            } else id[0] = ref[0]!!.id
+        viewLifecycleOwner.lifecycleScope.launch {
+            ref = dataService!!.getDateNoNotes(year, month, date)
+            if (ref == null) {
+                id = dataService!!.insertDate(year, month, date)
+            } else id = ref!!.id
             for (n in notes.keys) {
-                noteslist.add(Note(n, notes[n], id[0]))
+                noteslist.add(Note(n, notes[n], id!!))
             }
             for (n in noteslist) {
                 val a = dataService!!.insertOrUpdateNote(n)
             }
         }
-        val thread = Thread(runnable)
-        thread.start()
+
     }
 
     @Throws(InterruptedException::class)
     private fun fetchDate(year: Int, month: Int, date: Int): Map<String?, String?>? {
-        val dateSQL = arrayOfNulls<DateWithNotes>(1)
-        val runnable = Runnable { dateSQL[0] = dataService!!.getDate(year, month, date) }
-        val thread = Thread(runnable)
-        thread.start()
-        thread.join()
-        if (dateSQL[0] == null) {
+        var dateSQL: DateWithNotes? = null
+        viewLifecycleOwner.lifecycleScope.launch {
+            dateSQL = withContext(Dispatchers.IO) {
+                dataService!!.getDate(year, month, date)
+            }
+        }
+
+
+        if (dateSQL == null) {
             return null
         }
-        val notes = dateSQL[0]!!.notes
+        val notes = dateSQL!!.notes
         val notesRes: MutableMap<String?, String?> = HashMap()
         for (n in notes!!) {
             notesRes[n.type] = n.value
@@ -326,7 +335,6 @@ class CalendarFragment : Fragment() {
         return notesRes
     }
 
-    @Throws(InterruptedException::class)
     fun addmarks(calendarView: CalendarView) {
         val cal = calendarView.currentPageDate
         val year = cal[1]
@@ -336,8 +344,10 @@ class CalendarFragment : Fragment() {
         var noedit: Boolean
         var seldate: LocalDate
         val daysWithData: MutableList<Int> = ArrayList()
-        CoroutineScope(Dispatchers.Main).launch {
-            daysWithData.addAll(dataService!!.getDaysByMonth(year, month))
+        viewLifecycleOwner.lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                daysWithData.addAll(dataService!!.getDaysByMonth(year, month))
+            }
         }
         val events: MutableList<EventDay> = ArrayList()
         for (iter in 0 until days_amount) {
