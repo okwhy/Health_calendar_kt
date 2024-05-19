@@ -23,7 +23,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-   // private const val BASE_URL = "http://192.168.115.110:1337/"
+   // private const val BASE_URL = "http://192.168.0.108:1337/"
 
     private const val BASE_URL = "http://192.168.0.108:1337/"
 
