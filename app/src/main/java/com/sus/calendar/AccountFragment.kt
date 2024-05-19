@@ -64,43 +64,25 @@ class AccountFragment : Fragment() {
 
         member_group_button.setOnClickListener()
         {
-            /*val call_login = apiService.login(triedlogin.toString(), triedpass.toString())
+            val call_member_groups = apiService.get_member_groups(2)
 
-            call_login.enqueue(object : Callback<Long> {
-                override fun onResponse(call: Call<Long>, response: Response<Long>) {
+            call_member_groups.enqueue(object : Callback<List<Group>> {
+                override fun onResponse(call: Call<List<Group>>, response: Response<List<Group>>) {
                     if (response.isSuccessful) {
-                        val user_id = response.body()
-                        user_id?.let {
-                            if(user_id?.toInt() == -1)
-                            {
-                                Toast.makeText(requireContext(),"Такого логина не существует", Toast.LENGTH_SHORT).show()
-                            }
-                            else if (user_id?.toInt() == -2)
-                            {
-                                Toast.makeText(requireContext(),"Неверный пароль", Toast.LENGTH_SHORT).show()
-                            }
-                            else {
-                                Toast.makeText(requireContext(), "Успешная авторизация", Toast.LENGTH_SHORT).show()
-                                val enter_layout_embedded = enter_binding.enterLayoutEmbedded
-
-                                enter_layout.removeView(enter_layout_embedded)
-
-                                enter_layout.addView(account_layout_1)
-
-                            }
-                        }
+                        val groups = response.body()
+                        // Обработка успешного ответа, например, отображение данных в UI
                     } else {
-                        // Обработка ошибок
-                        Toast.makeText(requireContext(),"Внутренняя ошибка: ${response.errorBody()?.string()}", Toast.LENGTH_SHORT).show()
+                        // Обработка ошибки
+                        Toast.makeText(requireContext(), "Error: ${response.message()}", Toast.LENGTH_SHORT).show()
                     }
                 }
-                @OptIn(UnstableApi::class) override fun onFailure(call: Call<Long>, t: Throwable) {
+
+                override fun onFailure(call: Call<List<Group>>, t: Throwable) {
                     // Обработка ошибок сети или других ошибок
                     Log.e("RetrofitError", "Ошибка: ${t.message}", t)
-                    Toast.makeText(context, "Ошибка сети: ${t.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), "Ошибка: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
-
-            })*/
+            })
         }
 
         //==================================================//
