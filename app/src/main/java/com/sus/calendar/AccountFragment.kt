@@ -1,6 +1,7 @@
 package com.sus.calendar
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,7 +15,7 @@ import androidx.media3.common.util.UnstableApi
 import com.sus.calendar.databinding.AccountLayoutBinding
 import com.sus.calendar.databinding.AccountPageBinding
 import com.sus.calendar.databinding.RegistrationBinding
-import org.checkerframework.checker.units.qual.t
+import com.sus.calendar.dtos.UserDTO
 
 
 import retrofit2.Call
@@ -209,27 +210,32 @@ class AccountFragment : Fragment() {
         {
             val call_login = apiService.login(triedlogin.toString(), triedpass.toString())
 
-            call_login.enqueue(object : Callback<Long> {
-                override fun onResponse(call: Call<Long>, response: Response<Long>) {
+            call_login.enqueue(object : Callback<UserDTO> {
+                override fun onResponse(call: Call<UserDTO>, response: Response<UserDTO>) {
                     if (response.isSuccessful) {
-                        val user_id = response.body()
-                        user_id?.let {
-                            if(user_id?.toInt() == -1)
-                            {
-                                Toast.makeText(requireContext(),"Такого логина не существует", Toast.LENGTH_SHORT).show()
-                            }
-                            else if (user_id?.toInt() == -2)
-                            {
-                                Toast.makeText(requireContext(),"Неверный пароль", Toast.LENGTH_SHORT).show()
-                            }
-                            else {
-                                Toast.makeText(requireContext(), "Успешная авторизация", Toast.LENGTH_SHORT).show()
-                                val enter_layout_embedded = enter_binding.enterLayoutEmbedded
+                        val user = response.body()
+                        user?.let {
+                            when (user.id) {
+                                (-1).toLong() -> {
+                                    Toast.makeText(requireContext(),"Такого логина не существует", Toast.LENGTH_SHORT).show()
+                                }
+                                (-2).toLong() -> {
+                                    Toast.makeText(requireContext(),"Неверный пароль", Toast.LENGTH_SHORT).show()
+                                }
+                                else -> {
+                                    Toast.makeText(requireContext(), "Успешная авторизация", Toast.LENGTH_SHORT).show()
+                                    val enter_layout_embedded = enter_binding.enterLayoutEmbedded
+                                    MainActivity.DataManager.setUserData(user)
+                                    val sharedPreferences = requireContext().getSharedPreferences("data", Context.MODE_PRIVATE)
+                                    sharedPreferences.edit()
+                                        .putLong("key_id",user.id)
+                                        .putString("key_name",user.name)
+                                        .apply()
+                                    enter_layout.removeView(enter_layout_embedded)
 
-                                enter_layout.removeView(enter_layout_embedded)
+                                    enter_layout.addView(account_layout)
 
-                                enter_layout.addView(account_layout)
-
+                                }
                             }
                         }
                     } else {
@@ -237,7 +243,7 @@ class AccountFragment : Fragment() {
                         Toast.makeText(requireContext(),"Внутренняя ошибка: ${response.errorBody()?.string()}", Toast.LENGTH_SHORT).show()
                     }
                 }
-                @OptIn(UnstableApi::class) override fun onFailure(call: Call<Long>, t: Throwable) {
+                @OptIn(UnstableApi::class) override fun onFailure(call: Call<UserDTO>, t: Throwable) {
                     // Обработка ошибок сети или других ошибок
                     Log.e("RetrofitError", "Ошибка: ${t.message}", t)
                     Toast.makeText(context, "Ошибка сети: ${t.message}", Toast.LENGTH_LONG).show()

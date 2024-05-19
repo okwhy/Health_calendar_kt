@@ -1,23 +1,17 @@
 package com.sus.calendar
 
-import ApiService
-import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.MenuItem
-import android.view.View
+import android.util.Log
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sus.calendar.databinding.ActivityMainBinding
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
+import com.sus.calendar.dtos.UserDTO
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -25,7 +19,7 @@ object RetrofitClient {
 
    // private const val BASE_URL = "http://192.168.0.108:1337/"
 
-    private const val BASE_URL = "http://192.168.115.119:8080/"
+    private const val BASE_URL = "http://192.168.1.79:8080/"
 
     val instance: ApiService by lazy {
         val retrofit = Retrofit.Builder()
@@ -54,6 +48,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val sharedPreferences = getSharedPreferences("data", Context.MODE_PRIVATE)
+        if (sharedPreferences.contains("key_id")){
+            DataManager.setUserData(
+                UserDTO(sharedPreferences.getLong("key_id",-1)
+                , sharedPreferences.getString("key_name","")!!
+                ))
+        }
+
 //        setRepeatingAlarm()
         val navView: BottomNavigationView = binding.bottomNavigationView
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
@@ -66,9 +68,6 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
     }
-
-    var calendarFragment = CalendarFragment()
-    var exportFragment = ExportFragment()
     private fun setRepeatingAlarm() {
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
 
@@ -93,7 +92,16 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-//    @SuppressLint("NonConstantResourceId")
+    object DataManager {
+        private var user: UserDTO?=null
+        fun setUserData(user: UserDTO){
+            this.user=user
+        }
+        fun getUserData():UserDTO?{
+            return user
+        }
+    }
+    //    @SuppressLint("NonConstantResourceId")
 //    override fun onNavigationItemSelected(item: MenuItem): Boolean {
 //        return if (item.itemId == Calendar_page) {
 //            supportFragmentManager
