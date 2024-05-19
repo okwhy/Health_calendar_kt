@@ -10,6 +10,7 @@ import com.sus.calendar.databinding.EnterBinding
 import androidx.annotation.OptIn
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
+import com.google.protobuf.NullValue
 import com.sus.calendar.databinding.AccountLayoutBinding
 import com.sus.calendar.databinding.AccountPageBinding
 
@@ -28,18 +29,7 @@ class AccountFragment : Fragment() {
     ): View? {
         enter_binding = EnterBinding.inflate(inflater,container,false)
 
-        account_layout_binding = AccountLayoutBinding.inflate(inflater,container,false)
-
-        val exit_layout = AccountLayoutBinding.inflate(inflater,container,false)
-        val group_member_layout = AccountLayoutBinding.inflate(inflater,container,false)
-        val group_creator_layout = AccountLayoutBinding.inflate(inflater,container,false)
-
-        val exit_button = exit_layout.accountText
-        val group_member_button = group_member_layout.accountText
-        val group_creator_button = group_creator_layout.accountText
-        exit_button.text = "Выйти"
-        group_member_button.text = "Участие в группах"
-        group_creator_button.text = "Создание групп"
+        val enter_layout = enter_binding.enterLayout
 
         val login_edit = enter_binding.editTextEmail
 
@@ -49,12 +39,43 @@ class AccountFragment : Fragment() {
 
         val registerbutton = enter_binding.Regist
 
-
         var triedlogin = login_edit.text
 
         var triedpass = password_edit.text
 
+        //==================================================//
+
+        account_layout_binding = AccountLayoutBinding.inflate(inflater,container,false)
+
+        val account_layout = AccountPageBinding.inflate(inflater,container,false)
+
+        val account_layout_1 = account_layout.accountLayoutPage
+
+        val account_exit_button = account_layout.exit
+
+        val member_group_button = account_layout.MyGroup
+
+        member_group_button.setOnClickListener()
+        {
+
+        }
+
+        account_exit_button.setOnClickListener()
+        {
+            val enter_layout_embedded = enter_binding.enterLayoutEmbedded
+
+            login_edit.text.clear()
+
+            password_edit.text.clear()
+
+            enter_layout.removeView(account_layout_1)
+
+            enter_layout.addView(enter_layout_embedded)
+        }
+
         val apiService = RetrofitClient.instance
+
+
 
         enterbutton.setOnClickListener()
         {
@@ -75,16 +96,11 @@ class AccountFragment : Fragment() {
                             }
                             else {
                                 Toast.makeText(requireContext(), "Успешная авторизация", Toast.LENGTH_SHORT).show()
-                                val enter_layout = enter_binding.enterLayout
+                                val enter_layout_embedded = enter_binding.enterLayoutEmbedded
 
-                                enter_layout.removeView(login_edit)
-                                enter_layout.removeView(password_edit)
-                                enter_layout.removeView(enterbutton)
-                                enter_layout.removeView(registerbutton)
+                                enter_layout.removeView(enter_layout_embedded)
 
-                                enter_layout.addView(exit_layout.accountLayout)
-                                enter_layout.addView(group_member_layout.accountLayout)
-                                enter_layout.addView(group_creator_layout.accountLayout)
+                                enter_layout.addView(account_layout_1)
 
                             }
                         }
