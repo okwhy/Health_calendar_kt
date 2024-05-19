@@ -9,5 +9,5 @@ interface ApiService {
     fun login(@Query("login") login: String,@Query("password") password: String): Call<Long>
 
     @POST("api/users/register")
-    fun login(@Query("login") login: String,@Query("password") password: String): Call<Long>
+    fun register(@Query("login") login: String,@Query("password") password: String,@Query("name") name: String): Call<Boolean>
 }
