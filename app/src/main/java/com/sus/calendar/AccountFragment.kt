@@ -65,7 +65,9 @@ class AccountFragment : Fragment() {
 
         member_group_button.setOnClickListener()
         {
-            val call_member_groups = apiService.get_member_groups(2)
+            var user_id = MainActivity.DataManager.getUserData()!!.id
+
+            val call_member_groups = apiService.get_member_groups(user_id)
 
             call_member_groups.enqueue(object : Callback<List<Group>> {
                 override fun onResponse(call: Call<List<Group>>, response: Response<List<Group>>) {
