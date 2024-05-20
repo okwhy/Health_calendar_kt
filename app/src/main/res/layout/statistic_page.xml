@@ -312,6 +312,15 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 tools:ignore="MissingConstraints" />
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/averageAppetite"
+                android:layout_width="411dp"
+                android:layout_height="333dp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/AverageValueAppetite" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -397,6 +406,15 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 tools:ignore="MissingConstraints" />
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/averageHealth"
+                android:layout_width="411dp"
+                android:layout_height="333dp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/AverageValueHealth" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ViewFlipper>
 

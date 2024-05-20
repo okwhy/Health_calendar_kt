@@ -1,6 +1,7 @@
 package com.sus.calendar
 
 import android.app.DatePickerDialog
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,8 +15,11 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.ViewFlipper
 import androidx.fragment.app.Fragment
+import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.charts.ScatterChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -23,8 +27,12 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import com.github.mikephil.charting.utils.ColorTemplate
 import com.sus.calendar.entities.DateWithNotes
 import com.sus.calendar.services.DataService
 import java.time.LocalDate
@@ -122,6 +130,9 @@ class StatisticFragment : Fragment() {
     private var uptFellings: Boolean = false
     private var uptPressure: Boolean = false
 
+    private var boolDateFrom: Boolean = false
+    private var boolDateTo: Boolean = false
+
     private val handler = Handler(Looper.getMainLooper())
     private val dataService = this.context?.let { DataService.initial(it) }
     override fun onCreateView(
@@ -135,6 +146,8 @@ class StatisticFragment : Fragment() {
         val avgCHSS: LineChart = view.findViewById(R.id.averageCHSS)
         val avgPressure: LineChart = view.findViewById(R.id.averagePressure)
         val avgSleep: LineChart = view.findViewById(R.id.averageSleep)
+        val avgFellings: PieChart = view.findViewById(R.id.averageHealth)
+        val avgAppetite: PieChart = view.findViewById(R.id.averageAppetite)
 
         var btnNext = view.findViewById<View>(R.id.buttonNext) as Button
         var avgHeightText = view.findViewById<TextView>(R.id.AverageValueHeight)
@@ -153,18 +166,20 @@ class StatisticFragment : Fragment() {
 
         btnNext.setOnClickListener {
             Log.d("d", "${simpleViewFlipper.displayedChild}")
-
+            val startDate = getDateFromEditText(dateFrom)
+            val endDate = getDateFromEditText(dateTo)
             var ref = simpleViewFlipper.displayedChild
             if (simpleViewFlipper.displayedChild == 6) {
                 ref = 0
+                update(-1, true, avgPressure, avgAppetitText, avgFeelingsText, avgHeight,
+                    avgWeight, avgCHSS, avgSleep, avgHeightText, avgWeightText, avgCHSSText,
+                    avgSleepText, avgPressureText, avgFellings, avgAppetite, startDate, endDate)
             }
             try {
-                val startDate = getDateFromEditText(dateFrom)
-                val endDate = getDateFromEditText(dateTo)
                 if (getbool(ref + 1)) {
                     update(ref, true, avgPressure, avgAppetitText, avgFeelingsText, avgHeight,
                         avgWeight, avgCHSS, avgSleep, avgHeightText, avgWeightText, avgCHSSText,
-                        avgSleepText, avgPressureText, startDate, endDate)
+                        avgSleepText, avgPressureText, avgFellings, avgAppetite, startDate, endDate)
                 }
             } catch (e: InterruptedException) {
                 throw RuntimeException(e)
@@ -186,15 +201,14 @@ class StatisticFragment : Fragment() {
                 DatePickerDialog.OnDateSetListener { view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
                     val dateString = String.format("%02d-%02d-%d", dayOfMonth, monthOfYear + 1, year)
                     dateFrom.setText(dateString)
-                    /*try {
+                    boolDateFrom = true
+                    if(boolDateFrom == true && boolDateTo == true) {
                         val startDate = getDateFromEditText(dateFrom)
                         val endDate = getDateFromEditText(dateTo)
-                        update(simpleViewFlipper.displayedChild, false, avgPressure, avgAppetitText,
-                            avgFeelingsText, avgHeight, avgWeight, avgCHSS, avgSleep, avgHeightText,
-                            avgWeightText, avgCHSSText, avgSleepText, avgPressureText, startDate, endDate)
-                    } catch (e: InterruptedException) {
-                        throw RuntimeException(e)
-                    }*/
+                        update(-1, true, avgPressure, avgAppetitText, avgFeelingsText, avgHeight,
+                            avgWeight, avgCHSS, avgSleep, avgHeightText, avgWeightText, avgCHSSText,
+                            avgSleepText, avgPressureText, avgFellings, avgAppetite, startDate, endDate)
+                    }
                     uptFellings = true
                     uptAppetit = true
                     uptBPM = true
@@ -220,15 +234,14 @@ class StatisticFragment : Fragment() {
                 DatePickerDialog.OnDateSetListener { view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
                     val dateString = String.format("%02d-%02d-%d", dayOfMonth, monthOfYear + 1, year)
                     dateTo.setText(dateString)
-                    /*try {
+                    boolDateTo= true
+                    if(boolDateFrom == true && boolDateTo == true) {
                         val startDate = getDateFromEditText(dateFrom)
                         val endDate = getDateFromEditText(dateTo)
-                        update(simpleViewFlipper.displayedChild, false, avgPressure, avgAppetitText,
-                            avgFeelingsText, avgHeight, avgWeight, avgCHSS, avgSleep, avgHeightText,
-                            avgWeightText, avgCHSSText, avgSleepText, avgPressureText, startDate, endDate)
-                    } catch (e: InterruptedException) {
-                        throw RuntimeException(e)
-                    }*/
+                        update(-1, true, avgPressure, avgAppetitText, avgFeelingsText, avgHeight,
+                            avgWeight, avgCHSS, avgSleep, avgHeightText, avgWeightText, avgCHSSText,
+                            avgSleepText, avgPressureText, avgFellings, avgAppetite, startDate, endDate)
+                    }
                     uptFellings = true
                     uptAppetit = true
                     uptBPM = true
@@ -343,7 +356,7 @@ class StatisticFragment : Fragment() {
             }
             DataType.HEART_RATE -> {
                 val averageHeartRate = filteredRecords.map { it.heartRate }.average()
-                text.text = "уд/мин".format(averageHeartRate)
+                text.text = "%.2f уд/мин".format(averageHeartRate)
             }
             DataType.SLEEP_HOURS -> {
                 val averageSleepHours = filteredRecords.map { it.sleepHours }.average()
@@ -359,36 +372,165 @@ class StatisticFragment : Fragment() {
                     .maxByOrNull { it.value.size }?.key ?: Appetite.NO_APPETITE
                 text.text = mostCommonAppetite.toString()
             }
+            DataType.PRESSURE->{
+                val (systolicList, diastolicList) = filteredRecords.map {
+                    val (systolic, diastolic) = it.bloodPressure.split("/").map(String::toInt)
+                    systolic to diastolic
+                }.unzip()
+
+                val averageSystolic = systolicList.average()
+                val averageDiastolic = diastolicList.average()
+                text.text = "%.2f/%.2f".format(averageSystolic, averageDiastolic)
+            }
 
             else -> {}
         }
     }
 
-    @Throws(InterruptedException::class)
-    private fun showinfoCommon(text: TextView, dataType: DataType, startDate: LocalDate,  endDate: LocalDate) {
-        calculateAverages(text, startDate, endDate, dataType)
+    private fun showinfoPieHealth(avgtex: TextView, pie: PieChart, dataType: DataType, text: String,
+                            startDate: LocalDate, endDate: LocalDate) {
+        calculateAverages(avgtex, startDate, endDate, dataType)
+
+        val entries = listOf(
+            PieEntry(healthRecords.count { it.wellbeing == Wellbeing.GOOD }.toFloat(), "Хорошее"),
+            PieEntry(healthRecords.count { it.wellbeing == Wellbeing.NORMAL }.toFloat(), "Нормальное"),
+            PieEntry(healthRecords.count { it.wellbeing == Wellbeing.BAD }.toFloat(), "Плохое")
+        )
+        val dataSet = PieDataSet(entries, text)
+        // Задание цветов для сегментов диаграммы
+        val customColors = listOf(
+            Color.rgb(76, 175, 80),  // Зеленый для "Хорошее"
+            Color.rgb(255, 193, 7),  // Желтый для "Нормальное"
+            Color.rgb(244, 67, 54)   // Красный для "Плохое"
+        )
+        dataSet.colors = customColors
+
+        val pieData = PieData(dataSet)
+        pie.data = pieData
+
+        // Настройки отображения
+        pie.description.isEnabled = false
+        pie.isDrawHoleEnabled = false
+        pie.setEntryLabelColor(Color.BLACK)
+        pie.setEntryLabelTextSize(12f)
+
+        pie.animateY(1000, Easing.EaseInOutQuad)
+        pie.invalidate()
+    }
+
+    private fun showinfoPieAppetite(avgtex: TextView, pie: PieChart, dataType: DataType, text: String,
+                                  startDate: LocalDate, endDate: LocalDate) {
+        calculateAverages(avgtex, startDate, endDate, dataType)
+
+        val entries = listOf(
+            PieEntry(healthRecords.count { it.appetite == Appetite.NO_APPETITE }.toFloat(), "Нет аппетита"),
+            PieEntry(healthRecords.count { it.appetite == Appetite.GOOD }.toFloat(), "Хороший"),
+            PieEntry(healthRecords.count { it.appetite == Appetite.BAD }.toFloat(), "Плохой"),
+            PieEntry(healthRecords.count { it.appetite == Appetite.NORMAL}.toFloat(), "Нормальный")
+        )
+        val dataSet = PieDataSet(entries, text)
+
+        val customColors = listOf(
+            Color.rgb(76, 175, 80),
+            Color.rgb(255, 193, 7),
+            Color.rgb(244, 67, 54),
+            Color.rgb(199, 21, 133)
+        )
+        dataSet.colors = customColors
+
+        val pieData = PieData(dataSet)
+        pie.data = pieData
+
+        pie.description.isEnabled = false
+        pie.isDrawHoleEnabled = false
+        pie.setEntryLabelColor(Color.BLACK)
+        pie.setEntryLabelTextSize(12f)
+
+        pie.animateY(1000, Easing.EaseInOutQuad)
+        pie.invalidate()
     }
 
     private fun showinfoLine(avgtex: TextView, line: LineChart, dataType: DataType, text: String,
                              startDate: LocalDate,  endDate: LocalDate) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
-        setupLineChart(line, text)
-        setLineData(line)
+        val entries = healthRecords.mapIndexed { index, record ->
+            val value = when (dataType) {
+                DataType.WEIGHT -> record.weight.toFloat()
+                DataType.HEIGHT -> record.height.toFloat()
+                DataType.HEART_RATE -> record.heartRate.toFloat()
+                DataType.SLEEP_HOURS -> record.sleepHours.toFloat()
+                else -> 0f
+            }
+            Entry(index.toFloat(), value)
+        }
+        val dataSet = LineDataSet(entries, text)
+
+        dataSet.color = ColorTemplate.MATERIAL_COLORS[0]
+        dataSet.setCircleColor(ColorTemplate.MATERIAL_COLORS[1])
+        dataSet.valueTextColor = ColorTemplate.MATERIAL_COLORS[2]
+        dataSet.lineWidth = 2.5f
+        dataSet.circleRadius = 5f
+        dataSet.valueTextSize = 10f
+        dataSet.setDrawFilled(true)
+        dataSet.fillColor = ColorTemplate.MATERIAL_COLORS[3]
+
+        val lineData = LineData(dataSet)
+        line.data = lineData
+
+        line.description.isEnabled = false
+        line.setTouchEnabled(true)
+        line.isDragEnabled = true
+        line.setScaleEnabled(true)
+        line.setPinchZoom(true)
+
+        line.invalidate()
     }
 
     private fun showinfoBar(avgtex: TextView, bar: BarChart, dataType: DataType, text: String,
                             startDate: LocalDate,  endDate: LocalDate) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
-        setupBarChart(bar, text)
-        setBarData(bar)
+        val entries = healthRecords.mapIndexed { index, record ->
+            BarEntry(index.toFloat(), record.height.toFloat())
+        }
+
+        val dataSet = BarDataSet(entries, text)
+        dataSet.colors = ColorTemplate.MATERIAL_COLORS.toList()
+        val barData = BarData(dataSet)
+
+        bar.data = barData
+        bar.description.isEnabled = false
+        bar.animateY(1000)
+        bar.invalidate()
     }
 
     private fun showinfoPressure(avgPressureText:TextView, pressure: LineChart, dataType: DataType,
                                  startDate: LocalDate,  endDate: LocalDate) {
         calculateAverages(avgPressureText, startDate, endDate, dataType)
+        val systolicEntries = mutableListOf<Entry>()
+        val diastolicEntries = mutableListOf<Entry>()
 
+        healthRecords.forEachIndexed { index, record ->
+            val (systolic, diastolic) = record.bloodPressure.split("/").map { it.toFloat() }
+            systolicEntries.add(Entry(index.toFloat(), systolic))
+            diastolicEntries.add(Entry(index.toFloat(), diastolic))
+        }
+
+        val systolicDataSet = LineDataSet(systolicEntries, "Верхнее артериальное")
+        systolicDataSet.color = Color.RED
+        systolicDataSet.valueTextColor = Color.BLACK
+
+        val diastolicDataSet = LineDataSet(diastolicEntries, "Нижнее сердечное")
+        diastolicDataSet.color = Color.BLUE
+        diastolicDataSet.valueTextColor = Color.BLACK
+
+        val lineData = LineData(systolicDataSet, diastolicDataSet)
+
+        pressure.data = lineData
+        pressure.description.isEnabled = false
+        pressure.animateY(1000)
+        pressure.invalidate()
     }
 
 
@@ -413,11 +555,7 @@ class StatisticFragment : Fragment() {
             3 -> uptPressure
             4 -> uptAppetit
             5 -> uptSleep
-            6 -> {
-                uptFellings = false
-                false
-            }
-
+            6 -> uptFellings
             else -> false
         }
     }
@@ -433,11 +571,12 @@ class StatisticFragment : Fragment() {
                        avgFeelingsText: TextView, avgHeight: BarChart, avgWeight: LineChart,
                        avgCHSS: LineChart, avgSleep: LineChart, avgHeightText: TextView,
                        avgWeightText: TextView, avgCHSSText: TextView, avgSleepText: TextView,
-                       avgPressureText: TextView,  startDate: LocalDate,  endDate: LocalDate) {
+                       avgPressureText: TextView, avgFellings: PieChart,  avgAppetite: PieChart,
+                       startDate: LocalDate,  endDate: LocalDate) {
 
         var realnumber = page
         if (next) {
-            if (page == 6) {
+            if (page == 7) {
                 realnumber = 0
             } else {
                 realnumber++
@@ -447,9 +586,9 @@ class StatisticFragment : Fragment() {
         if (realnumber == 3) {
             showinfoPressure(avgPressureText, avgPressure, DataType.PRESSURE, startDate, endDate)
         } else if (realnumber == 4) {
-            showinfoCommon(avgAppetitText, DataType.APPETITE, startDate, endDate)
+            showinfoPieAppetite(avgAppetitText, avgAppetite, DataType.APPETITE, "Аппетит", startDate, endDate)
         } else if (realnumber == 6) {
-            showinfoCommon(avgFeelingsText, DataType.WELLBEING, startDate, endDate)
+            showinfoPieHealth(avgFeelingsText, avgFellings, DataType.WELLBEING, "Самочувствие", startDate, endDate)
         } else if (realnumber == 0) {
             showinfoBar(avgHeightText, avgHeight, DataType.HEIGHT, "Рост", startDate, endDate)
         } else if (realnumber == 1) {
