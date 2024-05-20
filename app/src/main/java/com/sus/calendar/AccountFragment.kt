@@ -14,6 +14,9 @@ import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import com.sus.calendar.databinding.AccountLayoutBinding
 import com.sus.calendar.databinding.AccountPageBinding
+import com.sus.calendar.databinding.CardGroupBinding
+import com.sus.calendar.databinding.CardUserBinding
+import com.sus.calendar.databinding.MyGroupsBinding
 import com.sus.calendar.databinding.RegistrationBinding
 import com.sus.calendar.dtos.GroupDTOforUser
 import com.sus.calendar.dtos.UserDTO
@@ -27,7 +30,8 @@ class AccountFragment : Fragment() {
     private lateinit var enter_binding: EnterBinding
     private lateinit var account_layout_binding: AccountLayoutBinding
     private lateinit var register_layout_binding: RegistrationBinding
-    
+    private lateinit var user_member_groups_binding: MyGroupsBinding
+    private lateinit var group_card:CardGroupBinding
 
     @OptIn(UnstableApi::class) override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,7 +68,11 @@ class AccountFragment : Fragment() {
 
         val member_group_button = account_layout_binding_layout.MyGroup
 
+        user_member_groups_binding = MyGroupsBinding.inflate(inflater,container,false)
 
+        val user_member_layout = user_member_groups_binding.UserGroupsLayout
+
+        group_card = CardGroupBinding.inflate(inflater,container,false)
 
         member_group_button.setOnClickListener()
         {
@@ -77,6 +85,14 @@ class AccountFragment : Fragment() {
                     if (response.isSuccessful) {
                         val groups = response.body()
 
+                        enter_layout.removeView(account_layout)
+
+                        enter_layout.addView(user_member_layout)
+
+                        if (groups != null) {
+                            if(groups.isNotEmpty()) {
+                            }
+                        }
 
                     } else {
                         Toast.makeText(requireContext(), "Error: ${response.message()}", Toast.LENGTH_SHORT).show()
