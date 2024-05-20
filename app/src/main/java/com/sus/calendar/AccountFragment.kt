@@ -32,8 +32,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+public var auth_flag = 0;
+private lateinit var enter_binding: EnterBinding
+
+
 class AccountFragment : Fragment() {
-    private lateinit var enter_binding: EnterBinding
     private lateinit var account_layout_binding: AccountLayoutBinding
     private lateinit var register_layout_binding: RegistrationBinding
     private lateinit var user_member_groups_binding: MyGroupsBinding
@@ -53,7 +56,27 @@ class AccountFragment : Fragment() {
         enter_binding = EnterBinding.inflate(inflater,container,false)
         joinadapter = JoinedGroupsRecyclerViewAdapter()
         creatoradapter = CreatorsGroupRecyclerViewAdapter()
+
         val enter_layout = enter_binding.enterLayout
+
+        val enter_layout_embedded = enter_binding.enterLayoutEmbedded
+
+        account_layout_binding = AccountLayoutBinding.inflate(inflater,container,false)
+
+        val account_layout_binding_layout = AccountPageBinding.inflate(inflater,container,false)
+
+        val account_layout = account_layout_binding_layout.accountLayoutPage
+
+
+        if(auth_flag == 0) {
+            if(MainActivity.DataManager.getUserData() != null)
+            {
+                enter_layout.removeView(enter_layout_embedded)
+
+                enter_layout.addView(account_layout)
+            }
+        }
+        joinadapter = JoinedGroupsRecyclerViewAdapter()
 
         val login_edit = enter_binding.editTextEmail
 
@@ -69,11 +92,7 @@ class AccountFragment : Fragment() {
 
         //==================================================//
 
-        account_layout_binding = AccountLayoutBinding.inflate(inflater,container,false)
 
-        val account_layout_binding_layout = AccountPageBinding.inflate(inflater,container,false)
-
-        val account_layout = account_layout_binding_layout.accountLayoutPage
 
         val account_exit_button = account_layout_binding_layout.exit
 
@@ -256,6 +275,15 @@ class AccountFragment : Fragment() {
 
             password_edit.text.clear()
 
+
+
+            MainActivity.DataManager.setUserData(null)
+            val sharedPreferences = requireContext().getSharedPreferences("data", Context.MODE_PRIVATE)
+            sharedPreferences.edit().clear()
+                /*.remove("key_id")
+                .remove("key_name")*/
+                .apply()
+
             enter_layout.removeView(account_layout)
 
             enter_layout.addView(enter_layout_embedded)
@@ -263,7 +291,7 @@ class AccountFragment : Fragment() {
 
         enterbutton.setOnClickListener()
         {
-            val call_login = apiService.login(triedlogin.toString(), triedpass.toString())
+            val call_login = apiService.login(login_edit.text.toString(), password_edit.text.toString())
 
             call_login.enqueue(object : Callback<UserDTO> {
                 override fun onResponse(call: Call<UserDTO>, response: Response<UserDTO>) {
@@ -290,6 +318,8 @@ class AccountFragment : Fragment() {
 
                                     enter_layout.addView(account_layout)
 
+                                    auth_flag = 1
+
                                 }
                             }
                         }
@@ -311,6 +341,6 @@ class AccountFragment : Fragment() {
 
 
 
-        return enter_binding.root
+        return enter_binding.enterLayout
     }
 }

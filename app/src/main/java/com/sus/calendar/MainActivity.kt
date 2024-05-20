@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
 
     object DataManager {
         private var user: UserDTO?=null
-        fun setUserData(user: UserDTO){
+        fun setUserData(user: UserDTO?){
             this.user=user
         }
         fun getUserData():UserDTO?{
