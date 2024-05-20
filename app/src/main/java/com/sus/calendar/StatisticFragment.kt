@@ -28,6 +28,10 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.sus.calendar.entities.DateWithNotes
 import com.sus.calendar.services.DataService
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.format.ResolverStyle
+import java.time.temporal.ChronoField
 import java.util.Calendar
 
 class StatisticFragment : Fragment() {
@@ -54,7 +58,7 @@ class StatisticFragment : Fragment() {
     }
 
     enum class DataType {
-        HEIGHT, WEIGHT, HEART_RATE, SLEEP_HOURS, WELLBEING, APPETITE
+        HEIGHT, WEIGHT, HEART_RATE, SLEEP_HOURS, WELLBEING, APPETITE, PRESSURE
     }
 
     val healthRecords = listOf(
@@ -132,9 +136,6 @@ class StatisticFragment : Fragment() {
         val avgPressure: LineChart = view.findViewById(R.id.averagePressure)
         val avgSleep: LineChart = view.findViewById(R.id.averageSleep)
 
-
-
-
         var btnNext = view.findViewById<View>(R.id.buttonNext) as Button
         var avgHeightText = view.findViewById<TextView>(R.id.AverageValueHeight)
         var avgWeightText = view.findViewById<TextView>(R.id.AverageValueWeight)
@@ -148,6 +149,8 @@ class StatisticFragment : Fragment() {
         var dateFrom = view.findViewById<EditText>(R.id.dateOt)
         var dateTo = view.findViewById<EditText>(R.id.dateDo)
 
+
+
         btnNext.setOnClickListener {
             Log.d("d", "${simpleViewFlipper.displayedChild}")
 
@@ -156,10 +159,12 @@ class StatisticFragment : Fragment() {
                 ref = 0
             }
             try {
+                val startDate = getDateFromEditText(dateFrom)
+                val endDate = getDateFromEditText(dateTo)
                 if (getbool(ref + 1)) {
                     update(ref, true, avgPressure, avgAppetitText, avgFeelingsText, avgHeight,
                         avgWeight, avgCHSS, avgSleep, avgHeightText, avgWeightText, avgCHSSText,
-                        avgSleepText, avgPressureText, dateFrom, dateTo)
+                        avgSleepText, avgPressureText, startDate, endDate)
                 }
             } catch (e: InterruptedException) {
                 throw RuntimeException(e)
@@ -174,18 +179,22 @@ class StatisticFragment : Fragment() {
             val month = calendar.get(Calendar.MONTH)
             val year = calendar.get(Calendar.YEAR)
 
+
+
             val datePickerDialogFrom = DatePickerDialog(
                 requireContext(),
                 DatePickerDialog.OnDateSetListener { view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
-                    val dateString = "$dayOfMonth-${monthOfYear + 1}-$year"
+                    val dateString = String.format("%02d-%02d-%d", dayOfMonth, monthOfYear + 1, year)
                     dateFrom.setText(dateString)
-                    try {
+                    /*try {
+                        val startDate = getDateFromEditText(dateFrom)
+                        val endDate = getDateFromEditText(dateTo)
                         update(simpleViewFlipper.displayedChild, false, avgPressure, avgAppetitText,
                             avgFeelingsText, avgHeight, avgWeight, avgCHSS, avgSleep, avgHeightText,
-                            avgWeightText, avgCHSSText, avgSleepText, avgPressureText, dateFrom, dateTo)
+                            avgWeightText, avgCHSSText, avgSleepText, avgPressureText, startDate, endDate)
                     } catch (e: InterruptedException) {
                         throw RuntimeException(e)
-                    }
+                    }*/
                     uptFellings = true
                     uptAppetit = true
                     uptBPM = true
@@ -209,15 +218,17 @@ class StatisticFragment : Fragment() {
             val datePickerDialogTo = DatePickerDialog(
                 requireContext(),
                 DatePickerDialog.OnDateSetListener { view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
-                    val dateString = "$dayOfMonth-${monthOfYear + 1}-$year"
+                    val dateString = String.format("%02d-%02d-%d", dayOfMonth, monthOfYear + 1, year)
                     dateTo.setText(dateString)
-                    try {
+                    /*try {
+                        val startDate = getDateFromEditText(dateFrom)
+                        val endDate = getDateFromEditText(dateTo)
                         update(simpleViewFlipper.displayedChild, false, avgPressure, avgAppetitText,
                             avgFeelingsText, avgHeight, avgWeight, avgCHSS, avgSleep, avgHeightText,
-                            avgWeightText, avgCHSSText, avgSleepText, avgPressureText, dateFrom, dateTo)
+                            avgWeightText, avgCHSSText, avgSleepText, avgPressureText, startDate, endDate)
                     } catch (e: InterruptedException) {
                         throw RuntimeException(e)
-                    }
+                    }*/
                     uptFellings = true
                     uptAppetit = true
                     uptBPM = true
@@ -308,152 +319,76 @@ class StatisticFragment : Fragment() {
             ?.key
     }
 
-    @Throws(InterruptedException::class)
-    private fun showinfoCommon(text: TextView, cat: String, aday: Int, amonth: Int, ayear: Int,
-                               bday: Int, bmonth: Int, byear: Int) {
-        val dateWithNotes: Array<List<DateWithNotes>?> = arrayOfNulls(1)
-
-        val runnable = Runnable {
-            dateWithNotes[0] = dataService!!.getMediumByDateandtype(cat, byear, ayear, bmonth, amonth, bday, aday) as List<DateWithNotes>?
-        }
-        val thread = Thread(runnable)
-        thread.start()
-        thread.join()
-        text.text = dateWithNotes[0].toString()
-    }
-
     private fun calculateAverages(
-        records: List<HealthRecord>,
+        text: TextView,
         startDate: LocalDate,
         endDate: LocalDate,
         dataType: DataType
     ) {
         // Фильтрация записей по заданному периоду
-        val filteredRecords = records.filter { it.date in startDate..endDate }
+        val filteredRecords = healthRecords.filter { it.date in startDate..endDate }
 
         if (filteredRecords.isEmpty()) {
-            println("Записей в указанном периоде нет.")
-            return
+            text.text = "Записей в указанном периоде нет."
         }
 
         when (dataType) {
             DataType.HEIGHT -> {
                 val averageHeight = filteredRecords.map { it.height }.average()
-                println("Средний рост: %.2f см".format(averageHeight))
+                text.text = "%.2f см".format(averageHeight)
             }
             DataType.WEIGHT -> {
                 val averageWeight = filteredRecords.map { it.weight }.average()
-                println("Средний вес: %.2f кг".format(averageWeight))
+                text.text = "%.2f кг".format(averageWeight)
             }
             DataType.HEART_RATE -> {
                 val averageHeartRate = filteredRecords.map { it.heartRate }.average()
-                println("Средняя ЧСС: %.2f уд/мин".format(averageHeartRate))
+                text.text = "уд/мин".format(averageHeartRate)
             }
             DataType.SLEEP_HOURS -> {
                 val averageSleepHours = filteredRecords.map { it.sleepHours }.average()
-                println("Среднее количество сна: %.2f часов".format(averageSleepHours))
+                text.text = "%.2f часов".format(averageSleepHours)
             }
             DataType.WELLBEING -> {
                 val mostCommonWellbeing = filteredRecords.groupBy { it.wellbeing }
                     .maxByOrNull { it.value.size }?.key ?: Wellbeing.NORMAL
-                println("Чаще всего встречаемое самочувствие: $mostCommonWellbeing")
+                text.text = mostCommonWellbeing.toString()
             }
             DataType.APPETITE -> {
                 val mostCommonAppetite = filteredRecords.groupBy { it.appetite }
                     .maxByOrNull { it.value.size }?.key ?: Appetite.NO_APPETITE
-                println("Чаще всего встречаемый аппетит: $mostCommonAppetite")
+                text.text = mostCommonAppetite.toString()
             }
+
+            else -> {}
         }
     }
 
-    private fun showinfoLine(avgtex: TextView, line: LineChart, cat: String, text: String, aday: Int,
-                             amonth: Int, ayear: Int, bday: Int, bmonth: Int, byear: Int) {
-        val vals: List<Float> = java.util.ArrayList()
-        val avg = FloatArray(1)
-        val runnable = Runnable {
-            avg[0] =
-                dataService!!.getMediumByDateandtype(cat, byear, ayear, bmonth, amonth, bday, aday)
-            vals.addAll(
-                dataService!!.getNotesByDateAndTypeF(cat, byear, ayear, bmonth, amonth, bday, aday
-                )
-            )
-        }
-        val thread = Thread(runnable)
-        thread.start()
-        thread.join()
-        avgtex.text = avg[0].toString()
+    @Throws(InterruptedException::class)
+    private fun showinfoCommon(text: TextView, dataType: DataType, startDate: LocalDate,  endDate: LocalDate) {
+        calculateAverages(text, startDate, endDate, dataType)
+    }
+
+    private fun showinfoLine(avgtex: TextView, line: LineChart, dataType: DataType, text: String,
+                             startDate: LocalDate,  endDate: LocalDate) {
+        calculateAverages(avgtex, startDate, endDate, dataType)
 
         setupLineChart(line, text)
         setLineData(line)
     }
 
-    private fun showinfoBar(avgtex: TextView, bar: BarChart, cat: String, text: String, aday: Int,
-                            amonth: Int, ayear: Int, bday: Int, bmonth: Int, byear: Int) {
-        val vals: List<Float> = java.util.ArrayList()
-        val avg = FloatArray(1)
-        val runnable = Runnable {
-            avg[0] =
-                dataService!!.getMediumByDateandtype(cat, byear, ayear, bmonth, amonth, bday, aday)
-            vals.addAll(
-                dataService!!.getNotesByDateAndTypeF(cat, byear, ayear, bmonth, amonth, bday, aday
-                )
-            )
-        }
-        val thread = Thread(runnable)
-        thread.start()
-        thread.join()
-        avgtex.text = avg[0].toString()
+    private fun showinfoBar(avgtex: TextView, bar: BarChart, dataType: DataType, text: String,
+                            startDate: LocalDate,  endDate: LocalDate) {
+        calculateAverages(avgtex, startDate, endDate, dataType)
 
         setupBarChart(bar, text)
         setBarData(bar)
     }
 
-    private fun showinfoPressure(avgPressureText:TextView, pressure: LineChart, aday: Int,
-                                 amonth: Int, ayear: Int, bday: Int, bmonth: Int, byear: Int) {
-       val vals: MutableList<PressureValue> = java.util.ArrayList<PressureValue>()
-        val runnable = Runnable {
-            vals.addAll(
-                dataService!!.getPressureByDate(
-                    byear,
-                    ayear,
-                    bmonth,
-                    amonth,
-                    bday,
-                    aday
-                )
-            )
-        }
-        val thread = Thread(runnable)
-        thread.start()
-        thread.join()
-        val entriesUpperPressure: MutableList<Entry> = java.util.ArrayList()
-        val entriesLowerPressure: MutableList<Entry> = java.util.ArrayList()
-        var highsSum = 0
-        var lowsSum = 0
-        for (i in vals.indices) {
-            entriesUpperPressure.add(Entry(i.toFloat(), vals[i].high))
-            entriesLowerPressure.add(Entry(i.toFloat(), vals[i].low))
-            highsSum += vals[i].high
-            lowsSum += vals[i].low
-        }
-        val reshigh = highsSum / vals.size
-        val reslow = lowsSum / vals.size
-        val vas = "$reshigh/$reslow"
-        avgPressureText.text = vas
-        val dataSetUpperPressure: LineDataSet = createLineDataSet(
-            entriesUpperPressure,
-            "Верхнее давление",
-            resources.getColor(R.color.colorUpperPressure)
-        )
-        val dataSetLowerPressure: LineDataSet = createLineDataSet(
-            entriesLowerPressure,
-            "Нижнее давление",
-            resources.getColor(R.color.colorLowerPressure)
-        )
+    private fun showinfoPressure(avgPressureText:TextView, pressure: LineChart, dataType: DataType,
+                                 startDate: LocalDate,  endDate: LocalDate) {
+        calculateAverages(avgPressureText, startDate, endDate, dataType)
 
-        val lineData = LineData(dataSetUpperPressure, dataSetLowerPressure)
-        setupChart(pressure)
-        pressure.setData(lineData)
     }
 
 
@@ -487,25 +422,19 @@ class StatisticFragment : Fragment() {
         }
     }
 
+    private fun getDateFromEditText(editText: EditText): LocalDate {
+        val dateString = editText.text.toString()
+        val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy") // Формат даты
+        return LocalDate.parse(dateString, formatter)
+    }
+
     @Throws(InterruptedException::class)
     private fun update(page: Int, next: Boolean, avgPressure: LineChart, avgAppetitText: TextView,
                        avgFeelingsText: TextView, avgHeight: BarChart, avgWeight: LineChart,
                        avgCHSS: LineChart, avgSleep: LineChart, avgHeightText: TextView,
                        avgWeightText: TextView, avgCHSSText: TextView, avgSleepText: TextView,
-                       avgPressureText: TextView, dateFrom: EditText, dateTo: EditText) {
-        val parts1 = dateFrom.text.toString().split("-")
-        val parts2 = dateTo.text.toString().split("-")
-        val cats: List<String> = ArrayList(
-            mutableListOf(
-                "HEIGHT",
-                "WEIGHT",
-                "PULSE",
-                "PRESSURE",
-                "APPETITE",
-                "SLEEP",
-                "HEALTH"
-            )
-        )
+                       avgPressureText: TextView,  startDate: LocalDate,  endDate: LocalDate) {
+
         var realnumber = page
         if (next) {
             if (page == 6) {
@@ -516,49 +445,19 @@ class StatisticFragment : Fragment() {
         }
         Log.d("dada", "$realnumber $next")
         if (realnumber == 3) {
-            showinfoPressure(avgPressureText, avgPressure,
-                parts1[0].toIntOrNull() ?: 0, parts1[1].toIntOrNull() ?: 0,
-                parts1[2].toIntOrNull() ?: 0, parts2[0].toIntOrNull() ?: 0,
-                parts2[1].toIntOrNull() ?: 0, parts2[2].toIntOrNull() ?: 0
-            )
+            showinfoPressure(avgPressureText, avgPressure, DataType.PRESSURE, startDate, endDate)
         } else if (realnumber == 4) {
-            showinfoCommon(
-                avgAppetitText, cats[realnumber], parts1[0].toIntOrNull() ?: 0,
-                parts1[1].toIntOrNull() ?: 0, parts1[2].toIntOrNull() ?: 0,
-                parts2[0].toIntOrNull() ?: 0, parts2[1].toIntOrNull() ?: 0,
-                parts2[2].toIntOrNull() ?: 0
-            )
+            showinfoCommon(avgAppetitText, DataType.APPETITE, startDate, endDate)
         } else if (realnumber == 6) {
-            showinfoCommon(
-                avgFeelingsText, cats[realnumber], parts1[0].toIntOrNull() ?: 0,
-                parts1[1].toIntOrNull() ?: 0, parts1[2].toIntOrNull() ?: 0,
-                parts2[0].toIntOrNull() ?: 0, parts2[1].toIntOrNull() ?: 0,
-                parts2[2].toIntOrNull() ?: 0
-            )
+            showinfoCommon(avgFeelingsText, DataType.WELLBEING, startDate, endDate)
         } else if (realnumber == 0) {
-            showinfoBar(avgHeightText, avgHeight,  cats[realnumber], "Рост",
-                parts1[0].toIntOrNull() ?: 0, parts1[1].toIntOrNull() ?: 0,
-                parts1[2].toIntOrNull() ?: 0, parts2[0].toIntOrNull() ?: 0,
-                parts2[1].toIntOrNull() ?: 0, parts2[2].toIntOrNull() ?: 0
-            )
+            showinfoBar(avgHeightText, avgHeight, DataType.HEIGHT, "Рост", startDate, endDate)
         } else if (realnumber == 1) {
-            showinfoLine(avgWeightText, avgWeight, cats[realnumber], "Вес",
-                parts1[0].toIntOrNull() ?: 0, parts1[1].toIntOrNull() ?: 0,
-                parts1[2].toIntOrNull() ?: 0, parts2[0].toIntOrNull() ?: 0,
-                parts2[1].toIntOrNull() ?: 0, parts2[2].toIntOrNull() ?: 0
-            )
+            showinfoLine(avgWeightText, avgWeight, DataType.WEIGHT, "Вес", startDate, endDate)
         } else if (realnumber == 2) {
-            showinfoLine(avgCHSSText, avgCHSS, cats[realnumber], "ЧСС",
-                parts1[0].toIntOrNull() ?: 0, parts1[1].toIntOrNull() ?: 0,
-                parts1[2].toIntOrNull() ?: 0, parts2[0].toIntOrNull() ?: 0,
-                parts2[1].toIntOrNull() ?: 0, parts2[2].toIntOrNull() ?: 0
-            )
+            showinfoLine(avgCHSSText, avgCHSS, DataType.HEART_RATE, "ЧСС", startDate, endDate)
         } else if (realnumber == 5) {
-            showinfoLine(avgSleepText, avgSleep, cats[realnumber], "Сон",
-                parts1[0].toIntOrNull() ?: 0, parts1[1].toIntOrNull() ?: 0,
-                parts1[2].toIntOrNull() ?: 0, parts2[0].toIntOrNull() ?: 0,
-                parts2[1].toIntOrNull() ?: 0, parts2[2].toIntOrNull() ?: 0
-            )
+            showinfoLine(avgSleepText, avgSleep, DataType.SLEEP_HOURS, "Сон", startDate, endDate)
         }
     }
 }
