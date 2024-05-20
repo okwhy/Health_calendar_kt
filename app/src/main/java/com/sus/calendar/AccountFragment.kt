@@ -15,6 +15,7 @@ import androidx.media3.common.util.UnstableApi
 import com.sus.calendar.databinding.AccountLayoutBinding
 import com.sus.calendar.databinding.AccountPageBinding
 import com.sus.calendar.databinding.RegistrationBinding
+import com.sus.calendar.dtos.GroupDTOforUser
 import com.sus.calendar.dtos.UserDTO
 
 
@@ -26,7 +27,7 @@ class AccountFragment : Fragment() {
     private lateinit var enter_binding: EnterBinding
     private lateinit var account_layout_binding: AccountLayoutBinding
     private lateinit var register_layout_binding: RegistrationBinding
-
+    
 
     @OptIn(UnstableApi::class) override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,24 +64,26 @@ class AccountFragment : Fragment() {
 
         val member_group_button = account_layout_binding_layout.MyGroup
 
+
+
         member_group_button.setOnClickListener()
         {
             var user_id = MainActivity.DataManager.getUserData()!!.id
 
             val call_member_groups = apiService.get_member_groups(user_id)
 
-            call_member_groups.enqueue(object : Callback<List<Group>> {
-                override fun onResponse(call: Call<List<Group>>, response: Response<List<Group>>) {
+            call_member_groups.enqueue(object : Callback<List<GroupDTOforUser>> {
+                override fun onResponse(call: Call<List<GroupDTOforUser>>, response: Response<List<GroupDTOforUser>>) {
                     if (response.isSuccessful) {
                         val groups = response.body()
-                        // Обработка успешного ответа, например, отображение данных в UI
+
+
                     } else {
-                        // Обработка ошибки
                         Toast.makeText(requireContext(), "Error: ${response.message()}", Toast.LENGTH_SHORT).show()
                     }
                 }
 
-                override fun onFailure(call: Call<List<Group>>, t: Throwable) {
+                override fun onFailure(call: Call<List<GroupDTOforUser>>, t: Throwable) {
                     // Обработка ошибок сети или других ошибок
                     Log.e("RetrofitError", "Ошибка: ${t.message}", t)
                     Toast.makeText(requireContext(), "Ошибка: ${t.message}", Toast.LENGTH_SHORT).show()
