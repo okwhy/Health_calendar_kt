@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/card_view_mon"
+        android:id="@+id/card_view_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:radius="16dp"
@@ -18,33 +18,47 @@
         >
 
         <RelativeLayout
-            android:id="@+id/user"
+            android:id="@+id/MyGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            android:radius="16dp"
-            app:cardElevation="4dp"
-            app:cardCornerRadius="16dp"
             android:layout_marginTop="16dp"
-            android:onClick="onLabelClick">
+            android:radius="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp">
 
             <TextView
+                android:id="@+id/textMyGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
+
                 android:layout_marginTop="10dp"
                 android:gravity="start"
-                android:text="Пользователь1"
-                android:textColor="#0B0B0B"
+                android:text="Моя группа1"
+                android:textColor="#000000"
                 android:textSize="25dp" />
 
             <ImageButton
-                android:id="@+id/kickUser"
-                android:layout_width="49dp"
-                android:layout_height="46dp"
+                android:id="@+id/exitGroup"
+                android:layout_width="46dp"
+                android:layout_height="37dp"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="0dp"
-                android:background="@drawable/exit" />
+                android:background="@drawable/garbage" />
+
+            <TextView
+                android:id="@+id/textCountPeopleInGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="5dp"
+                android:layout_toStartOf="@+id/exitGroup"
+                android:gravity="start"
+                android:text="52"
+                android:textColor="#000000"
+                android:textSize="25dp" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>

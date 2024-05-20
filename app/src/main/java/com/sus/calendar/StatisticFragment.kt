@@ -27,9 +27,88 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.sus.calendar.entities.DateWithNotes
 import com.sus.calendar.services.DataService
+import java.time.LocalDate
 import java.util.Calendar
 
 class StatisticFragment : Fragment() {
+
+
+    data class HealthRecord(
+        val date: LocalDate,
+        val height: Int, // Рост в см
+        val weight: Double, // Вес в кг
+        val heartRate: Int, // ЧСС
+        val bloodPressure: String, // Давление (например, "120/80")
+        val sleepHours: Double, // Сон в часах
+        val wellbeing: Wellbeing, // Самочувствие
+        val appetite: Appetite // Аппетит
+    )
+
+    // Перечисления для самочувствия и аппетита
+    enum class Wellbeing {
+        GOOD, BAD, NORMAL
+    }
+
+    enum class Appetite {
+        GOOD, BAD, NO_APPETITE, NORMAL
+    }
+
+    enum class DataType {
+        HEIGHT, WEIGHT, HEART_RATE, SLEEP_HOURS, WELLBEING, APPETITE
+    }
+
+    val healthRecords = listOf(
+        HealthRecord(
+            date = LocalDate.of(2024, 5, 17),
+            height = 175,
+            weight = 70.5,
+            heartRate = 72,
+            bloodPressure = "120/80",
+            sleepHours = 7.5,
+            wellbeing = Wellbeing.GOOD,
+            appetite = Appetite.GOOD
+        ),
+        HealthRecord(
+            date = LocalDate.of(2024, 5, 18),
+            height = 175,
+            weight = 70.0,
+            heartRate = 70,
+            bloodPressure = "118/78",
+            sleepHours = 8.0,
+            wellbeing = Wellbeing.NORMAL,
+            appetite = Appetite.NORMAL
+        ),
+        HealthRecord(
+            date = LocalDate.of(2024, 5, 19),
+            height = 176,
+            weight = 71.0,
+            heartRate = 68,
+            bloodPressure = "118/80",
+            sleepHours = 10.0,
+            wellbeing = Wellbeing.NORMAL,
+            appetite = Appetite.NORMAL
+        ),
+        HealthRecord(
+            date = LocalDate.of(2024, 5, 20),
+            height = 174,
+            weight = 69.0,
+            heartRate = 780,
+            bloodPressure = "140/70",
+            sleepHours = 5.0,
+            wellbeing = Wellbeing.BAD,
+            appetite = Appetite.NO_APPETITE
+        ),
+        HealthRecord(
+            date = LocalDate.of(2024, 5, 21),
+            height = 175,
+            weight = 67.0,
+            heartRate = 69,
+            bloodPressure = "120/80",
+            sleepHours = 12.0,
+            wellbeing = Wellbeing.NORMAL,
+            appetite = Appetite.NORMAL
+        ),
+    )
 
     private var uptHeight: Boolean = false
     private var uptWeight: Boolean = false
@@ -243,9 +322,53 @@ class StatisticFragment : Fragment() {
         text.text = dateWithNotes[0].toString()
     }
 
+    private fun calculateAverages(
+        records: List<HealthRecord>,
+        startDate: LocalDate,
+        endDate: LocalDate,
+        dataType: DataType
+    ) {
+        // Фильтрация записей по заданному периоду
+        val filteredRecords = records.filter { it.date in startDate..endDate }
+
+        if (filteredRecords.isEmpty()) {
+            println("Записей в указанном периоде нет.")
+            return
+        }
+
+        when (dataType) {
+            DataType.HEIGHT -> {
+                val averageHeight = filteredRecords.map { it.height }.average()
+                println("Средний рост: %.2f см".format(averageHeight))
+            }
+            DataType.WEIGHT -> {
+                val averageWeight = filteredRecords.map { it.weight }.average()
+                println("Средний вес: %.2f кг".format(averageWeight))
+            }
+            DataType.HEART_RATE -> {
+                val averageHeartRate = filteredRecords.map { it.heartRate }.average()
+                println("Средняя ЧСС: %.2f уд/мин".format(averageHeartRate))
+            }
+            DataType.SLEEP_HOURS -> {
+                val averageSleepHours = filteredRecords.map { it.sleepHours }.average()
+                println("Среднее количество сна: %.2f часов".format(averageSleepHours))
+            }
+            DataType.WELLBEING -> {
+                val mostCommonWellbeing = filteredRecords.groupBy { it.wellbeing }
+                    .maxByOrNull { it.value.size }?.key ?: Wellbeing.NORMAL
+                println("Чаще всего встречаемое самочувствие: $mostCommonWellbeing")
+            }
+            DataType.APPETITE -> {
+                val mostCommonAppetite = filteredRecords.groupBy { it.appetite }
+                    .maxByOrNull { it.value.size }?.key ?: Appetite.NO_APPETITE
+                println("Чаще всего встречаемый аппетит: $mostCommonAppetite")
+            }
+        }
+    }
+
     private fun showinfoLine(avgtex: TextView, line: LineChart, cat: String, text: String, aday: Int,
                              amonth: Int, ayear: Int, bday: Int, bmonth: Int, byear: Int) {
-        /*val vals: List<Float> = java.util.ArrayList()
+        val vals: List<Float> = java.util.ArrayList()
         val avg = FloatArray(1)
         val runnable = Runnable {
             avg[0] =
@@ -261,12 +384,12 @@ class StatisticFragment : Fragment() {
         avgtex.text = avg[0].toString()
 
         setupLineChart(line, text)
-        setLineData(line)*/
+        setLineData(line)
     }
 
     private fun showinfoBar(avgtex: TextView, bar: BarChart, cat: String, text: String, aday: Int,
                             amonth: Int, ayear: Int, bday: Int, bmonth: Int, byear: Int) {
-        /*val vals: List<Float> = java.util.ArrayList()
+        val vals: List<Float> = java.util.ArrayList()
         val avg = FloatArray(1)
         val runnable = Runnable {
             avg[0] =
@@ -282,12 +405,12 @@ class StatisticFragment : Fragment() {
         avgtex.text = avg[0].toString()
 
         setupBarChart(bar, text)
-        setBarData(bar)*/
+        setBarData(bar)
     }
 
     private fun showinfoPressure(avgPressureText:TextView, pressure: LineChart, aday: Int,
                                  amonth: Int, ayear: Int, bday: Int, bmonth: Int, byear: Int) {
-       /* val vals: MutableList<PressureValue> = java.util.ArrayList<PressureValue>()
+       val vals: MutableList<PressureValue> = java.util.ArrayList<PressureValue>()
         val runnable = Runnable {
             vals.addAll(
                 dataService!!.getPressureByDate(
@@ -329,8 +452,8 @@ class StatisticFragment : Fragment() {
         )
 
         val lineData = LineData(dataSetUpperPressure, dataSetLowerPressure)
-        //setupChart(pressure)
-        pressure.setData(lineData)*/
+        setupChart(pressure)
+        pressure.setData(lineData)
     }
 
 

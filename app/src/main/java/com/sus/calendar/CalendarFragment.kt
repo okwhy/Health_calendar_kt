@@ -34,6 +34,9 @@ import java.util.Arrays
 import java.util.Calendar
 
 class CalendarFragment : Fragment() {
+
+
+
     private lateinit var curdate: LocalDate
     private var calendar: Calendar? = null
     private var currentYear = 0
