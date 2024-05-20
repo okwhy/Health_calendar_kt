@@ -13,6 +13,7 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.sus.calendar.adapters.CreatorsGroupRecyclerViewAdapter
 import com.sus.calendar.adapters.JoinedGroupsRecyclerViewAdapter
 import com.sus.calendar.databinding.AccountLayoutBinding
 import com.sus.calendar.databinding.AccountPageBinding
@@ -24,6 +25,7 @@ import com.sus.calendar.databinding.RegistrationBinding
 import com.sus.calendar.dtos.GroupforUserDto
 import com.sus.calendar.dtos.UserDTO
 import com.sus.calendar.dtos.getgroupcreator.GroupCreatorForCreatorDto
+import com.sus.calendar.dtos.getgroupcreator.subdtos.GroupForCreatorDTO
 
 
 import retrofit2.Call
@@ -38,7 +40,8 @@ class AccountFragment : Fragment() {
     private lateinit var group_card_for_member:CardGroupBinding
     private lateinit var group_card_for_creator:GroupCardForCreatorBinding
     private lateinit var user_creator_groups_binding:CreateGroupBinding
-    private lateinit var adapter: JoinedGroupsRecyclerViewAdapter
+    private lateinit var joinadapter: JoinedGroupsRecyclerViewAdapter
+    private lateinit var creatoradapter: CreatorsGroupRecyclerViewAdapter
 
     @OptIn(UnstableApi::class) override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,7 +51,8 @@ class AccountFragment : Fragment() {
         val apiService = RetrofitClient.instance
 
         enter_binding = EnterBinding.inflate(inflater,container,false)
-        adapter = JoinedGroupsRecyclerViewAdapter()
+        joinadapter = JoinedGroupsRecyclerViewAdapter()
+        creatoradapter = CreatorsGroupRecyclerViewAdapter()
         val enter_layout = enter_binding.enterLayout
 
         val login_edit = enter_binding.editTextEmail
@@ -93,10 +97,10 @@ class AccountFragment : Fragment() {
                         enter_layout.removeView(account_layout)
 
                         enter_layout.addView(user_member_layout)
-                        adapter.data= groups as MutableList<GroupforUserDto>
+                        joinadapter.data= groups as MutableList<GroupforUserDto>
                         val manager=LinearLayoutManager(requireContext())
                         user_member_groups_binding.recyclerJoinedGroups.layoutManager=manager
-                        user_member_groups_binding.recyclerJoinedGroups.adapter=adapter
+                        user_member_groups_binding.recyclerJoinedGroups.adapter=joinadapter
 
 
                     } else {
@@ -130,11 +134,16 @@ class AccountFragment : Fragment() {
                 override fun onResponse(call: Call<List<GroupCreatorForCreatorDto>>, response: Response<List<GroupCreatorForCreatorDto>>) {
                     if (response.isSuccessful) {
                         val groups = response.body()
-
                         enter_layout.removeView(account_layout)
-
                         enter_layout.addView(user_creator_layout)
-
+                        val manager=LinearLayoutManager(requireContext())
+                        val converted= mutableListOf<GroupForCreatorDTO>()
+                        for (a in groups!!){
+                            converted.add(GroupForCreatorDTO(a.id,a.groupName,a.accessKey,a.groupMembers.size))
+                        }
+                        creatoradapter.data=converted
+                        user_creator_groups_binding.recyclerAllGroup.layoutManager=manager
+                        user_creator_groups_binding.recyclerAllGroup.adapter=creatoradapter
 
 
                     } else {

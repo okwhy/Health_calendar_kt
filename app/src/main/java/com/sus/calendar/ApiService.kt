@@ -26,4 +26,6 @@ interface ApiService {
 
     @DELETE("api/groups/users/{user_id}")
     fun delete_user(@Path("user_id") userid:Long,@Query("id") id:Long):Call<Void>
+    @DELETE("api/groups/delete/{id}")
+    fun delete_group(@Path("id") id:Long):Call<Void>
 }
