@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/UserGroupLayout"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -34,6 +35,8 @@
                 android:layout_toEndOf="@+id/textMygroup"
                 android:background="#FFFFFF"
                 android:gravity="start"
+                android:textIsSelectable="true"
+                android:focusable="false"
                 android:hint="Код"
                 android:padding="8dp"
                 android:textColor="#2A2A2A"

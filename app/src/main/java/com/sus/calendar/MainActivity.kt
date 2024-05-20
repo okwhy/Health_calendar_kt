@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -17,9 +16,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-   // private const val BASE_URL = "http://192.168.0.108:1337/"
 
-    private const val BASE_URL = "http://192.168.115.110:1337/"
+    private const val BASE_URL = "http://192.168.0.102:1337/"
 
     val instance: ApiService by lazy {
         val retrofit = Retrofit.Builder()
@@ -51,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("data", Context.MODE_PRIVATE)
         if (sharedPreferences.contains("key_id")){
             DataManager.setUserData(
-                UserDTO(sharedPreferences.getLong("key_id",-1)
+                UserDTO(sharedPreferences.getLong("key_id",-3)
                 , sharedPreferences.getString("key_name","")!!
                 ))
         }
@@ -94,7 +92,7 @@ class MainActivity : AppCompatActivity() {
 
     object DataManager {
         private var user: UserDTO?=null
-        fun setUserData(user: UserDTO){
+        fun setUserData(user: UserDTO?){
             this.user=user
         }
         fun getUserData():UserDTO?{

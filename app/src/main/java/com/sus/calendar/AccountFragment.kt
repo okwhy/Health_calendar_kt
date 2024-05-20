@@ -13,29 +13,40 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.sus.calendar.adapters.CreatorsGroupRecyclerViewAdapter
+import com.sus.calendar.adapters.GroupMembersRecyclerViewAdapter
 import com.sus.calendar.adapters.JoinedGroupsRecyclerViewAdapter
 import com.sus.calendar.databinding.AccountLayoutBinding
 import com.sus.calendar.databinding.AccountPageBinding
 import com.sus.calendar.databinding.CardGroupBinding
-import com.sus.calendar.databinding.CardUserBinding
+import com.sus.calendar.databinding.CreateGroupBinding
+import com.sus.calendar.databinding.GroupCardForCreatorBinding
 import com.sus.calendar.databinding.MyGroupsBinding
 import com.sus.calendar.databinding.RegistrationBinding
-import com.sus.calendar.dtos.GroupDTOforUser
+import com.sus.calendar.dtos.GroupforUserDto
 import com.sus.calendar.dtos.UserDTO
+import com.sus.calendar.dtos.getgroupcreator.GroupCreatorForCreatorDto
+import com.sus.calendar.dtos.getgroupcreator.subdtos.GroupForCreatorDTO
 
 
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+//var auth_flag = 0;
+var state = "main"
+private lateinit var enter_binding: EnterBinding
+
+
 class AccountFragment : Fragment() {
-    private lateinit var enter_binding: EnterBinding
     private lateinit var account_layout_binding: AccountLayoutBinding
     private lateinit var register_layout_binding: RegistrationBinding
     private lateinit var user_member_groups_binding: MyGroupsBinding
-    private lateinit var group_card:CardGroupBinding
-    private lateinit var adapter: JoinedGroupsRecyclerViewAdapter
-
+    private lateinit var group_card_for_member:CardGroupBinding
+    private lateinit var user_creator_groups_binding:CreateGroupBinding
+    private lateinit var joinadapter: JoinedGroupsRecyclerViewAdapter
+    private lateinit var creatoradapter: CreatorsGroupRecyclerViewAdapter
+    private lateinit var groupCardForCreatorBinding: GroupCardForCreatorBinding
     @OptIn(UnstableApi::class) override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -44,8 +55,118 @@ class AccountFragment : Fragment() {
         val apiService = RetrofitClient.instance
 
         enter_binding = EnterBinding.inflate(inflater,container,false)
-        adapter = JoinedGroupsRecyclerViewAdapter()
+        joinadapter = JoinedGroupsRecyclerViewAdapter()
+        user_creator_groups_binding = CreateGroupBinding.inflate(inflater,container,false)
+        groupCardForCreatorBinding=GroupCardForCreatorBinding.inflate(inflater,container,false)
+        account_layout_binding = AccountLayoutBinding.inflate(inflater,container,false)
+        register_layout_binding = RegistrationBinding.inflate(inflater,container,false)
+        user_member_groups_binding = MyGroupsBinding.inflate(inflater,container,false)
+        group_card_for_member = CardGroupBinding.inflate(inflater,container,false)
+        creatoradapter = CreatorsGroupRecyclerViewAdapter(enter_binding,user_creator_groups_binding,groupCardForCreatorBinding)
+
         val enter_layout = enter_binding.enterLayout
+
+        val enter_layout_embedded = enter_binding.enterLayoutEmbedded
+
+
+
+        val account_layout_binding_layout = AccountPageBinding.inflate(inflater,container,false)
+
+        val account_layout = account_layout_binding_layout.accountLayoutPage
+
+        user_member_groups_binding = MyGroupsBinding.inflate(inflater,container,false)
+
+        val user_member_layout = user_member_groups_binding.UserGroupsLayout
+
+        user_creator_groups_binding = CreateGroupBinding.inflate(inflater,container,false)
+
+        val user_creator_layout = user_creator_groups_binding.GroupCreatorLayout
+
+        if(MainActivity.DataManager.getUserData() != null)
+        {
+            if(state == "main")
+            {
+                enter_layout.removeView(enter_layout_embedded)
+                enter_layout.addView(account_layout)
+            }
+            else if(state == "group_members")
+            {
+                enter_layout.removeView(account_layout)
+
+                enter_layout.addView(user_member_layout)
+
+                var user_id = MainActivity.DataManager.getUserData()!!.id
+
+                val call_member_groups = apiService.get_member_groups(user_id)
+
+                call_member_groups.enqueue(object : Callback<List<GroupforUserDto>> {
+                    override fun onResponse(
+                        call: Call<List<GroupforUserDto>>,
+                        response: Response<List<GroupforUserDto>>
+                    ) {
+                        if (response.isSuccessful) {
+                            val groups = response.body()
+
+                            joinadapter.data = groups as MutableList<GroupforUserDto>
+                            val manager = LinearLayoutManager(requireContext())
+                            user_member_groups_binding.recyclerJoinedGroups.layoutManager = manager
+                            user_member_groups_binding.recyclerJoinedGroups.adapter = joinadapter
+                        }
+                    }
+
+                    override fun onFailure(call: Call<List<GroupforUserDto>>, t: Throwable) {
+                        TODO("Not yet implemented")
+                    }
+                })
+            }
+            else if(state == "created_groups")
+            {
+                enter_layout.removeView(account_layout)
+                enter_layout.addView(user_creator_layout)
+                var user_id = MainActivity.DataManager.getUserData()!!.id
+
+                val call_creator_groups = apiService.get_creator_groups(user_id.toLong())
+
+                call_creator_groups.enqueue(object : Callback<List<GroupCreatorForCreatorDto>> {
+                    override fun onResponse(
+                        call: Call<List<GroupCreatorForCreatorDto>>,
+                        response: Response<List<GroupCreatorForCreatorDto>>
+                    ) {
+                        if (response.isSuccessful) {
+                            val groups = response.body()
+                            val manager = LinearLayoutManager(requireContext())
+                            val converted = mutableListOf<GroupForCreatorDTO>()
+                            for (a in groups!!) {
+                                converted.add(
+                                    GroupForCreatorDTO(
+                                        a.id,
+                                        a.groupName,
+                                        a.accessKey,
+                                        a.groupMembers.size
+                                    )
+                                )
+                            }
+                            creatoradapter.data= groups as MutableList<GroupCreatorForCreatorDto>
+                            user_creator_groups_binding.recyclerAllGroup.layoutManager = manager
+                            user_creator_groups_binding.recyclerAllGroup.adapter = creatoradapter
+                        }
+                    }
+
+                    override fun onFailure(
+                        call: Call<List<GroupCreatorForCreatorDto>>,
+                        t: Throwable
+                    ) {
+                        TODO("Not yet implemented")
+                    }
+                })
+            }
+        }
+        else
+        {
+            state = "auth"
+        }
+
+        joinadapter = JoinedGroupsRecyclerViewAdapter()
 
         val login_edit = enter_binding.editTextEmail
 
@@ -61,21 +182,11 @@ class AccountFragment : Fragment() {
 
         //==================================================//
 
-        account_layout_binding = AccountLayoutBinding.inflate(inflater,container,false)
 
-        val account_layout_binding_layout = AccountPageBinding.inflate(inflater,container,false)
-
-        val account_layout = account_layout_binding_layout.accountLayoutPage
 
         val account_exit_button = account_layout_binding_layout.exit
 
         val member_group_button = account_layout_binding_layout.MyGroup
-
-        user_member_groups_binding = MyGroupsBinding.inflate(inflater,container,false)
-
-        val user_member_layout = user_member_groups_binding.UserGroupsLayout
-
-        group_card = CardGroupBinding.inflate(inflater,container,false)
 
         member_group_button.setOnClickListener()
         {
@@ -83,18 +194,19 @@ class AccountFragment : Fragment() {
 
             val call_member_groups = apiService.get_member_groups(user_id)
 
-            call_member_groups.enqueue(object : Callback<List<GroupDTOforUser>> {
-                override fun onResponse(call: Call<List<GroupDTOforUser>>, response: Response<List<GroupDTOforUser>>) {
+            call_member_groups.enqueue(object : Callback<List<GroupforUserDto>> {
+                override fun onResponse(call: Call<List<GroupforUserDto>>, response: Response<List<GroupforUserDto>>) {
                     if (response.isSuccessful) {
                         val groups = response.body()
 
                         enter_layout.removeView(account_layout)
 
                         enter_layout.addView(user_member_layout)
-                        adapter.data= groups as MutableList<GroupDTOforUser>
+                        joinadapter.data= groups as MutableList<GroupforUserDto>
                         val manager=LinearLayoutManager(requireContext())
                         user_member_groups_binding.recyclerJoinedGroups.layoutManager=manager
-                        user_member_groups_binding.recyclerJoinedGroups.adapter=adapter
+                        user_member_groups_binding.recyclerJoinedGroups.adapter=joinadapter
+                        state = "group_members"
 
 
                     } else {
@@ -102,7 +214,47 @@ class AccountFragment : Fragment() {
                     }
                 }
 
-                override fun onFailure(call: Call<List<GroupDTOforUser>>, t: Throwable) {
+                override fun onFailure(call: Call<List<GroupforUserDto>>, t: Throwable) {
+                    // Обработка ошибок сети или других ошибок
+                    Log.e("RetrofitError", "Ошибка: ${t.message}", t)
+                    Toast.makeText(requireContext(), "Ошибка: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
+
+        val creator_group_button = account_layout_binding_layout.MyGroups
+
+        group_card_for_member = CardGroupBinding.inflate(inflater,container,false)
+
+        creator_group_button.setOnClickListener()
+        {
+            var user_id = MainActivity.DataManager.getUserData()!!.id
+
+            val call_creator_groups = apiService.get_creator_groups(user_id.toLong())
+
+            call_creator_groups.enqueue(object : Callback<List<GroupCreatorForCreatorDto>> {
+                override fun onResponse(call: Call<List<GroupCreatorForCreatorDto>>, response: Response<List<GroupCreatorForCreatorDto>>) {
+                    if (response.isSuccessful) {
+                        val groups = response.body()
+                        enter_layout.removeView(account_layout)
+                        enter_layout.addView(user_creator_layout)
+                        val manager=LinearLayoutManager(requireContext())
+//                        val converted= mutableListOf<GroupForCreatorDTO>()
+//                        for (a in groups!!){
+//                            converted.add(GroupForCreatorDTO(a.id,a.groupName,a.accessKey,a.groupMembers.size))
+//                        }
+                        creatoradapter.data= groups as MutableList<GroupCreatorForCreatorDto>
+                        user_creator_groups_binding.recyclerAllGroup.layoutManager=manager
+                        user_creator_groups_binding.recyclerAllGroup.adapter=creatoradapter
+                        state = "created_groups"
+
+
+                    } else {
+                        Toast.makeText(requireContext(), "Error: ${response.message()}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<List<GroupCreatorForCreatorDto>>, t: Throwable) {
                     // Обработка ошибок сети или других ошибок
                     Log.e("RetrofitError", "Ошибка: ${t.message}", t)
                     Toast.makeText(requireContext(), "Ошибка: ${t.message}", Toast.LENGTH_SHORT).show()
@@ -112,7 +264,6 @@ class AccountFragment : Fragment() {
 
         //==================================================//
 
-        register_layout_binding = RegistrationBinding.inflate(inflater,container,false)
 
         val register_layout = register_layout_binding.RegistrationLayout
 
@@ -171,6 +322,9 @@ class AccountFragment : Fragment() {
                             enter_layout.removeView(registration_layout)
 
                             enter_layout.addView(enter_layout_embedded)
+
+                            state = "auth"
+
                         } else {
                             Toast.makeText(
                                 requireContext(),
@@ -207,6 +361,15 @@ class AccountFragment : Fragment() {
 
             password_edit.text.clear()
 
+
+
+            MainActivity.DataManager.setUserData(null)
+            val sharedPreferences = requireContext().getSharedPreferences("data", Context.MODE_PRIVATE)
+            sharedPreferences.edit().clear()
+                /*.remove("key_id")
+                .remove("key_name")*/
+                .apply()
+
             enter_layout.removeView(account_layout)
 
             enter_layout.addView(enter_layout_embedded)
@@ -214,7 +377,7 @@ class AccountFragment : Fragment() {
 
         enterbutton.setOnClickListener()
         {
-            val call_login = apiService.login(triedlogin.toString(), triedpass.toString())
+            val call_login = apiService.login(login_edit.text.toString(), password_edit.text.toString())
 
             call_login.enqueue(object : Callback<UserDTO> {
                 override fun onResponse(call: Call<UserDTO>, response: Response<UserDTO>) {
@@ -240,6 +403,9 @@ class AccountFragment : Fragment() {
                                     enter_layout.removeView(enter_layout_embedded)
 
                                     enter_layout.addView(account_layout)
+                                    state = "main"
+
+                                    //auth_flag = 1
 
                                 }
                             }
@@ -262,6 +428,6 @@ class AccountFragment : Fragment() {
 
 
 
-        return enter_binding.root
+        return enter_binding.enterLayout
     }
 }
