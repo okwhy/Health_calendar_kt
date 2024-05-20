@@ -17,11 +17,13 @@ import com.sus.calendar.adapters.JoinedGroupsRecyclerViewAdapter
 import com.sus.calendar.databinding.AccountLayoutBinding
 import com.sus.calendar.databinding.AccountPageBinding
 import com.sus.calendar.databinding.CardGroupBinding
-import com.sus.calendar.databinding.CardUserBinding
+import com.sus.calendar.databinding.CreateGroupBinding
+import com.sus.calendar.databinding.GroupCardForCreatorBinding
 import com.sus.calendar.databinding.MyGroupsBinding
 import com.sus.calendar.databinding.RegistrationBinding
-import com.sus.calendar.dtos.GroupDTOforUser
+import com.sus.calendar.dtos.GroupforUserDto
 import com.sus.calendar.dtos.UserDTO
+import com.sus.calendar.dtos.getgroupcreator.GroupCreatorForCreatorDto
 
 
 import retrofit2.Call
@@ -33,7 +35,9 @@ class AccountFragment : Fragment() {
     private lateinit var account_layout_binding: AccountLayoutBinding
     private lateinit var register_layout_binding: RegistrationBinding
     private lateinit var user_member_groups_binding: MyGroupsBinding
-    private lateinit var group_card:CardGroupBinding
+    private lateinit var group_card_for_member:CardGroupBinding
+    private lateinit var group_card_for_creator:GroupCardForCreatorBinding
+    private lateinit var user_creator_groups_binding:CreateGroupBinding
     private lateinit var adapter: JoinedGroupsRecyclerViewAdapter
 
     @OptIn(UnstableApi::class) override fun onCreateView(
@@ -75,23 +79,21 @@ class AccountFragment : Fragment() {
 
         val user_member_layout = user_member_groups_binding.UserGroupsLayout
 
-        group_card = CardGroupBinding.inflate(inflater,container,false)
-
         member_group_button.setOnClickListener()
         {
             var user_id = MainActivity.DataManager.getUserData()!!.id
 
             val call_member_groups = apiService.get_member_groups(user_id)
 
-            call_member_groups.enqueue(object : Callback<List<GroupDTOforUser>> {
-                override fun onResponse(call: Call<List<GroupDTOforUser>>, response: Response<List<GroupDTOforUser>>) {
+            call_member_groups.enqueue(object : Callback<List<GroupforUserDto>> {
+                override fun onResponse(call: Call<List<GroupforUserDto>>, response: Response<List<GroupforUserDto>>) {
                     if (response.isSuccessful) {
                         val groups = response.body()
 
                         enter_layout.removeView(account_layout)
 
                         enter_layout.addView(user_member_layout)
-                        adapter.data= groups as MutableList<GroupDTOforUser>
+                        adapter.data= groups as MutableList<GroupforUserDto>
                         val manager=LinearLayoutManager(requireContext())
                         user_member_groups_binding.recyclerJoinedGroups.layoutManager=manager
                         user_member_groups_binding.recyclerJoinedGroups.adapter=adapter
@@ -102,7 +104,45 @@ class AccountFragment : Fragment() {
                     }
                 }
 
-                override fun onFailure(call: Call<List<GroupDTOforUser>>, t: Throwable) {
+                override fun onFailure(call: Call<List<GroupforUserDto>>, t: Throwable) {
+                    // Обработка ошибок сети или других ошибок
+                    Log.e("RetrofitError", "Ошибка: ${t.message}", t)
+                    Toast.makeText(requireContext(), "Ошибка: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
+
+        val creator_group_button = account_layout_binding_layout.MyGroups
+
+        user_creator_groups_binding = CreateGroupBinding.inflate(inflater,container,false)
+
+        val user_creator_layout = user_creator_groups_binding.GroupCreatorLayout
+
+        group_card_for_member = CardGroupBinding.inflate(inflater,container,false)
+
+        creator_group_button.setOnClickListener()
+        {
+            var user_id = MainActivity.DataManager.getUserData()!!.id
+
+            val call_creator_groups = apiService.get_creator_groups(user_id.toLong())
+
+            call_creator_groups.enqueue(object : Callback<List<GroupCreatorForCreatorDto>> {
+                override fun onResponse(call: Call<List<GroupCreatorForCreatorDto>>, response: Response<List<GroupCreatorForCreatorDto>>) {
+                    if (response.isSuccessful) {
+                        val groups = response.body()
+
+                        enter_layout.removeView(account_layout)
+
+                        enter_layout.addView(user_creator_layout)
+
+
+
+                    } else {
+                        Toast.makeText(requireContext(), "Error: ${response.message()}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<List<GroupCreatorForCreatorDto>>, t: Throwable) {
                     // Обработка ошибок сети или других ошибок
                     Log.e("RetrofitError", "Ошибка: ${t.message}", t)
                     Toast.makeText(requireContext(), "Ошибка: ${t.message}", Toast.LENGTH_SHORT).show()

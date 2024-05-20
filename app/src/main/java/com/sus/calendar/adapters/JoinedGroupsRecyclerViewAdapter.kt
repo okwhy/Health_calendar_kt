@@ -3,18 +3,17 @@ package com.sus.calendar.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.media3.common.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import com.sus.calendar.MainActivity
 import com.sus.calendar.RetrofitClient
 import com.sus.calendar.databinding.CardGroupBinding
-import com.sus.calendar.dtos.GroupDTOforUser
+import com.sus.calendar.dtos.GroupforUserDto
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class JoinedGroupsRecyclerViewAdapter:RecyclerView.Adapter<JoinedGroupsRecyclerViewAdapter.ViewHolder>() {
-    var data:MutableList<GroupDTOforUser> = mutableListOf()
+    var data:MutableList<GroupforUserDto> = mutableListOf()
         set(newValue){
             field=newValue
             notifyDataSetChanged()
