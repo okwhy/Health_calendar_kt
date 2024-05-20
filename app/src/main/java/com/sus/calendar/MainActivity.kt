@@ -16,9 +16,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-   // private const val BASE_URL = "http://192.168.0.108:1337/"
+    private const val BASE_URL = "http://192.168.1.79:8080/"
 
-    private const val BASE_URL = "http://192.168.115.110:1337/"
+   // private const val BASE_URL = "http://192.168.115.110:1337/"
 
     val instance: ApiService by lazy {
         val retrofit = Retrofit.Builder()
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("data", Context.MODE_PRIVATE)
         if (sharedPreferences.contains("key_id")){
             DataManager.setUserData(
-                UserDTO(sharedPreferences.getLong("key_id",-1)
+                UserDTO(sharedPreferences.getLong("key_id",-3)
                 , sharedPreferences.getString("key_name","")!!
                 ))
         }

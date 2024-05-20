@@ -35,6 +35,8 @@
                 android:layout_toEndOf="@+id/textMygroup"
                 android:background="#FFFFFF"
                 android:gravity="start"
+                android:textIsSelectable="true"
+                android:focusable="false"
                 android:hint="Код"
                 android:padding="8dp"
                 android:textColor="#2A2A2A"

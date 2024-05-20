@@ -14,6 +14,7 @@ import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sus.calendar.adapters.CreatorsGroupRecyclerViewAdapter
+import com.sus.calendar.adapters.GroupMembersRecyclerViewAdapter
 import com.sus.calendar.adapters.JoinedGroupsRecyclerViewAdapter
 import com.sus.calendar.databinding.AccountLayoutBinding
 import com.sus.calendar.databinding.AccountPageBinding
@@ -41,11 +42,10 @@ class AccountFragment : Fragment() {
     private lateinit var register_layout_binding: RegistrationBinding
     private lateinit var user_member_groups_binding: MyGroupsBinding
     private lateinit var group_card_for_member:CardGroupBinding
-    private lateinit var group_card_for_creator:GroupCardForCreatorBinding
     private lateinit var user_creator_groups_binding:CreateGroupBinding
     private lateinit var joinadapter: JoinedGroupsRecyclerViewAdapter
     private lateinit var creatoradapter: CreatorsGroupRecyclerViewAdapter
-
+    private lateinit var groupCardForCreatorBinding: GroupCardForCreatorBinding
     @OptIn(UnstableApi::class) override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -55,13 +55,19 @@ class AccountFragment : Fragment() {
 
         enter_binding = EnterBinding.inflate(inflater,container,false)
         joinadapter = JoinedGroupsRecyclerViewAdapter()
-        creatoradapter = CreatorsGroupRecyclerViewAdapter()
+        user_creator_groups_binding = CreateGroupBinding.inflate(inflater,container,false)
+        groupCardForCreatorBinding=GroupCardForCreatorBinding.inflate(inflater,container,false)
+        account_layout_binding = AccountLayoutBinding.inflate(inflater,container,false)
+        register_layout_binding = RegistrationBinding.inflate(inflater,container,false)
+        user_member_groups_binding = MyGroupsBinding.inflate(inflater,container,false)
+        group_card_for_member = CardGroupBinding.inflate(inflater,container,false)
+        creatoradapter = CreatorsGroupRecyclerViewAdapter(enter_binding,user_creator_groups_binding,groupCardForCreatorBinding)
 
         val enter_layout = enter_binding.enterLayout
 
         val enter_layout_embedded = enter_binding.enterLayoutEmbedded
 
-        account_layout_binding = AccountLayoutBinding.inflate(inflater,container,false)
+
 
         val account_layout_binding_layout = AccountPageBinding.inflate(inflater,container,false)
 
@@ -98,7 +104,7 @@ class AccountFragment : Fragment() {
 
         val member_group_button = account_layout_binding_layout.MyGroup
 
-        user_member_groups_binding = MyGroupsBinding.inflate(inflater,container,false)
+
 
         val user_member_layout = user_member_groups_binding.UserGroupsLayout
 
@@ -137,11 +143,11 @@ class AccountFragment : Fragment() {
 
         val creator_group_button = account_layout_binding_layout.MyGroups
 
-        user_creator_groups_binding = CreateGroupBinding.inflate(inflater,container,false)
+
 
         val user_creator_layout = user_creator_groups_binding.GroupCreatorLayout
 
-        group_card_for_member = CardGroupBinding.inflate(inflater,container,false)
+
 
         creator_group_button.setOnClickListener()
         {
@@ -156,11 +162,11 @@ class AccountFragment : Fragment() {
                         enter_layout.removeView(account_layout)
                         enter_layout.addView(user_creator_layout)
                         val manager=LinearLayoutManager(requireContext())
-                        val converted= mutableListOf<GroupForCreatorDTO>()
-                        for (a in groups!!){
-                            converted.add(GroupForCreatorDTO(a.id,a.groupName,a.accessKey,a.groupMembers.size))
-                        }
-                        creatoradapter.data=converted
+//                        val converted= mutableListOf<GroupForCreatorDTO>()
+//                        for (a in groups!!){
+//                            converted.add(GroupForCreatorDTO(a.id,a.groupName,a.accessKey,a.groupMembers.size))
+//                        }
+                        creatoradapter.data= groups as MutableList<GroupCreatorForCreatorDto>
                         user_creator_groups_binding.recyclerAllGroup.layoutManager=manager
                         user_creator_groups_binding.recyclerAllGroup.adapter=creatoradapter
 
@@ -180,7 +186,6 @@ class AccountFragment : Fragment() {
 
         //==================================================//
 
-        register_layout_binding = RegistrationBinding.inflate(inflater,container,false)
 
         val register_layout = register_layout_binding.RegistrationLayout
 
