@@ -12,6 +12,8 @@ import com.sus.calendar.databinding.EnterBinding
 import androidx.annotation.OptIn
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.sus.calendar.adapters.JoinedGroupsRecyclerViewAdapter
 import com.sus.calendar.databinding.AccountLayoutBinding
 import com.sus.calendar.databinding.AccountPageBinding
 import com.sus.calendar.databinding.CardGroupBinding
@@ -32,6 +34,7 @@ class AccountFragment : Fragment() {
     private lateinit var register_layout_binding: RegistrationBinding
     private lateinit var user_member_groups_binding: MyGroupsBinding
     private lateinit var group_card:CardGroupBinding
+    private lateinit var adapter: JoinedGroupsRecyclerViewAdapter
 
     @OptIn(UnstableApi::class) override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,7 +44,7 @@ class AccountFragment : Fragment() {
         val apiService = RetrofitClient.instance
 
         enter_binding = EnterBinding.inflate(inflater,container,false)
-
+        adapter = JoinedGroupsRecyclerViewAdapter()
         val enter_layout = enter_binding.enterLayout
 
         val login_edit = enter_binding.editTextEmail
@@ -88,11 +91,11 @@ class AccountFragment : Fragment() {
                         enter_layout.removeView(account_layout)
 
                         enter_layout.addView(user_member_layout)
+                        adapter.data= groups as MutableList<GroupDTOforUser>
+                        val manager=LinearLayoutManager(requireContext())
+                        user_member_groups_binding.recyclerJoinedGroups.layoutManager=manager
+                        user_member_groups_binding.recyclerJoinedGroups.adapter=adapter
 
-                        if (groups != null) {
-                            if(groups.isNotEmpty()) {
-                            }
-                        }
 
                     } else {
                         Toast.makeText(requireContext(), "Error: ${response.message()}", Toast.LENGTH_SHORT).show()

@@ -4,6 +4,7 @@ import com.sus.calendar.dtos.GroupDTOforUser
 
 import com.sus.calendar.dtos.UserDTO
 import retrofit2.Call
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -18,4 +19,6 @@ interface ApiService {
 
     @POST("api/users/register")
     fun register(@Query("login") login: String,@Query("password") password: String,@Query("name") name: String): Call<Boolean>
+    @DELETE("api/groups/users/{user_id}")
+    fun delete_user(@Path("user_id") userid:Long,@Query("id") id:Long):Call<Void>
 }
