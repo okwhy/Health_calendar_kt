@@ -125,6 +125,7 @@ class StatisticFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        /*
         val view = inflater.inflate(R.layout.statistic_page, container, false)
         val avgHeight: BarChart = view.findViewById(R.id.averageHeight)
         val avgWeight: LineChart = view.findViewById(R.id.averageWeight)
@@ -559,6 +560,6 @@ class StatisticFragment : Fragment() {
                 parts1[2].toIntOrNull() ?: 0, parts2[0].toIntOrNull() ?: 0,
                 parts2[1].toIntOrNull() ?: 0, parts2[2].toIntOrNull() ?: 0
             )
-        }
-    }
+        }*/
+    return view}
 }
