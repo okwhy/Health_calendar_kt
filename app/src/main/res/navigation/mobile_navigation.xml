@@ -32,7 +32,7 @@
         tools:layout="@layout/fragment_statistic_member">
         <argument
             android:name="UserDTO"
-            app:argType="com.sus.calendar.dtos.UserInGroupDto" />
+            app:argType="com.sus.calendar.dtos.getgroupcreator.UserInGroupDto" />
 
     </fragment>
 </navigation>

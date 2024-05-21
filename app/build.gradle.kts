@@ -1,7 +1,10 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
+//    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
+    id("androidx.navigation.safeargs.kotlin")
+    id("org.jetbrains.kotlin.plugin.parcelize")
 }
 
 android {
@@ -16,9 +19,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        kapt {
-            arguments {arg("room.schemaLocation", "$projectDir/schemas")}
-        }
+//        kapt {
+//            arguments {arg("room.schemaLocation", "$projectDir/schemas")}
+//        }
     }
 
     buildTypes {
@@ -57,7 +60,9 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     val room_version = "2.5.2"
     implementation("androidx.room:room-runtime:$room_version")
-    kapt("androidx.room:room-compiler:$room_version")
+//
+//    ksp("com.google.dagger:dagger-compiler")
+    ksp("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
     implementation ("net.sourceforge.jexcelapi:jxl:2.6.12")
     implementation ("com.applandeo:material-calendar-view:1.9.0-rc03")
@@ -65,5 +70,5 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
     implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
-
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.10")
 }

@@ -51,7 +51,7 @@ class StatisticMember : Fragment() {
         val args:StatisticMemberArgs by navArgs()
         val UserDTO=args.UserDTO
 
-      Log.d("авава",UserDTO)
+      Log.d("авава",UserDTO.id.toString()+" "+UserDTO.name)
 
     }
     /*companion object {

@@ -13,10 +13,10 @@ interface DateDao {
     val all: List<DateSQL?>?
 
     @Delete
-    fun delete(vararg dates: DateSQL?)
+    fun delete(vararg dates: DateSQL)
 
     @Insert
-    fun insert(dateSQL: DateSQL?): Long
+    fun insert(dateSQL: DateSQL): Long
 
     @Query("select * from DateSQL where DateSQL.year =:year order by month,day")
     fun getByYear(year: Int): List<DateSQL?>?

@@ -13,19 +13,19 @@ interface NoteDao {
     val all: List<Note?>?
 
     @Update
-    fun update(note: Note?)
+    fun update(note: Note)
 
     @Insert
-    fun insert(note: Note?): Long
+    fun insert(note: Note): Long
 
     @Delete
-    fun delete(note: Note?)
+    fun delete(note: Note)
 
     @Query("select * from note where note.type = :type")
-    fun getByCat(type: String?): List<Note?>?
+    fun getByCat(type: String): List<Note?>?
 
     @Query("select * from note where note.type = :type and note.value=:value")
-    fun getByCat(type: String?, value: Double): List<Note?>?
+    fun getByCat(type: String, value: Double): List<Note?>?
 
     @Query("select * from note where note.type = :type and note.id_fkdate=:id")
     fun getByCatAndFKId(type: String?, id: Long): Note?
