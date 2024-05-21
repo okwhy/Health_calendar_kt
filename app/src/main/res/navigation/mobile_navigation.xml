@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation.xml"
     app:startDestination="@id/nav_calendar">
 
@@ -13,8 +14,8 @@
         android:name="com.sus.calendar.AccountFragment"
         android:label="AccountFragment" >
         <action
-            android:id="@+id/action_nav_account_to_nav_statistic"
-            app:destination="@id/nav_statistic" />
+            android:id="@+id/action_nav_account_to_statisticMember"
+            app:destination="@id/statisticMember" />
     </fragment>
     <fragment
         android:id="@+id/nav_statistic"
@@ -24,4 +25,14 @@
         android:id="@+id/nav_export"
         android:name="com.sus.calendar.ExportFragment"
         android:label="ExportFragment" />
+    <fragment
+        android:id="@+id/statisticMember"
+        android:name="com.sus.calendar.StatisticMember"
+        android:label="fragment_statistic_member"
+        tools:layout="@layout/fragment_statistic_member">
+        <argument
+            android:name="UserDTO"
+            app:argType="com.sus.calendar.dtos.UserInGroupDto" />
+
+    </fragment>
 </navigation>

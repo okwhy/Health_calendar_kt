@@ -22,6 +22,7 @@ import com.sus.calendar.databinding.MyGroupsBinding
 import com.sus.calendar.dtos.UserDTO
 import com.sus.calendar.dtos.getgroupcreator.GroupCreatorForCreatorDto
 import com.sus.calendar.dtos.getgroupcreator.subdtos.GroupForCreatorDTO
+import com.sus.calendar.state
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -105,6 +106,16 @@ class CreatorsGroupRecyclerViewAdapter(
 //                val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerMygroup)
 //                recyclerView.adapter = GroupMembersRecyclerViewAdapter(element.id)
 //                recyclerView.layoutManager = manager
+
+                val backToGroupsFromGroupMembers = userLayoutBinding.bacKToGroups
+
+                backToGroupsFromGroupMembers.setOnClickListener()
+                {
+                    enter_binding.enterLayout.removeView(userLayoutBinding.UserGroupLayout)
+                    enter_binding.enterLayout.addView(groupsBinding.GroupCreatorLayout)
+
+                    state = "created_groups"
+                }
 
             }
 

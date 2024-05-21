@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.sus.calendar.AccountFragment
+import com.sus.calendar.AccountFragmentDirections
 import com.sus.calendar.R
 import com.sus.calendar.RetrofitClient
 import com.sus.calendar.databinding.CardUserBinding
@@ -39,7 +40,8 @@ class GroupMembersRecyclerViewAdapter(val id_user: Long) :
             val apiService = RetrofitClient.instance
             usernametext.text = element.name
             usernametext.setOnClickListener {
-                it.findNavController().navigate(R.id.action_nav_account_to_nav_statistic)
+                val action=AccountFragmentDirections.actionNavAccountToStatisticMember(element)
+                it.findNavController().navigate(action)
             }
             kickUser.setOnClickListener {
                 val call_delete_user = apiService.delete_user(element.id, id_user)

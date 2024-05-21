@@ -80,6 +80,8 @@ class AccountFragment : Fragment() {
 
         val user_creator_layout = user_creator_groups_binding.GroupCreatorLayout
 
+        val register_layout = register_layout_binding.RegistrationLayout
+
 
         if(MainActivity.DataManager.getUserData() != null)
         {
@@ -223,6 +225,17 @@ class AccountFragment : Fragment() {
 
         val backToMainFromGroupEnjoy = user_member_groups_binding.backToMain
 
+        val backToMainFromRegistration = register_layout_binding.backToMainFrom
+
+
+        backToMainFromRegistration.setOnClickListener()
+        {
+            enter_layout.removeView(register_layout)
+            enter_layout.addView(enter_layout_embedded)
+
+            state = "auth"
+        }
+
         backToMainFromGroupManagment.setOnClickListener()
         {
             enter_layout.removeView(user_creator_layout)
@@ -257,10 +270,8 @@ class AccountFragment : Fragment() {
                         enter_layout.removeView(account_layout)
                         enter_layout.addView(user_creator_layout)
                         val manager=LinearLayoutManager(requireContext())
-//                        val converted= mutableListOf<GroupForCreatorDTO>()
-//                        for (a in groups!!){
-//                            converted.add(GroupForCreatorDTO(a.id,a.groupName,a.accessKey,a.groupMembers.size))
-//                        }
+
+
                         creatoradapter.data= groups as MutableList<GroupCreatorForCreatorDto>
                         user_creator_groups_binding.recyclerAllGroup.layoutManager=manager
                         user_creator_groups_binding.recyclerAllGroup.adapter=creatoradapter
@@ -281,9 +292,6 @@ class AccountFragment : Fragment() {
         }
 
         //==================================================//
-
-
-        val register_layout = register_layout_binding.RegistrationLayout
 
         registerbutton.setOnClickListener()
         {
