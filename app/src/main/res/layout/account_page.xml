@@ -79,5 +79,26 @@
                 android:textColor="#FDFDFD"
                 android:textSize="25dp" />
         </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/Help"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:radius="16dp"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/header"
+            android:onClick="onLabelClick">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="57dp"
+                android:gravity="center"
+                android:text="Помощь"
+                android:textColor="#FDFDFD"
+                android:textSize="25dp" />
+        </RelativeLayout>
     </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.appcompat.widget.LinearLayoutCompat>

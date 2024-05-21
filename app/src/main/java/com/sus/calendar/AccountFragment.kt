@@ -1,12 +1,16 @@
 package com.sus.calendar
 
+
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import com.sus.calendar.databinding.EnterBinding
 import androidx.annotation.OptIn
@@ -47,6 +51,8 @@ class AccountFragment : Fragment() {
     private lateinit var joinadapter: JoinedGroupsRecyclerViewAdapter
     private lateinit var creatoradapter: CreatorsGroupRecyclerViewAdapter
     private lateinit var groupCardForCreatorBinding: GroupCardForCreatorBinding
+    private lateinit var alertDialog: AlertDialog
+
     @OptIn(UnstableApi::class) override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -291,6 +297,19 @@ class AccountFragment : Fragment() {
             })
         }
 
+        val help_button = account_layout_binding_layout.Help
+
+        help_button.setOnClickListener(){
+            showPopup()
+        }
+
+        val help_button_in_auth = enter_binding.helpButtonInAuth
+
+        help_button_in_auth.setOnClickListener()
+        {
+            showPopup()
+        }
+
         //==================================================//
 
         registerbutton.setOnClickListener()
@@ -455,5 +474,26 @@ class AccountFragment : Fragment() {
 
 
         return enter_binding.enterLayout
+    }
+    private fun showPopup() {
+        val context = requireContext()
+        val builder = AlertDialog.Builder(context)
+        val inflater = LayoutInflater.from(context)
+        val popupView = inflater.inflate(R.layout.popup_layout, null)
+        val popupText = popupView.findViewById<TextView>(R.id.popupText)
+        val closeButton = popupView.findViewById<Button>(R.id.closeButton)
+        popupText.text = """
+            Приложение Health Calendar представляет собой инструмент для отслеживания основных показателей здоровья.
+            
+            На главном экране приложения расположен календарь, в котором можно установить, за какой день вносятся данные. Для сохранения введенных данных необходимо нажать на кнопку "Сохранить".
+            
+            Для удобства использования календаря в приложение были добавлены метки для дней. Дни, в которые данные не были своевременно введены помечаются красной полоской, а дни, в которые данные были внесены вовремя помечаются зеленой полоской.
+            
+            Приятного вам использования!
+            """.trimIndent()
+        closeButton.setOnClickListener { alertDialog!!.dismiss() }
+        builder.setView(popupView)
+        alertDialog = builder.create()
+        alertDialog.show()
     }
 }

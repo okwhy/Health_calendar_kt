@@ -53,5 +53,23 @@
                 android:textColor="#628BF4"
                 android:textSize="25dp" />
         </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/help_button_in_auth"
+            android:layout_width="365dp"
+            android:layout_height="47dp"
+            android:layout_marginTop="16dp"
+            android:clickable="true"
+            android:onClick="onLabelClick"
+            android:radius="16dp">
+
+            <TextView
+                android:id="@+id/help_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="Помощь"
+                android:textColor="#628BF4"
+                android:textSize="25dp" />
+        </RelativeLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
