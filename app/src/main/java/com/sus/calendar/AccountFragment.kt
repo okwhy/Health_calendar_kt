@@ -68,8 +68,6 @@ class AccountFragment : Fragment() {
 
         val enter_layout_embedded = enter_binding.enterLayoutEmbedded
 
-
-
         val account_layout_binding_layout = AccountPageBinding.inflate(inflater,container,false)
 
         val account_layout = account_layout_binding_layout.accountLayoutPage
@@ -81,6 +79,7 @@ class AccountFragment : Fragment() {
         user_creator_groups_binding = CreateGroupBinding.inflate(inflater,container,false)
 
         val user_creator_layout = user_creator_groups_binding.GroupCreatorLayout
+
 
         if(MainActivity.DataManager.getUserData() != null)
         {
@@ -218,6 +217,27 @@ class AccountFragment : Fragment() {
                     Toast.makeText(requireContext(), "Ошибка: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
+        }
+
+        val backToMainFromGroupManagment = user_creator_groups_binding.backListMyGroups
+
+        val backToMainFromGroupEnjoy = user_member_groups_binding.backToMain
+
+        backToMainFromGroupManagment.setOnClickListener()
+        {
+            enter_layout.removeView(user_creator_layout)
+            enter_layout.addView(account_layout)
+
+            state = "main"
+        }
+
+        backToMainFromGroupEnjoy.setOnClickListener()
+        {
+            enter_layout.removeView(user_member_layout)
+
+            enter_layout.addView(account_layout)
+
+            state = "main"
         }
 
         val creator_group_button = account_layout_binding_layout.MyGroups
