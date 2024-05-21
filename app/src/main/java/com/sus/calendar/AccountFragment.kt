@@ -182,8 +182,6 @@ class AccountFragment : Fragment() {
 
         //==================================================//
 
-
-
         val account_exit_button = account_layout_binding_layout.exit
 
         val member_group_button = account_layout_binding_layout.MyGroup

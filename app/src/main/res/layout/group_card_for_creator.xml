@@ -20,8 +20,10 @@
 
             <TextView
                 android:id="@+id/textMygroup"
-                android:layout_width="171dp"
+                android:layout_width="160dp"
                 android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:layout_toEndOf="@+id/backListMyGroups"
                 android:gravity="center"
                 android:text="Моя группа"
                 android:textColor="#673AB7"
@@ -31,7 +33,7 @@
                 android:id="@+id/passwordOfGroup"
                 android:layout_width="173dp"
                 android:layout_height="36dp"
-                android:layout_marginStart="64dp"
+                android:layout_marginStart="3dp"
                 android:layout_toEndOf="@+id/textMygroup"
                 android:background="#FFFFFF"
                 android:gravity="start"
@@ -41,6 +43,14 @@
                 android:padding="8dp"
                 android:textColor="#2A2A2A"
                 android:textSize="18dp" />
+
+            <ImageButton
+                android:id="@+id/backListMyGroups"
+                android:layout_width="49dp"
+                android:layout_height="46dp"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="0dp"
+                android:background="@drawable/back" />
         </RelativeLayout>
     </androidx.appcompat.widget.LinearLayoutCompat>
 
