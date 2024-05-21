@@ -3,8 +3,6 @@ package com.sus.calendar
 import android.app.DatePickerDialog
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +17,6 @@ import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.charts.PieChart
-import com.github.mikephil.charting.charts.ScatterChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -33,18 +30,11 @@ import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.utils.ColorTemplate
-import com.sus.calendar.entities.DateWithNotes
-import com.sus.calendar.services.DataService
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatterBuilder
-import java.time.format.ResolverStyle
-import java.time.temporal.ChronoField
 import java.util.Calendar
 
 class StatisticFragment : Fragment() {
-
-
     data class HealthRecord(
         val date: LocalDate,
         val height: Int, // Рост в см
@@ -133,8 +123,6 @@ class StatisticFragment : Fragment() {
     private var boolDateFrom: Boolean = false
     private var boolDateTo: Boolean = false
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val dataService = this.context?.let { DataService.initial(it) }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

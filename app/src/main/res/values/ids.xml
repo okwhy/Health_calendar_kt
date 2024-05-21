@@ -2,4 +2,6 @@
 <resources>
     <item name="dayPulse" type="id" />
     <item name="bottom_navigation" type="id" />
+    <item name="toggleButton" type="id">toggleButton</item>
+    <item name="enterHight" type="id">enterHight</item>
 </resources>

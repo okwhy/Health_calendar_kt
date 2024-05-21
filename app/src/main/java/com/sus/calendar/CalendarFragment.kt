@@ -1,6 +1,7 @@
 package com.sus.calendar
 
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,8 +10,10 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.applandeo.materialcalendarview.CalendarView
@@ -18,6 +21,7 @@ import com.applandeo.materialcalendarview.EventDay
 import com.applandeo.materialcalendarview.listeners.OnCalendarPageChangeListener
 import com.applandeo.materialcalendarview.listeners.OnDayClickListener
 import com.sus.calendar.databinding.CalendarPageBinding
+import com.sus.calendar.databinding.DialogDataBinding
 import com.sus.calendar.entities.DateSQL
 import com.sus.calendar.entities.DateWithNotes
 import com.sus.calendar.entities.Note
@@ -27,11 +31,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.Arrays
 import java.util.Calendar
+import kotlin.time.toKotlinDuration
 
 class CalendarFragment : Fragment() {
 
@@ -46,6 +52,7 @@ class CalendarFragment : Fragment() {
     private var texts: List<EditText>? = null
     private lateinit var alertDialog: AlertDialog
     private lateinit var binding: CalendarPageBinding
+    private lateinit var bindingHide: DialogDataBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -54,6 +61,8 @@ class CalendarFragment : Fragment() {
 
         // Inflate the layout for this fragment
         binding = CalendarPageBinding.inflate(layoutInflater, container, false)
+        bindingHide = DialogDataBinding.inflate(layoutInflater, container, false)
+        val dialogView = binding.root
         calendar = Calendar.getInstance()
         curdate = LocalDateTime.now().toLocalDate()
         currentDay = curdate.getDayOfMonth()
@@ -73,32 +82,25 @@ class CalendarFragment : Fragment() {
         val days = IntArray(31)
         val months = IntArray(12)
         val years = IntArray(10)
-        val textInputHeight = binding.textInputHeight
-        val textInputWeight = binding.textInputWeight
-        val textInputPulse = binding.textInputPulse
-        val textInputPressure = binding.textInputPressure
-        val textInputAppetite = binding.textInputAppetite
-        val textInputSlepping = binding.textInputSlepping
-        val textInputHealth = binding.textInputHealth
+        val textInputHeight = bindingHide.enterHeight
+        val textInputWeight = bindingHide.enterWeight
+        val textInputPulse = bindingHide.enterPulse
+        val textInputPressureUp = bindingHide.enterPressureUp
+        val textInputPressureDown = bindingHide.enterPressureDown
+        val textInputAppetite = bindingHide.editAppetite
+        val textInputSlepping = bindingHide.enterSleep
+        val textInputHealth = bindingHide.editHealth
         texts = ArrayList(
             Arrays.asList(
                 textInputHeight,
                 textInputWeight,
                 textInputPulse,
-                textInputPressure,
-                textInputAppetite,
-                textInputSlepping,
-                textInputHealth
+                textInputPressureUp,
+                textInputPressureDown,
+                textInputSlepping
             )
         )
-        val dayInfo = binding.dayInfo
-        val dayHeight = binding.dayHeight
-        val dayWeight = binding.dayWeight
-        val dayPulse = binding.dayPulse
-        val dayPressure = binding.dayPressure
-        val dayAppetite = binding.dayAppetite
-        val daySlepping = binding.daySlepping
-        val dayHealth = binding.dayHealth
+
         var notes: Map<String?, String?>? = null
         notes = try {
             fetchDate(currentYear, currentMonth, currentDay)
@@ -110,18 +112,16 @@ class CalendarFragment : Fragment() {
             textInputHeight.setText(if (notes["HEIGHT"] == null) "Нет данных" else notes["HEIGHT"])
             textInputWeight.setText(if (notes["WEIGHT"] == null) "Нет данных" else notes["WEIGHT"])
             textInputPulse.setText(if (notes["PULSE"] == null) "Нет данных" else notes["PULSE"])
-            textInputPressure.setText(if (notes["PRESSURE"] == null) "Нет данных" else notes["PRESSURE"]) // Артем
-            textInputAppetite.setText(if (notes["APPETITE"] == null) "Нет данных" else notes["APPETITE"])
+            textInputPressureUp.setText(if (notes["PRESSURE"] == null) "Нет данных" else notes["PRESSURE"]) // Артем
+            textInputPressureDown.setText(if (notes["PRESSURE"] == null) "Нет данных" else notes["PRESSURE"])
             textInputSlepping.setText(if (notes["SLEEP"] == null) "Нет данных" else notes["SLEEP"])
-            textInputHealth.setText(if (notes["HEALTH"] == null) "Нет данных" else notes["HEALTH"])
         } else {
             textInputHeight.setText("Нет данных")
             textInputWeight.setText("Нет данных")
             textInputPulse.setText("Нет данных")
-            textInputPressure.setText("Нет данных")
-            textInputAppetite.setText("Нет данных")
+            textInputPressureUp.setText("Нет данных")
+            textInputPressureDown.setText("Нет данных")
             textInputSlepping.setText("Нет данных")
-            textInputHealth.setText("Нет данных")
         }
         calendarView.setOnDayClickListener(object : OnDayClickListener {
             override fun onDayClick(eventDay: EventDay) {
@@ -132,60 +132,114 @@ class CalendarFragment : Fragment() {
                 currentYear = year
                 currentMonth = month + 1
                 currentDay = dayOfMonth
-                if (dayInfo.visibility == View.INVISIBLE) {
-                    dayInfo.visibility = View.VISIBLE
-                    dayHeight.visibility = View.VISIBLE
-                    dayWeight.visibility = View.VISIBLE
-                    dayPulse.visibility = View.VISIBLE
-                    dayPressure.visibility = View.VISIBLE
-                    dayAppetite.visibility = View.VISIBLE
-                    daySlepping.visibility = View.VISIBLE
-                    dayHealth.visibility = View.VISIBLE
-                }
-                for (i in 0..30) {
-                    if (days[i] == currentDay) {
-                        for (j in 0..11) {
-                            if (months[j] == currentMonth) {
-                                for (k in 0..9) {
-                                    if (years[k] == currentYear) {
-                                        textInputHeight.setText(calendarStrings[i])
-                                        textInputWeight.setText(calendarStrings[i + 1])
-                                        textInputPulse.setText(calendarStrings[i + 2])
-                                        textInputPressure.setText(calendarStrings[i + 3])
-                                        textInputAppetite.setText(calendarStrings[i + 4])
-                                        textInputSlepping.setText(calendarStrings[i + 5])
-                                        textInputHealth.setText(calendarStrings[i + 6])
-                                        return
+                val dialogBuilder = AlertDialog.Builder(requireContext())
+                    .setView(dialogView)
+                    .setTitle("Введите данные")
+                    .setPositiveButton("OK") { dialog, which ->
+                        for (i in 0..30) {
+                            if (days[i] == currentDay) {
+                                for (j in 0..11) {
+                                    if (months[j] == currentMonth) {
+                                        for (k in 0..9) {
+                                            if (years[k] == currentYear) {
+                                                textInputHeight.setText(calendarStrings[i])
+                                                textInputWeight.setText(calendarStrings[i + 1])
+                                                textInputPulse.setText(calendarStrings[i + 2])
+                                                textInputPressureUp.setText(calendarStrings[i + 3])
+                                                textInputPressureDown.setText(calendarStrings[i + 4])
+                                                textInputSlepping.setText(calendarStrings[i + 5])
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
+                        var notes: Map<String?, String?>? = null
+                        notes = try {
+                            fetchDate(currentYear, currentMonth, currentDay) // все записи за текущий день
+                        } catch (e: InterruptedException) {
+                            throw RuntimeException(e)
+                        }
+                        checkdate(currentYear, currentMonth, currentDay)
+                        if (!(notes == null || notes!!.isEmpty())) {
+                            textInputHeight.setText(if (notes!!["HEIGHT"] == null) "Нет данных" else notes!!["HEIGHT"])
+                            textInputWeight.setText(if (notes!!["WEIGHT"] == null) "Нет данных" else notes!!["WEIGHT"])
+                            textInputPulse.setText(if (notes!!["PULSE"] == null) "Нет данных" else notes!!["PULSE"])
+                            textInputPressureUp.setText(if (notes!!["PRESSURE"] == null) "Нет данных" else notes!!["PRESSURE"])
+                            textInputPressureDown.setText(if (notes!!["PRESSURE"] == null) "Нет данных" else notes!!["PRESSURE"])
+                            textInputSlepping.setText(if (notes!!["SLEEP"] == null) "Нет данных" else notes!!["SLEEP"])
+                        } else {
+                            textInputHeight.setText("Нет данных")
+                            textInputWeight.setText("Нет данных")
+                            textInputPulse.setText("Нет данных")
+                            textInputPressureUp.setText("Нет данных")
+                            textInputPressureDown.setText("Нет данных")
+                            textInputSlepping.setText("Нет данных")
+                        }
+
+                        val notes1: MutableMap<String, String> = HashMap()
+                        if (textInputHeight.text.toString() != "Нет данных") {
+                            notes1["HEIGHT"] = textInputHeight.text.toString()
+                        }
+                        if (textInputWeight.text.toString() != "Нет данных") {
+                            notes1["WEIGHT"] = textInputWeight.text.toString()
+                        }
+                        if (textInputPulse.text.toString() != "Нет данных") {
+                            notes1["PULSE"] = textInputPulse.text.toString()
+                        }
+                        if (textInputPressureUp.text.toString() != "Нет данных") {
+                            notes1["PRESSURE"] = textInputPressureUp.text.toString()
+                        }
+                        if (textInputPressureDown.text.toString() != "Нет данных") {
+                            notes1["PRESSURE"] = textInputPressureUp.text.toString()
+                        }
+
+                        if (textInputSlepping.text.toString() != "Нет данных") {
+                            notes1["SLEEP"] = textInputSlepping.text.toString()
+                        }
+
+                        val stateOfAppetite = arrayOf<String?>(
+                            "Введите аппетит",
+                            "Отличный",
+                            "Хороший",
+                            "Средний",
+                            "Плохой",
+                            "Нет аппетита"
+                        )
+                        val spinnerAppetite = bindingHide.editAppetite
+                        val appetiteAdapter: ArrayAdapter<Any?> =
+                            ArrayAdapter<Any?>(
+                                requireContext(),
+                                android.R.layout.simple_spinner_item,
+                                stateOfAppetite
+                            )
+                        appetiteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        spinnerAppetite.adapter = appetiteAdapter
+                        val stateOfHealth = arrayOf<String?>(
+                            "Введите самочувствие",
+                            "Отличное",
+                            "Хорошее",
+                            "Среднее",
+                            "Плохое",
+                            "Ужасное"
+                        )
+                        val spinnerHealth = bindingHide.editHealth
+                        val appetiteHealth: ArrayAdapter<Any?> =
+                            ArrayAdapter<Any?>(
+                                requireContext(),
+                                android.R.layout.simple_spinner_item,
+                                stateOfHealth
+                            )
+                        appetiteHealth.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        spinnerHealth.adapter = appetiteHealth
+
+                        Log.d("dafa", "$notes1 $currentYear")
+                        insertorupdateDate(notes1, currentYear, currentMonth, currentDay)
                     }
-                }
-                var notes: Map<String?, String?>? = null
-                notes = try {
-                    fetchDate(currentYear, currentMonth, currentDay) // все записи за текущий день
-                } catch (e: InterruptedException) {
-                    throw RuntimeException(e)
-                }
-                checkdate(currentYear, currentMonth, currentDay)
-                if (!(notes == null || notes!!.isEmpty())) {
-                    textInputHeight.setText(if (notes!!["HEIGHT"] == null) "Нет данных" else notes!!["HEIGHT"])
-                    textInputWeight.setText(if (notes!!["WEIGHT"] == null) "Нет данных" else notes!!["WEIGHT"])
-                    textInputPulse.setText(if (notes!!["PULSE"] == null) "Нет данных" else notes!!["PULSE"])
-                    textInputPressure.setText(if (notes!!["PRESSURE"] == null) "Нет данных" else notes!!["PRESSURE"])
-                    textInputAppetite.setText(if (notes!!["APPETITE"] == null) "Нет данных" else notes!!["APPETITE"])
-                    textInputSlepping.setText(if (notes!!["SLEEP"] == null) "Нет данных" else notes!!["SLEEP"])
-                    textInputHealth.setText(if (notes!!["HEALTH"] == null) "Нет данных" else notes!!["HEALTH"])
-                } else {
-                    textInputHeight.setText("Нет данных")
-                    textInputWeight.setText("Нет данных")
-                    textInputPulse.setText("Нет данных")
-                    textInputPressure.setText("Нет данных")
-                    textInputAppetite.setText("Нет данных")
-                    textInputSlepping.setText("Нет данных")
-                    textInputHealth.setText("Нет данных")
-                }
+                    .setNegativeButton("Cancel") { dialog, which ->
+                        dialog.cancel()
+                    }
+
             }
         })
         calendarView.setOnForwardPageChangeListener(object : OnCalendarPageChangeListener {
@@ -206,73 +260,7 @@ class CalendarFragment : Fragment() {
                 }
             }
         })
-        val stateOfAppetite = arrayOf<String?>(
-            "Введите аппетит",
-            "Отличный",
-            "Хороший",
-            "Средний",
-            "Плохой",
-            "Нет аппетита"
-        )
-        val spinnerAppetite = binding.textInputAppetiteSpiner
-        val appetiteAdapter: ArrayAdapter<Any?> =
-            ArrayAdapter<Any?>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                stateOfAppetite
-            )
-        appetiteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerAppetite.adapter = appetiteAdapter
-        val stateOfHealth = arrayOf<String?>(
-            "Введите самочувствие",
-            "Отличное",
-            "Хорошее",
-            "Среднее",
-            "Плохое",
-            "Ужасное"
-        )
-        val spinnerHealth = binding.textInputHealthSpiner
-        val appetiteHealth: ArrayAdapter<Any?> =
-            ArrayAdapter<Any?>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                stateOfHealth
-            )
-        appetiteHealth.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerHealth.adapter = appetiteHealth
-        val saveTextButton = binding.saveTextButton1
-        saveTextButton.setOnClickListener { v: View? ->
-            val notes1: MutableMap<String, String> = HashMap()
-            if (textInputHeight.text.toString() != "Нет данных") {
-                notes1["HEIGHT"] = textInputHeight.text.toString()
-            }
-            if (textInputWeight.text.toString() != "Нет данных") {
-                notes1["WEIGHT"] = textInputWeight.text.toString()
-            }
-            if (textInputPulse.text.toString() != "Нет данных") {
-                notes1["PULSE"] = textInputPulse.text.toString()
-            }
-            if (textInputPressure.text.toString() != "Нет данных") {
-                notes1["PRESSURE"] = textInputPressure.text.toString()
-            }
-            if (textInputAppetite.text.toString() != "Нет данных") {
-                notes1["APPETITE"] = textInputAppetite.text.toString()
-            }
-            if (textInputSlepping.text.toString() != "Нет данных") {
-                notes1["SLEEP"] = textInputSlepping.text.toString()
-            }
-            if (textInputHealth.text.toString() != "Нет данных") {
-                notes1["HEALTH"] = textInputHealth.text.toString()
-            }
-            Log.d("dafa", "$notes1 $currentYear")
-            insertorupdateDate(notes1, currentYear, currentMonth, currentDay)
-        }
 
-        // Подключаемся к кнопке в макете вашей активности
-        val showPopupButton = binding.showPopupButton
-
-        // Устанавливаем слушателя нажатия на кнопку
-        showPopupButton.setOnClickListener { showPopup() }
         return binding.root
     }
 

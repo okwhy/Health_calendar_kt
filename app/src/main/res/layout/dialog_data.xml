@@ -5,102 +5,153 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Рост -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Рост (см)" />
-    <EditText
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="number"
-        android:hint="Введите ваш рост" />
+        android:layout_marginBottom="16dp"
+        android:padding="16dp">
 
-    <!-- Вес -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Вес (кг)" />
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:hint="Введите ваш вес" />
-
-    <!-- Пульс -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Пульс" />
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:hint="Введите ваш пульс" />
-
-    <!-- Давление -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Давление (верхнее артериальное / нижнее сердечное)" />
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <EditText
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:inputType="number"
-            android:hint="Верхнее артериальное" />
-        <TextView
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="/" />
-        <EditText
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:inputType="number"
-            android:hint="Нижнее сердечное" />
-    </LinearLayout>
+            android:background="#F8F6F6"
+            android:padding="20dp"
+            android:paddingTop="12dp">
 
-    <!-- Аппетит -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Аппетит" />
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/appetite_array" />
+            <TextView
+                android:id="@+id/height"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Рост (см)" />
 
-    <!-- Продолжительность сна -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Продолжительность сна (часы)" />
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
-        android:hint="Введите количество часов сна" />
+            <EditText
+                android:id="@+id/enterHeight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/height"
+                android:layout_marginTop="0dp"
+                android:hint="Введите ваш рост"
+                android:inputType="number" />
 
-    <!-- Самочувствие -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Самочувствие" />
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/health_status_array" />
+            <!-- Вес -->
+            <TextView
+                android:id="@+id/weight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/enterHeight"
+                android:layout_marginTop="0dp"
+                android:text="Вес (кг)" />
 
-    <!-- Кнопка ОК -->
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="ОК"
-        android:onClick="onOkButtonClick" />
+            <EditText
+                android:id="@+id/enterWeight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Введите ваш вес"
+                android:inputType="number"
+                android:layout_below="@+id/weight"/>
 
+            <TextView
+                android:id="@+id/pulse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/enterWeight"
+                android:layout_marginTop="0dp"
+                android:text="Пульс" />
+
+             <EditText
+                 android:id="@+id/enterPulse"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:hint="Введите ваш пульс"
+                 android:inputType="number"
+                 android:layout_below="@+id/pulse"/>
+
+            <TextView
+                android:id="@+id/pressure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/enterPulse"
+                android:layout_marginTop="0dp"
+                android:text="Давление (верхнее артериальное / нижнее сердечное)" />
+
+            <LinearLayout
+                android:id="@+id/pres"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/pressure"
+                android:layout_marginTop="0dp"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/enterPressureUp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Верхнее артериальное"
+                    android:inputType="number" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="/" />
+
+                <EditText
+                    android:id="@+id/enterPressureDown"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Нижнее сердечное"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/appetite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/pres"
+                android:layout_marginTop="0dp"
+                android:text="Аппетит" />
+
+            <Spinner
+                android:id="@+id/editAppetite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/appetite"
+                android:layout_marginTop="0dp"
+                android:entries="@array/appetite_array" />
+
+            <TextView
+                android:id="@+id/sleep"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/editAppetite"
+                android:layout_marginTop="0dp"
+                android:text="Продолжительность сна (часы)" />
+
+            <EditText
+                android:id="@+id/enterSleep"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/sleep"
+                android:layout_marginTop="0dp"
+                android:hint="Введите количество часов сна"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:id="@+id/health"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/enterSleep"
+                android:layout_marginTop="0dp"
+                android:text="Самочувствие" />
+
+            <Spinner
+                android:id="@+id/editHealth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/health"
+                android:layout_marginTop="0dp"
+                android:entries="@array/health_status_array" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>
