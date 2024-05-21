@@ -11,7 +11,11 @@
     <fragment
         android:id="@+id/nav_account"
         android:name="com.sus.calendar.AccountFragment"
-        android:label="AccountFragment" />
+        android:label="AccountFragment" >
+        <action
+            android:id="@+id/action_nav_account_to_nav_statistic"
+            app:destination="@id/nav_statistic" />
+    </fragment>
     <fragment
         android:id="@+id/nav_statistic"
         android:name="com.sus.calendar.StatisticFragment"
