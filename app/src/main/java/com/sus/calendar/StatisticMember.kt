@@ -30,6 +30,7 @@ import com.sus.calendar.databinding.FragmentStatisticMemberBinding
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import kotlin.properties.Delegates
 
 /*private const val ARG_PARAM2 = "param2"
 // TODO: Rename parameter arguments, choose names that match
@@ -43,6 +44,7 @@ private const val ARG_PARAM1 = "param1"*/
  */
 class StatisticMember : Fragment() {
     private lateinit var binding: FragmentStatisticMemberBinding
+
     data class HealthRecord(
         val date: LocalDate,
         val height: Int, // Рост в см
@@ -56,18 +58,20 @@ class StatisticMember : Fragment() {
 
     // Перечисления для самочувствия и аппетита
     enum class Wellbeing {
-        GOOD, BAD, NORMAL
+        GOOD, BAD, NORMAL, NOT_STATED
     }
 
     enum class Appetite {
-        GOOD, BAD, NO_APPETITE, NORMAL
+        GOOD, BAD, NO_APPETITE, NORMAL, NOT_STATED
     }
 
     enum class DataType {
         HEIGHT, WEIGHT, HEART_RATE, SLEEP_HOURS, WELLBEING, APPETITE, PRESSURE
     }
 
-    val healthRecords = listOf(
+    var healthRecords = mutableListOf<HealthRecord>()
+
+    /*var healthRecords = listOf(
         HealthRecord(
             date = LocalDate.of(2024, 5, 17),
             height = 175,
@@ -118,7 +122,7 @@ class StatisticMember : Fragment() {
             wellbeing = Wellbeing.NORMAL,
             appetite = Appetite.NORMAL
         ),
-    )
+    )*/
 
     private var uptHeight: Boolean = false
     private var uptWeight: Boolean = false
@@ -135,7 +139,7 @@ class StatisticMember : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding= FragmentStatisticMemberBinding.inflate(inflater,container,false)
+        binding = FragmentStatisticMemberBinding.inflate(inflater, container, false)
         val view = binding.root
 
         val avgHeight = binding.averageHeightMember
@@ -166,15 +170,19 @@ class StatisticMember : Fragment() {
             var ref = simpleViewFlipper.displayedChild
             if (simpleViewFlipper.displayedChild == 6) {
                 ref = 0
-                update(-1, true, avgPressure, avgAppetitText, avgFeelingsText, avgHeight,
+                update(
+                    -1, true, avgPressure, avgAppetitText, avgFeelingsText, avgHeight,
                     avgWeight, avgCHSS, avgSleep, avgHeightText, avgWeightText, avgCHSSText,
-                    avgSleepText, avgPressureText, avgFellings, avgAppetite, startDate, endDate)
+                    avgSleepText, avgPressureText, avgFellings, avgAppetite, startDate, endDate
+                )
             }
             try {
                 if (getbool(ref + 1)) {
-                    update(ref, true, avgPressure, avgAppetitText, avgFeelingsText, avgHeight,
+                    update(
+                        ref, true, avgPressure, avgAppetitText, avgFeelingsText, avgHeight,
                         avgWeight, avgCHSS, avgSleep, avgHeightText, avgWeightText, avgCHSSText,
-                        avgSleepText, avgPressureText, avgFellings, avgAppetite, startDate, endDate)
+                        avgSleepText, avgPressureText, avgFellings, avgAppetite, startDate, endDate
+                    )
                 }
             } catch (e: InterruptedException) {
                 throw RuntimeException(e)
@@ -190,19 +198,36 @@ class StatisticMember : Fragment() {
             val year = calendar.get(Calendar.YEAR)
 
 
-
             val datePickerDialogFrom = DatePickerDialog(
                 requireContext(),
                 DatePickerDialog.OnDateSetListener { view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
-                    val dateString = String.format("%02d-%02d-%d", dayOfMonth, monthOfYear + 1, year)
+                    val dateString =
+                        String.format("%02d-%02d-%d", dayOfMonth, monthOfYear + 1, year)
                     dateFrom.setText(dateString)
                     boolDateFrom = true
-                    if(boolDateFrom == true && boolDateTo == true) {
+                    if (boolDateFrom == true && boolDateTo == true) {
                         val startDate = getDateFromEditText(dateFrom)
                         val endDate = getDateFromEditText(dateTo)
-                        update(-1, true, avgPressure, avgAppetitText, avgFeelingsText, avgHeight,
-                            avgWeight, avgCHSS, avgSleep, avgHeightText, avgWeightText, avgCHSSText,
-                            avgSleepText, avgPressureText, avgFellings, avgAppetite, startDate, endDate)
+                        update(
+                            -1,
+                            true,
+                            avgPressure,
+                            avgAppetitText,
+                            avgFeelingsText,
+                            avgHeight,
+                            avgWeight,
+                            avgCHSS,
+                            avgSleep,
+                            avgHeightText,
+                            avgWeightText,
+                            avgCHSSText,
+                            avgSleepText,
+                            avgPressureText,
+                            avgFellings,
+                            avgAppetite,
+                            startDate,
+                            endDate
+                        )
                     }
                     uptFellings = true
                     uptAppetit = true
@@ -227,15 +252,33 @@ class StatisticMember : Fragment() {
             val datePickerDialogTo = DatePickerDialog(
                 requireContext(),
                 DatePickerDialog.OnDateSetListener { view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
-                    val dateString = String.format("%02d-%02d-%d", dayOfMonth, monthOfYear + 1, year)
+                    val dateString =
+                        String.format("%02d-%02d-%d", dayOfMonth, monthOfYear + 1, year)
                     dateTo.setText(dateString)
-                    boolDateTo= true
-                    if(boolDateFrom == true && boolDateTo == true) {
+                    boolDateTo = true
+                    if (boolDateFrom == true && boolDateTo == true) {
                         val startDate = getDateFromEditText(dateFrom)
                         val endDate = getDateFromEditText(dateTo)
-                        update(-1, true, avgPressure, avgAppetitText, avgFeelingsText, avgHeight,
-                            avgWeight, avgCHSS, avgSleep, avgHeightText, avgWeightText, avgCHSSText,
-                            avgSleepText, avgPressureText, avgFellings, avgAppetite, startDate, endDate)
+                        update(
+                            -1,
+                            true,
+                            avgPressure,
+                            avgAppetitText,
+                            avgFeelingsText,
+                            avgHeight,
+                            avgWeight,
+                            avgCHSS,
+                            avgSleep,
+                            avgHeightText,
+                            avgWeightText,
+                            avgCHSSText,
+                            avgSleepText,
+                            avgPressureText,
+                            avgFellings,
+                            avgAppetite,
+                            startDate,
+                            endDate
+                        )
                     }
                     uptFellings = true
                     uptAppetit = true
@@ -254,13 +297,108 @@ class StatisticMember : Fragment() {
         return view
     }
 
+    fun createHealthRecordFromString(data: String): HealthRecord {
+        val parts = data.split(",")
+
+        val date = LocalDate.parse(parts[0].trim(), DateTimeFormatter.ISO_LOCAL_DATE)
+        val height = parts[1].trim().toInt()
+        val weight = parts[2].trim().toDouble()
+        val heartRate = parts[3].trim().toInt()
+        val bloodPressure = parts[4].trim()
+        val sleepHours = parts[5].trim().toDouble()
+        val wellbeing = Wellbeing.valueOf(parts[6].trim().toUpperCase())
+        val appetite = Appetite.valueOf(parts[7].trim().toUpperCase())
+
+        return HealthRecord(
+            date = date,
+            height = height,
+            weight = weight,
+            heartRate = heartRate,
+            bloodPressure = bloodPressure,
+            sleepHours = sleepHours,
+            wellbeing = wellbeing,
+            appetite = appetite
+        )
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val args:StatisticMemberArgs by navArgs()
-        val UserDTO=args.UserDTO
+        val args: StatisticMemberArgs by navArgs()
+        val UserDTO = args.UserDTO
 
-      Log.d("авава",UserDTO.id.toString()+" "+UserDTO.name)
+        val dates = UserDTO.dates
+
+        for (date in dates) {
+            var temp_healthRecord_date = LocalDate.of(date.year, date.month, date.day)
+            var temp_height = 0
+            var temp_weight = 0.0
+            var temp_heartrate = 0
+            var temp_pressure = ""
+            var temp_wellbeing  = Wellbeing.NOT_STATED
+            var temp_appetite = Appetite.NOT_STATED
+            var temp_sleep_hours = 0.0
+
+            for (note in date.notes) {
+                if (note.type == "HEIGHT") {
+                    temp_height = note.value.toInt()
+                }
+                if (note.type == "WEIGHT") {
+                    temp_weight = note.value.toDouble()
+                }
+                if (note.type == "PULSE") {
+                    temp_heartrate = note.value.toInt()
+                }
+                if (note.type == "PRESSURE") {
+                    temp_pressure = note.value
+                }
+                if (note.type == "SLEEP") {
+                    temp_sleep_hours = note.value.toDouble()
+                }
+                if (note.type == "APPETITE") {
+                    temp_appetite = Appetite.valueOf(note.value)
+                }
+                if (note.type == "WELLBEING") {
+                    temp_wellbeing = Wellbeing.valueOf(note.value)
+                }
+            }
+            healthRecords.add(
+                HealthRecord(
+                    date = temp_healthRecord_date,
+                    height = temp_height,
+                    weight = temp_weight,
+                    heartRate = temp_heartrate,
+                    bloodPressure = temp_pressure,
+                    sleepHours = temp_sleep_hours,
+                    wellbeing = temp_wellbeing,
+                    appetite = temp_appetite
+                )
+            )
+
+        }
+
+        /*
+        data class HealthRecord(
+        val date: LocalDate,
+        val height: Int, // Рост в см
+        val weight: Double, // Вес в кг
+        val heartRate: Int, // ЧСС
+        val bloodPressure: String, // Давление (например, "120/80")
+        val sleepHours: Double, // Сон в часах
+        val wellbeing: Wellbeing, // Самочувствие
+        val appetite: Appetite // Аппетит
+    )
+        date = LocalDate.of(2024, 5, 20),
+        height = 174,
+        weight = 69.0,
+        heartRate = 780,
+        bloodPressure = "140/70",
+        sleepHours = 5.0,
+        wellbeing = Wellbeing.BAD,
+        appetite = Appetite.NO_APPETITE
+         */
+
+        Log.d("авава", UserDTO.id.toString() + " " + UserDTO.name)
 
     }
 
@@ -282,30 +420,42 @@ class StatisticMember : Fragment() {
                 val averageHeight = filteredRecords.map { it.height }.average()
                 text.text = "%.2f см".format(averageHeight)
             }
+
             StatisticMember.DataType.WEIGHT -> {
                 val averageWeight = filteredRecords.map { it.weight }.average()
                 text.text = "%.2f кг".format(averageWeight)
             }
+
             StatisticMember.DataType.HEART_RATE -> {
                 val averageHeartRate = filteredRecords.map { it.heartRate }.average()
                 text.text = "%.2f уд/мин".format(averageHeartRate)
             }
+
             StatisticMember.DataType.SLEEP_HOURS -> {
                 val averageSleepHours = filteredRecords.map { it.sleepHours }.average()
                 text.text = "%.2f часов".format(averageSleepHours)
             }
+
             StatisticMember.DataType.WELLBEING -> {
                 val mostCommonWellbeing = filteredRecords.groupBy { it.wellbeing }
                     .maxByOrNull { it.value.size }?.key ?: StatisticMember.Wellbeing.NORMAL
                 text.text = mostCommonWellbeing.toString()
             }
+
             StatisticMember.DataType.APPETITE -> {
                 val mostCommonAppetite = filteredRecords.groupBy { it.appetite }
                     .maxByOrNull { it.value.size }?.key ?: StatisticMember.Appetite.NO_APPETITE
                 text.text = mostCommonAppetite.toString()
             }
-            StatisticMember.DataType.PRESSURE->{
-                val (systolicList, diastolicList) = filteredRecords.map {
+
+            StatisticMember.DataType.PRESSURE -> {
+                val regex = "\\d+/\\d+".toRegex()
+
+
+                val (systolicList, diastolicList) = filteredRecords.filter {
+                    it.bloodPressure.matches(regex)
+                }.
+                map {
                     val (systolic, diastolic) = it.bloodPressure.split("/").map(String::toInt)
                     systolic to diastolic
                 }.unzip()
@@ -319,14 +469,19 @@ class StatisticMember : Fragment() {
         }
     }
 
-    private fun showinfoPieHealth(avgtex: TextView, pie: PieChart, dataType: StatisticMember.DataType, text: String,
-                                  startDate: LocalDate, endDate: LocalDate) {
+    private fun showinfoPieHealth(
+        avgtex: TextView, pie: PieChart, dataType: StatisticMember.DataType, text: String,
+        startDate: LocalDate, endDate: LocalDate
+    ) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
         val entries = listOf(
-            PieEntry(healthRecords.count { it.wellbeing == StatisticMember.Wellbeing.GOOD }.toFloat(), "Хорошее"),
-            PieEntry(healthRecords.count { it.wellbeing == StatisticMember.Wellbeing.NORMAL }.toFloat(), "Нормальное"),
-            PieEntry(healthRecords.count { it.wellbeing == StatisticMember.Wellbeing.BAD }.toFloat(), "Плохое")
+            PieEntry(healthRecords.count { it.wellbeing == StatisticMember.Wellbeing.GOOD }
+                .toFloat(), "Хорошее"),
+            PieEntry(healthRecords.count { it.wellbeing == StatisticMember.Wellbeing.NORMAL }
+                .toFloat(), "Нормальное"),
+            PieEntry(healthRecords.count { it.wellbeing == StatisticMember.Wellbeing.BAD }
+                .toFloat(), "Плохое")
         )
         val dataSet = PieDataSet(entries, text)
         // Задание цветов для сегментов диаграммы
@@ -350,15 +505,25 @@ class StatisticMember : Fragment() {
         pie.invalidate()
     }
 
-    private fun showinfoPieAppetite(avgtex: TextView, pie: PieChart, dataType: StatisticMember.DataType, text: String,
-                                    startDate: LocalDate, endDate: LocalDate) {
+    private fun showinfoPieAppetite(
+        avgtex: TextView, pie: PieChart, dataType: StatisticMember.DataType, text: String,
+        startDate: LocalDate, endDate: LocalDate
+    ) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
         val entries = listOf(
-            PieEntry(healthRecords.count { it.appetite == StatisticMember.Appetite.NO_APPETITE }.toFloat(), "Нет аппетита"),
-            PieEntry(healthRecords.count { it.appetite == StatisticMember.Appetite.GOOD }.toFloat(), "Хороший"),
-            PieEntry(healthRecords.count { it.appetite == StatisticMember.Appetite.BAD }.toFloat(), "Плохой"),
-            PieEntry(healthRecords.count { it.appetite == StatisticMember.Appetite.NORMAL}.toFloat(), "Нормальный")
+            PieEntry(healthRecords.count { it.appetite == StatisticMember.Appetite.NO_APPETITE }
+                .toFloat(), "Нет аппетита"),
+            PieEntry(
+                healthRecords.count { it.appetite == StatisticMember.Appetite.GOOD }.toFloat(),
+                "Хороший"
+            ),
+            PieEntry(
+                healthRecords.count { it.appetite == StatisticMember.Appetite.BAD }.toFloat(),
+                "Плохой"
+            ),
+            PieEntry(healthRecords.count { it.appetite == StatisticMember.Appetite.NORMAL }
+                .toFloat(), "Нормальный")
         )
         val dataSet = PieDataSet(entries, text)
 
@@ -382,8 +547,10 @@ class StatisticMember : Fragment() {
         pie.invalidate()
     }
 
-    private fun showinfoLine(avgtex: TextView, line: LineChart, dataType: StatisticMember.DataType, text: String,
-                             startDate: LocalDate, endDate: LocalDate) {
+    private fun showinfoLine(
+        avgtex: TextView, line: LineChart, dataType: StatisticMember.DataType, text: String,
+        startDate: LocalDate, endDate: LocalDate
+    ) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
         val entries = healthRecords.mapIndexed { index, record ->
@@ -419,8 +586,10 @@ class StatisticMember : Fragment() {
         line.invalidate()
     }
 
-    private fun showinfoBar(avgtex: TextView, bar: BarChart, dataType: StatisticMember.DataType, text: String,
-                            startDate: LocalDate, endDate: LocalDate) {
+    private fun showinfoBar(
+        avgtex: TextView, bar: BarChart, dataType: StatisticMember.DataType, text: String,
+        startDate: LocalDate, endDate: LocalDate
+    ) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
         val entries = healthRecords.mapIndexed { index, record ->
@@ -437,16 +606,22 @@ class StatisticMember : Fragment() {
         bar.invalidate()
     }
 
-    private fun showinfoPressure(avgPressureText:TextView, pressure: LineChart, dataType: StatisticMember.DataType,
-                                 startDate: LocalDate, endDate: LocalDate) {
+    private fun showinfoPressure(
+        avgPressureText: TextView, pressure: LineChart, dataType: StatisticMember.DataType,
+        startDate: LocalDate, endDate: LocalDate
+    ) {
         calculateAverages(avgPressureText, startDate, endDate, dataType)
         val systolicEntries = mutableListOf<Entry>()
         val diastolicEntries = mutableListOf<Entry>()
 
         healthRecords.forEachIndexed { index, record ->
-            val (systolic, diastolic) = record.bloodPressure.split("/").map { it.toFloat() }
-            systolicEntries.add(Entry(index.toFloat(), systolic))
-            diastolicEntries.add(Entry(index.toFloat(), diastolic))
+            val pressure_temp = record.bloodPressure
+            val regex = "\\d+/\\d+".toRegex()
+            if (pressure_temp.matches(regex)) {
+                val (systolic, diastolic) = record.bloodPressure.split("/").map { it.toFloat() }
+                systolicEntries.add(Entry(index.toFloat(), systolic))
+                diastolicEntries.add(Entry(index.toFloat(), diastolic))
+            }
         }
 
         val systolicDataSet = LineDataSet(systolicEntries, "Верхнее артериальное")
@@ -464,6 +639,7 @@ class StatisticMember : Fragment() {
         pressure.animateY(1000)
         pressure.invalidate()
     }
+
     private fun chooseBool(value: Int) {
         when (value) {
             0 -> uptHeight = false
@@ -497,14 +673,15 @@ class StatisticMember : Fragment() {
     }
 
 
-
     @Throws(InterruptedException::class)
-    private fun update(page: Int, next: Boolean, avgPressure: LineChart, avgAppetitText: TextView,
-                       avgFeelingsText: TextView, avgHeight: BarChart, avgWeight: LineChart,
-                       avgCHSS: LineChart, avgSleep: LineChart, avgHeightText: TextView,
-                       avgWeightText: TextView, avgCHSSText: TextView, avgSleepText: TextView,
-                       avgPressureText: TextView, avgFellings: PieChart,  avgAppetite: PieChart,
-                       startDate: LocalDate,  endDate: LocalDate) {
+    private fun update(
+        page: Int, next: Boolean, avgPressure: LineChart, avgAppetitText: TextView,
+        avgFeelingsText: TextView, avgHeight: BarChart, avgWeight: LineChart,
+        avgCHSS: LineChart, avgSleep: LineChart, avgHeightText: TextView,
+        avgWeightText: TextView, avgCHSSText: TextView, avgSleepText: TextView,
+        avgPressureText: TextView, avgFellings: PieChart, avgAppetite: PieChart,
+        startDate: LocalDate, endDate: LocalDate
+    ) {
 
         var realnumber = page
         if (next) {
@@ -516,19 +693,67 @@ class StatisticMember : Fragment() {
         }
         Log.d("dada", "$realnumber $next")
         if (realnumber == 3) {
-            showinfoPressure(avgPressureText, avgPressure, StatisticMember.DataType.PRESSURE, startDate, endDate)
+            showinfoPressure(
+                avgPressureText,
+                avgPressure,
+                StatisticMember.DataType.PRESSURE,
+                startDate,
+                endDate
+            )
         } else if (realnumber == 4) {
-            showinfoPieAppetite(avgAppetitText, avgAppetite, StatisticMember.DataType.APPETITE, "Аппетит", startDate, endDate)
+            showinfoPieAppetite(
+                avgAppetitText,
+                avgAppetite,
+                StatisticMember.DataType.APPETITE,
+                "Аппетит",
+                startDate,
+                endDate
+            )
         } else if (realnumber == 6) {
-            showinfoPieHealth(avgFeelingsText, avgFellings, StatisticMember.DataType.WELLBEING, "Самочувствие", startDate, endDate)
+            showinfoPieHealth(
+                avgFeelingsText,
+                avgFellings,
+                StatisticMember.DataType.WELLBEING,
+                "Самочувствие",
+                startDate,
+                endDate
+            )
         } else if (realnumber == 0) {
-            showinfoBar(avgHeightText, avgHeight, StatisticMember.DataType.HEIGHT, "Рост", startDate, endDate)
+            showinfoBar(
+                avgHeightText,
+                avgHeight,
+                StatisticMember.DataType.HEIGHT,
+                "Рост",
+                startDate,
+                endDate
+            )
         } else if (realnumber == 1) {
-            showinfoLine(avgWeightText, avgWeight, StatisticMember.DataType.WEIGHT, "Вес", startDate, endDate)
+            showinfoLine(
+                avgWeightText,
+                avgWeight,
+                StatisticMember.DataType.WEIGHT,
+                "Вес",
+                startDate,
+                endDate
+            )
         } else if (realnumber == 2) {
-            showinfoLine(avgCHSSText, avgCHSS, StatisticMember.DataType.HEART_RATE, "ЧСС", startDate, endDate)
+            showinfoLine(
+                avgCHSSText,
+                avgCHSS,
+                StatisticMember.DataType.HEART_RATE,
+                "ЧСС",
+                startDate,
+                endDate
+            )
         } else if (realnumber == 5) {
-            showinfoLine(avgSleepText, avgSleep, StatisticMember.DataType.SLEEP_HOURS, "Сон", startDate, endDate)
+            showinfoLine(
+                avgSleepText,
+                avgSleep,
+                StatisticMember.DataType.SLEEP_HOURS,
+                "Сон",
+                startDate,
+                endDate
+            )
         }
     }
 }
