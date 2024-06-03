@@ -1,38 +1,23 @@
 package com.sus.calendar.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.findFragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.navigation.findNavController
+
 import androidx.recyclerview.widget.RecyclerView
-import com.sus.calendar.R
+import com.sus.calendar.MainActivity
 import com.sus.calendar.RetrofitClient
 import com.sus.calendar.databinding.CarGroupForCreaterBinding
-import com.sus.calendar.databinding.CreateGroupBinding
-import com.sus.calendar.databinding.EnterBinding
-import com.sus.calendar.databinding.GroupCardForCreatorBinding
-import com.sus.calendar.databinding.MyGroupsBinding
-import com.sus.calendar.dtos.UserDTO
+
 import com.sus.calendar.dtos.getgroupcreator.GroupCreatorForCreatorDto
-import com.sus.calendar.dtos.getgroupcreator.subdtos.GroupForCreatorDTO
-import com.sus.calendar.state
+import com.sus.calendar.fragment.CreatedGroupsDirections
+
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class CreatorsGroupRecyclerViewAdapter(
-    private val enter_binding: EnterBinding,
-    private val groupsBinding: CreateGroupBinding,
-    private val userLayoutBinding:GroupCardForCreatorBinding
-
-) :
+class CreatorsGroupRecyclerViewAdapter() :
     RecyclerView.Adapter<CreatorsGroupRecyclerViewAdapter.ViewHolder>() {
     class ViewHolder(val binding: CarGroupForCreaterBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -41,10 +26,6 @@ class CreatorsGroupRecyclerViewAdapter(
             field = newValue
             notifyDataSetChanged()
         }
-    private val dataUsers:MutableList<UserDTO> = mutableListOf()
-    fun setUsers(users:MutableList<UserDTO>){
-        dataUsers.addAll(users)
-    }
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -79,7 +60,6 @@ class CreatorsGroupRecyclerViewAdapter(
                             ).show()
                         }
                     }
-
                     override fun onFailure(call: Call<Void>, t: Throwable) {
                         Toast.makeText(context, "Ошибка: ${t.message}", Toast.LENGTH_SHORT).show()
                     }
@@ -87,38 +67,16 @@ class CreatorsGroupRecyclerViewAdapter(
                 })
             }
             textMyGroup.setOnClickListener {
-                enter_binding.enterLayout.removeView(groupsBinding.GroupCreatorLayout)
-                enter_binding.enterLayout.addView(userLayoutBinding.UserGroupLayout)
-                userLayoutBinding.textMygroup.text= element.groupName
-                userLayoutBinding.passwordOfGroup.setText(element.accessKey)
-                val manager = LinearLayoutManager(context)
-                val adapter=GroupMembersRecyclerViewAdapter(element.id)
-                adapter.data= element.groupMembers.map { x->x.fkUser }.toMutableList()
-                userLayoutBinding.recyclerMygroup.layoutManager=manager
-                userLayoutBinding.recyclerMygroup.adapter=adapter
-//                val tmp = root.findViewById<ConstraintLayout>(R.id.enter_layout)|
-//                tmp.removeView(root.findViewById<LinearLayoutCompat>(R.id.GroupCreatorLayout))|
-//                tmp.addView(root.findViewById<LinearLayoutCompat>(R.id.UserGroupLayout))|
-//                val view = tmp.findViewById<LinearLayoutCompat>(R.id.UserGroupLayout)|
-//                view.findViewById<TextView>(R.id.textMygroup).text = element.groupNam
-//                view.findViewById<EditText>(R.id.passwordOfGroup).setText(element.accessKey|
-//                val manager = LinearLayoutManager(context)
-//                val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerMygroup)
-//                recyclerView.adapter = GroupMembersRecyclerViewAdapter(element.id)
-//                recyclerView.layoutManager = manager
-
-                val backToGroupsFromGroupMembers = userLayoutBinding.bacKToGroups
-
-                backToGroupsFromGroupMembers.setOnClickListener()
-                {
-                    enter_binding.enterLayout.removeView(userLayoutBinding.UserGroupLayout)
-                    enter_binding.enterLayout.addView(groupsBinding.GroupCreatorLayout)
-
-                    state = "created_groups"
+                val id= MainActivity.DataManager.getUserData()?.id
+                val action=
+                    id?.let { it1 ->
+                        CreatedGroupsDirections.actionNavCreatedGroupsToUsersOfGroup(element.groupMembers.map { x->x.fkUser }
+                            .toTypedArray(), it1)
+                    }
+                if (action != null) {
+                    it.findNavController().navigate(action)
                 }
-
             }
-
         }
     }
 }

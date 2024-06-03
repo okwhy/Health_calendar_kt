@@ -1,4 +1,4 @@
-package com.sus.calendar
+package com.sus.calendar.fragment
 
 import android.app.DatePickerDialog
 import android.graphics.Color
@@ -30,7 +30,7 @@ import com.sus.calendar.databinding.FragmentStatisticMemberBinding
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
-import kotlin.properties.Delegates
+import java.util.Locale
 
 /*private const val ARG_PARAM2 = "param2"
 // TODO: Rename parameter arguments, choose names that match
@@ -306,8 +306,8 @@ class StatisticMember : Fragment() {
         val heartRate = parts[3].trim().toInt()
         val bloodPressure = parts[4].trim()
         val sleepHours = parts[5].trim().toDouble()
-        val wellbeing = Wellbeing.valueOf(parts[6].trim().toUpperCase())
-        val appetite = Appetite.valueOf(parts[7].trim().toUpperCase())
+        val wellbeing = Wellbeing.valueOf(parts[6].trim().uppercase(Locale.getDefault()))
+        val appetite = Appetite.valueOf(parts[7].trim().uppercase(Locale.getDefault()))
 
         return HealthRecord(
             date = date,
@@ -406,7 +406,7 @@ class StatisticMember : Fragment() {
         text: TextView,
         startDate: LocalDate,
         endDate: LocalDate,
-        dataType: StatisticMember.DataType
+        dataType: DataType
     ) {
         // Фильтрация записей по заданному периоду
         val filteredRecords = healthRecords.filter { it.date in startDate..endDate }
@@ -416,39 +416,39 @@ class StatisticMember : Fragment() {
         }
 
         when (dataType) {
-            StatisticMember.DataType.HEIGHT -> {
+            DataType.HEIGHT -> {
                 val averageHeight = filteredRecords.map { it.height }.average()
                 text.text = "%.2f см".format(averageHeight)
             }
 
-            StatisticMember.DataType.WEIGHT -> {
+            DataType.WEIGHT -> {
                 val averageWeight = filteredRecords.map { it.weight }.average()
                 text.text = "%.2f кг".format(averageWeight)
             }
 
-            StatisticMember.DataType.HEART_RATE -> {
+            DataType.HEART_RATE -> {
                 val averageHeartRate = filteredRecords.map { it.heartRate }.average()
                 text.text = "%.2f уд/мин".format(averageHeartRate)
             }
 
-            StatisticMember.DataType.SLEEP_HOURS -> {
+            DataType.SLEEP_HOURS -> {
                 val averageSleepHours = filteredRecords.map { it.sleepHours }.average()
                 text.text = "%.2f часов".format(averageSleepHours)
             }
 
-            StatisticMember.DataType.WELLBEING -> {
+            DataType.WELLBEING -> {
                 val mostCommonWellbeing = filteredRecords.groupBy { it.wellbeing }
-                    .maxByOrNull { it.value.size }?.key ?: StatisticMember.Wellbeing.NORMAL
+                    .maxByOrNull { it.value.size }?.key ?: Wellbeing.NORMAL
                 text.text = mostCommonWellbeing.toString()
             }
 
-            StatisticMember.DataType.APPETITE -> {
+            DataType.APPETITE -> {
                 val mostCommonAppetite = filteredRecords.groupBy { it.appetite }
-                    .maxByOrNull { it.value.size }?.key ?: StatisticMember.Appetite.NO_APPETITE
+                    .maxByOrNull { it.value.size }?.key ?: Appetite.NO_APPETITE
                 text.text = mostCommonAppetite.toString()
             }
 
-            StatisticMember.DataType.PRESSURE -> {
+            DataType.PRESSURE -> {
                 val regex = "\\d+/\\d+".toRegex()
 
 
@@ -470,20 +470,20 @@ class StatisticMember : Fragment() {
     }
 
     private fun showinfoPieHealth(
-        avgtex: TextView, pie: PieChart, dataType: StatisticMember.DataType, text: String,
+        avgtex: TextView, pie: PieChart, dataType: DataType, text: String,
         startDate: LocalDate, endDate: LocalDate
     ) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
         val entries = listOf(
-            PieEntry(healthRecords.count { it.wellbeing == StatisticMember.Wellbeing.GOOD }
+            PieEntry(healthRecords.count { it.wellbeing == Wellbeing.GOOD }
                 .toFloat(), "Хорошее"),
-            PieEntry(healthRecords.count { it.wellbeing == StatisticMember.Wellbeing.NORMAL }
+            PieEntry(healthRecords.count { it.wellbeing == Wellbeing.NORMAL }
                 .toFloat(), "Нормальное"),
-            PieEntry(healthRecords.count { it.wellbeing == StatisticMember.Wellbeing.BAD }
+            PieEntry(healthRecords.count { it.wellbeing == Wellbeing.BAD }
                 .toFloat(), "Плохое")
         )
-        val dataSet = PieDataSet(entries, text)
+        val dataSet = PieDataSet(entries.filter { it.value !=0f }, text)
         // Задание цветов для сегментов диаграммы
         val customColors = listOf(
             Color.rgb(76, 175, 80),  // Зеленый для "Хорошее"
@@ -501,31 +501,32 @@ class StatisticMember : Fragment() {
         pie.setEntryLabelColor(Color.BLACK)
         pie.setEntryLabelTextSize(12f)
 
+
         pie.animateY(1000, Easing.EaseInOutQuad)
         pie.invalidate()
     }
 
     private fun showinfoPieAppetite(
-        avgtex: TextView, pie: PieChart, dataType: StatisticMember.DataType, text: String,
+        avgtex: TextView, pie: PieChart, dataType: DataType, text: String,
         startDate: LocalDate, endDate: LocalDate
     ) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
         val entries = listOf(
-            PieEntry(healthRecords.count { it.appetite == StatisticMember.Appetite.NO_APPETITE }
+            PieEntry(healthRecords.count { it.appetite == Appetite.NO_APPETITE }
                 .toFloat(), "Нет аппетита"),
             PieEntry(
-                healthRecords.count { it.appetite == StatisticMember.Appetite.GOOD }.toFloat(),
+                healthRecords.count { it.appetite == Appetite.GOOD }.toFloat(),
                 "Хороший"
             ),
             PieEntry(
-                healthRecords.count { it.appetite == StatisticMember.Appetite.BAD }.toFloat(),
+                healthRecords.count { it.appetite == Appetite.BAD }.toFloat(),
                 "Плохой"
             ),
-            PieEntry(healthRecords.count { it.appetite == StatisticMember.Appetite.NORMAL }
+            PieEntry(healthRecords.count { it.appetite == Appetite.NORMAL }
                 .toFloat(), "Нормальный")
         )
-        val dataSet = PieDataSet(entries, text)
+        val dataSet = PieDataSet(entries.filter { it.value !=0f }, text)
 
         val customColors = listOf(
             Color.rgb(76, 175, 80),
@@ -548,17 +549,17 @@ class StatisticMember : Fragment() {
     }
 
     private fun showinfoLine(
-        avgtex: TextView, line: LineChart, dataType: StatisticMember.DataType, text: String,
+        avgtex: TextView, line: LineChart, dataType: DataType, text: String,
         startDate: LocalDate, endDate: LocalDate
     ) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
         val entries = healthRecords.mapIndexed { index, record ->
             val value = when (dataType) {
-                StatisticMember.DataType.WEIGHT -> record.weight.toFloat()
-                StatisticMember.DataType.HEIGHT -> record.height.toFloat()
-                StatisticMember.DataType.HEART_RATE -> record.heartRate.toFloat()
-                StatisticMember.DataType.SLEEP_HOURS -> record.sleepHours.toFloat()
+                DataType.WEIGHT -> record.weight.toFloat()
+                DataType.HEIGHT -> record.height.toFloat()
+                DataType.HEART_RATE -> record.heartRate.toFloat()
+                DataType.SLEEP_HOURS -> record.sleepHours.toFloat()
                 else -> 0f
             }
             Entry(index.toFloat(), value)
@@ -587,7 +588,7 @@ class StatisticMember : Fragment() {
     }
 
     private fun showinfoBar(
-        avgtex: TextView, bar: BarChart, dataType: StatisticMember.DataType, text: String,
+        avgtex: TextView, bar: BarChart, dataType: DataType, text: String,
         startDate: LocalDate, endDate: LocalDate
     ) {
         calculateAverages(avgtex, startDate, endDate, dataType)
@@ -607,7 +608,7 @@ class StatisticMember : Fragment() {
     }
 
     private fun showinfoPressure(
-        avgPressureText: TextView, pressure: LineChart, dataType: StatisticMember.DataType,
+        avgPressureText: TextView, pressure: LineChart, dataType: DataType,
         startDate: LocalDate, endDate: LocalDate
     ) {
         calculateAverages(avgPressureText, startDate, endDate, dataType)
@@ -673,7 +674,7 @@ class StatisticMember : Fragment() {
     }
 
 
-    @Throws(InterruptedException::class)
+
     private fun update(
         page: Int, next: Boolean, avgPressure: LineChart, avgAppetitText: TextView,
         avgFeelingsText: TextView, avgHeight: BarChart, avgWeight: LineChart,
@@ -696,7 +697,7 @@ class StatisticMember : Fragment() {
             showinfoPressure(
                 avgPressureText,
                 avgPressure,
-                StatisticMember.DataType.PRESSURE,
+                DataType.PRESSURE,
                 startDate,
                 endDate
             )
@@ -704,7 +705,7 @@ class StatisticMember : Fragment() {
             showinfoPieAppetite(
                 avgAppetitText,
                 avgAppetite,
-                StatisticMember.DataType.APPETITE,
+                DataType.APPETITE,
                 "Аппетит",
                 startDate,
                 endDate
@@ -713,7 +714,7 @@ class StatisticMember : Fragment() {
             showinfoPieHealth(
                 avgFeelingsText,
                 avgFellings,
-                StatisticMember.DataType.WELLBEING,
+                DataType.WELLBEING,
                 "Самочувствие",
                 startDate,
                 endDate
@@ -722,7 +723,7 @@ class StatisticMember : Fragment() {
             showinfoBar(
                 avgHeightText,
                 avgHeight,
-                StatisticMember.DataType.HEIGHT,
+                DataType.HEIGHT,
                 "Рост",
                 startDate,
                 endDate
@@ -731,7 +732,7 @@ class StatisticMember : Fragment() {
             showinfoLine(
                 avgWeightText,
                 avgWeight,
-                StatisticMember.DataType.WEIGHT,
+                DataType.WEIGHT,
                 "Вес",
                 startDate,
                 endDate
@@ -740,7 +741,7 @@ class StatisticMember : Fragment() {
             showinfoLine(
                 avgCHSSText,
                 avgCHSS,
-                StatisticMember.DataType.HEART_RATE,
+                DataType.HEART_RATE,
                 "ЧСС",
                 startDate,
                 endDate
@@ -749,7 +750,7 @@ class StatisticMember : Fragment() {
             showinfoLine(
                 avgSleepText,
                 avgSleep,
-                StatisticMember.DataType.SLEEP_HOURS,
+                DataType.SLEEP_HOURS,
                 "Сон",
                 startDate,
                 endDate

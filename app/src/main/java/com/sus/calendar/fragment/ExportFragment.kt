@@ -1,4 +1,4 @@
-package com.sus.calendar
+package com.sus.calendar.fragment
 
 import android.app.DatePickerDialog
 import android.content.pm.PackageManager
@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.sus.calendar.R
 import com.sus.calendar.entities.DateSQL
 import com.sus.calendar.entities.DateWithNotes
 import com.sus.calendar.entities.Note

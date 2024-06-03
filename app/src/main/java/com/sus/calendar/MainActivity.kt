@@ -11,13 +11,15 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sus.calendar.databinding.ActivityMainBinding
 import com.sus.calendar.dtos.UserDTO
+import com.sus.calendar.services.AlarmReceiver
+import com.sus.calendar.services.ApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
 
-    private const val BASE_URL = "http://192.168.151.110:1337/"
+    private const val BASE_URL = "http://192.168.1.79:8080/"
 
     val instance: ApiService by lazy {
         val retrofit = Retrofit.Builder()
@@ -82,15 +84,15 @@ class MainActivity : AppCompatActivity() {
         val repeatInterval = (60 * 60 * 1000).toLong() // час в миллисекундах
 
         // Устанавливаем повторяющееся событие
-        alarmManager.setRepeating(
-            AlarmManager.RTC_WAKEUP,
-            System.currentTimeMillis() + repeatInterval,
-            repeatInterval,
-            pendingIntent
-        )
+//        alarmManager.setRepeating(
+//            AlarmManager.RTC_WAKEUP,
+//            System.currentTimeMillis() + repeatInterval,
+//            repeatInterval,
+//            pendingIntent
+//        )
     }
 
-    object DataManager {
+   object DataManager {
         private var user: UserDTO?=null
         fun setUserData(user: UserDTO?){
             this.user=user

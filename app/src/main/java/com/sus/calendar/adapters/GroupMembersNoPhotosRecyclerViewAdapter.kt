@@ -5,24 +5,25 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.sus.calendar.AccountFragment
-import com.sus.calendar.AccountFragmentDirections
-import com.sus.calendar.R
+
 import com.sus.calendar.RetrofitClient
+
 import com.sus.calendar.databinding.CardUserBinding
 import com.sus.calendar.dtos.getgroupcreator.UserInGroupDto
+import com.sus.calendar.fragment.UsersOfGroupDirections
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class GroupMembersRecyclerViewAdapter(val id_user: Long) :
-    RecyclerView.Adapter<GroupMembersRecyclerViewAdapter.ViewHolder>() {
+
+class GroupMembersNoPhotosRecyclerViewAdapter  (val idUser:Long) :
+    RecyclerView.Adapter<GroupMembersNoPhotosRecyclerViewAdapter.ViewHolder>() {
     var data: MutableList<UserInGroupDto> = mutableListOf()
-        set(newValue) {
-            field = newValue
+        get() = field
+        set(value) {
+            field = value
             notifyDataSetChanged()
         }
-
     class ViewHolder(val binding: CardUserBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -40,11 +41,11 @@ class GroupMembersRecyclerViewAdapter(val id_user: Long) :
             val apiService = RetrofitClient.instance
             usernametext.text = element.name
             usernametext.setOnClickListener {
-                val action=AccountFragmentDirections.actionNavAccountToStatisticMember(element)
+                val action=UsersOfGroupDirections.actionUsersOfGroupToStatisticMember(element)
                 it.findNavController().navigate(action)
             }
             kickUser.setOnClickListener {
-                val call_delete_user = apiService.delete_user(element.id, id_user)
+                val call_delete_user = apiService.delete_user(element.id, idUser)
                 call_delete_user.enqueue(object : Callback<Void> {
                     override fun onResponse(call: Call<Void>, response: Response<Void>) {
                         if (response.isSuccessful) {
@@ -67,6 +68,8 @@ class GroupMembersRecyclerViewAdapter(val id_user: Long) :
             }
         }
     }
+
+
 }
 
    

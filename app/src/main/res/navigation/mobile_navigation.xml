@@ -7,27 +7,27 @@
 
     <fragment
         android:id="@+id/nav_calendar"
-        android:name="com.sus.calendar.CalendarFragment"
+        android:name="com.sus.calendar.fragment.CalendarFragment"
         android:label="CalendarFragment" />
-    <fragment
-        android:id="@+id/nav_account"
-        android:name="com.sus.calendar.AccountFragment"
-        android:label="AccountFragment" >
-        <action
-            android:id="@+id/action_nav_account_to_statisticMember"
-            app:destination="@id/statisticMember" />
-    </fragment>
+<!--    <fragment-->
+<!--        android:id="@+id/nav_account"-->
+<!--        android:name="com.sus.calendar.fragment.AccountFragment"-->
+<!--        android:label="AccountFragment" >-->
+<!--        <action-->
+<!--            android:id="@+id/action_nav_account_to_statisticMember"-->
+<!--            app:destination="@id/statisticMember" />-->
+<!--    </fragment>-->
     <fragment
         android:id="@+id/nav_statistic"
-        android:name="com.sus.calendar.StatisticFragment"
+        android:name="com.sus.calendar.fragment.StatisticFragment"
         android:label="StatisticFragment" />
     <fragment
         android:id="@+id/nav_export"
-        android:name="com.sus.calendar.ExportFragment"
+        android:name="com.sus.calendar.fragment.ExportFragment"
         android:label="ExportFragment" />
     <fragment
         android:id="@+id/statisticMember"
-        android:name="com.sus.calendar.StatisticMember"
+        android:name="com.sus.calendar.fragment.StatisticMember"
         android:label="fragment_statistic_member"
         tools:layout="@layout/fragment_statistic_member">
         <argument
@@ -35,4 +35,55 @@
             app:argType="com.sus.calendar.dtos.getgroupcreator.UserInGroupDto" />
 
     </fragment>
+    <fragment
+        android:id="@+id/nav_account"
+        android:name="com.sus.calendar.fragment.EnterFragment"
+        android:label="EnterFragment" >
+        <action
+            android:id="@+id/action_enterFragment_to_registrationFragment"
+            app:destination="@id/nav_registration" />
+        <action
+            android:id="@+id/action_nav_account_to_nav_user_page"
+            app:destination="@id/nav_user_page" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_registration"
+        android:name="com.sus.calendar.fragment.RegistrationFragment"
+        android:label="RegistrationFragment" />
+    <fragment
+        android:id="@+id/nav_user_page"
+        android:name="com.sus.calendar.fragment.AccountPageFragment"
+        android:label="AccountPageFragment" >
+        <argument
+            android:name="id"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_nav_user_page_to_nav_created_groups"
+            app:destination="@id/nav_created_groups" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_created_groups"
+        android:name="com.sus.calendar.fragment.CreatedGroups"
+        android:label="CreatedGroups" >
+        <argument
+            android:name="groups"
+            app:argType="com.sus.calendar.dtos.getgroupcreator.GroupCreatorForCreatorDto[]"/>
+        <action
+            android:id="@+id/action_nav_created_groups_to_usersOfGroup"
+            app:destination="@id/usersOfGroup" />
+    </fragment>
+    <fragment
+        android:id="@+id/usersOfGroup"
+        android:name="com.sus.calendar.fragment.UsersOfGroup"
+        android:label="UsersOfGroup" >
+        <argument android:name="users"
+            app:argType="com.sus.calendar.dtos.getgroupcreator.UserInGroupDto[]"/>
+        <argument
+            android:name="id"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_usersOfGroup_to_statisticMember"
+            app:destination="@id/statisticMember" />
+    </fragment>
+
 </navigation>

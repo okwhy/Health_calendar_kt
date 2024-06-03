@@ -26,7 +26,7 @@
             app:cardCornerRadius="16dp"
             android:layout_marginTop="16dp"
             android:background="@color/header"
-            android:onClick="onLabelClick">
+            >
 
             <TextView
                 android:id="@+id/exit"
@@ -35,7 +35,7 @@
                 android:gravity="center"
                 android:text="Выйти"
                 android:textColor="#FDFDFD"
-                android:textSize="25dp" />
+                android:textSize="25sp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -48,15 +48,16 @@
             app:cardCornerRadius="16dp"
             android:layout_marginTop="16dp"
             android:background="@color/header"
-            android:onClick="onClick">
+           >
 
             <TextView
+                android:id="@+id/groupsButton"
                 android:layout_width="match_parent"
                 android:layout_height="57dp"
                 android:gravity="center"
                 android:text="Участие в группах"
                 android:textColor="#FDFDFD"
-                android:textSize="25dp" />
+                android:textSize="25sp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -69,15 +70,16 @@
             app:cardCornerRadius="16dp"
             android:layout_marginTop="16dp"
             android:background="@color/header"
-            android:onClick="onLabelClick">
+           >
 
             <TextView
+                android:id="@+id/control"
                 android:layout_width="match_parent"
                 android:layout_height="57dp"
                 android:gravity="center"
                 android:text="Управление группами"
                 android:textColor="#FDFDFD"
-                android:textSize="25dp" />
+                android:textSize="25sp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -90,7 +92,7 @@
             app:cardCornerRadius="16dp"
             android:layout_marginTop="16dp"
             android:background="@color/header"
-            android:onClick="onLabelClick">
+            >
 
             <TextView
                 android:layout_width="match_parent"
@@ -98,7 +100,7 @@
                 android:gravity="center"
                 android:text="Помощь"
                 android:textColor="#FDFDFD"
-                android:textSize="25dp" />
+                android:textSize="25sp" />
         </RelativeLayout>
     </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.appcompat.widget.LinearLayoutCompat>

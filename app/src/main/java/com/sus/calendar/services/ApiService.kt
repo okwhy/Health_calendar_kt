@@ -1,4 +1,4 @@
-package com.sus.calendar
+package com.sus.calendar.services
 import com.sus.calendar.dtos.GroupforUserDto
 
 

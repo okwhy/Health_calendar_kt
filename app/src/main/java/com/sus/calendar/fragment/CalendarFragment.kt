@@ -1,4 +1,4 @@
-package com.sus.calendar
+package com.sus.calendar.fragment
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -17,14 +16,13 @@ import com.applandeo.materialcalendarview.CalendarView
 import com.applandeo.materialcalendarview.EventDay
 import com.applandeo.materialcalendarview.listeners.OnCalendarPageChangeListener
 import com.applandeo.materialcalendarview.listeners.OnDayClickListener
+import com.sus.calendar.R
 import com.sus.calendar.databinding.CalendarPageBinding
 import com.sus.calendar.entities.DateSQL
 import com.sus.calendar.entities.DateWithNotes
 import com.sus.calendar.entities.Note
 import com.sus.calendar.services.DataService
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate

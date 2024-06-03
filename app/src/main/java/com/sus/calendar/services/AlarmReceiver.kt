@@ -1,4 +1,4 @@
-package com.sus.calendar
+package com.sus.calendar.services
 
 import android.content.BroadcastReceiver
 import android.content.Context

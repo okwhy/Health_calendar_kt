@@ -41,11 +41,10 @@
             android:layout_height="47dp"
             android:layout_marginTop="16dp"
             android:clickable="true"
-            android:onClick="onLabelClick"
             android:radius="16dp">
 
             <TextView
-                android:id="@+id/Regist"
+                android:id="@+id/regist"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -59,7 +58,6 @@
             android:layout_height="47dp"
             android:layout_marginTop="16dp"
             android:clickable="true"
-            android:onClick="onLabelClick"
             android:radius="16dp">
 
             <TextView

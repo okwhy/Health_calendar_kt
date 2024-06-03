@@ -1,4 +1,4 @@
-package com.sus.calendar
+package com.sus.calendar.fragment
 
 import android.app.DatePickerDialog
 import android.graphics.Color
@@ -19,7 +19,6 @@ import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.charts.PieChart
-import com.github.mikephil.charting.charts.ScatterChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -33,13 +32,10 @@ import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.utils.ColorTemplate
-import com.sus.calendar.entities.DateWithNotes
+import com.sus.calendar.R
 import com.sus.calendar.services.DataService
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatterBuilder
-import java.time.format.ResolverStyle
-import java.time.temporal.ChronoField
 import java.util.Calendar
 
 class StatisticFragment : Fragment() {
@@ -372,7 +368,7 @@ class StatisticFragment : Fragment() {
                     .maxByOrNull { it.value.size }?.key ?: Appetite.NO_APPETITE
                 text.text = mostCommonAppetite.toString()
             }
-            DataType.PRESSURE->{
+            DataType.PRESSURE ->{
                 val (systolicList, diastolicList) = filteredRecords.map {
                     val (systolic, diastolic) = it.bloodPressure.split("/").map(String::toInt)
                     systolic to diastolic
@@ -388,7 +384,7 @@ class StatisticFragment : Fragment() {
     }
 
     private fun showinfoPieHealth(avgtex: TextView, pie: PieChart, dataType: DataType, text: String,
-                            startDate: LocalDate, endDate: LocalDate) {
+                                  startDate: LocalDate, endDate: LocalDate) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
         val entries = listOf(
@@ -419,14 +415,14 @@ class StatisticFragment : Fragment() {
     }
 
     private fun showinfoPieAppetite(avgtex: TextView, pie: PieChart, dataType: DataType, text: String,
-                                  startDate: LocalDate, endDate: LocalDate) {
+                                    startDate: LocalDate, endDate: LocalDate) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
         val entries = listOf(
             PieEntry(healthRecords.count { it.appetite == Appetite.NO_APPETITE }.toFloat(), "Нет аппетита"),
             PieEntry(healthRecords.count { it.appetite == Appetite.GOOD }.toFloat(), "Хороший"),
             PieEntry(healthRecords.count { it.appetite == Appetite.BAD }.toFloat(), "Плохой"),
-            PieEntry(healthRecords.count { it.appetite == Appetite.NORMAL}.toFloat(), "Нормальный")
+            PieEntry(healthRecords.count { it.appetite == Appetite.NORMAL }.toFloat(), "Нормальный")
         )
         val dataSet = PieDataSet(entries, text)
 
@@ -451,7 +447,7 @@ class StatisticFragment : Fragment() {
     }
 
     private fun showinfoLine(avgtex: TextView, line: LineChart, dataType: DataType, text: String,
-                             startDate: LocalDate,  endDate: LocalDate) {
+                             startDate: LocalDate, endDate: LocalDate) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
         val entries = healthRecords.mapIndexed { index, record ->
@@ -488,7 +484,7 @@ class StatisticFragment : Fragment() {
     }
 
     private fun showinfoBar(avgtex: TextView, bar: BarChart, dataType: DataType, text: String,
-                            startDate: LocalDate,  endDate: LocalDate) {
+                            startDate: LocalDate, endDate: LocalDate) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
         val entries = healthRecords.mapIndexed { index, record ->
@@ -506,7 +502,7 @@ class StatisticFragment : Fragment() {
     }
 
     private fun showinfoPressure(avgPressureText:TextView, pressure: LineChart, dataType: DataType,
-                                 startDate: LocalDate,  endDate: LocalDate) {
+                                 startDate: LocalDate, endDate: LocalDate) {
         calculateAverages(avgPressureText, startDate, endDate, dataType)
         val systolicEntries = mutableListOf<Entry>()
         val diastolicEntries = mutableListOf<Entry>()
@@ -586,9 +582,11 @@ class StatisticFragment : Fragment() {
         if (realnumber == 3) {
             showinfoPressure(avgPressureText, avgPressure, DataType.PRESSURE, startDate, endDate)
         } else if (realnumber == 4) {
-            showinfoPieAppetite(avgAppetitText, avgAppetite, DataType.APPETITE, "Аппетит", startDate, endDate)
+            showinfoPieAppetite(avgAppetitText, avgAppetite,
+                DataType.APPETITE, "Аппетит", startDate, endDate)
         } else if (realnumber == 6) {
-            showinfoPieHealth(avgFeelingsText, avgFellings, DataType.WELLBEING, "Самочувствие", startDate, endDate)
+            showinfoPieHealth(avgFeelingsText, avgFellings,
+                DataType.WELLBEING, "Самочувствие", startDate, endDate)
         } else if (realnumber == 0) {
             showinfoBar(avgHeightText, avgHeight, DataType.HEIGHT, "Рост", startDate, endDate)
         } else if (realnumber == 1) {
