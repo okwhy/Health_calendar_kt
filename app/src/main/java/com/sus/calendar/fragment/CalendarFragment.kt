@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -42,6 +43,24 @@ import java.util.Calendar
 
 class CalendarFragment : Fragment() {
 
+    private val appetite_map = hashMapOf<String,String>(
+        "GOOD" to "Хороший",
+        "BAD" to "Плохой",
+        "NORMAL" to "Нормальный",
+        "NO_APPETITE" to "Нет аппетита"
+    )
+
+    private val selffeelings_map = hashMapOf<String,String>(
+
+        "GOOD" to "Хорошее",
+        "BAD" to "Плохое",
+        "NORMAL" to "Нормальное"
+
+    )
+
+
+    private lateinit var spinnerAppetite:Spinner
+    private lateinit var spinnerHealth:Spinner
 
     private lateinit var curdate: LocalDate
     private var calendar: Calendar? = null
@@ -84,6 +103,11 @@ class CalendarFragment : Fragment() {
         val textInputAppetite = binding.textInputAppetite
         val textInputSlepping = binding.textInputSlepping
         val textInputHealth = binding.textInputHealth
+
+        spinnerAppetite = binding.textInputAppetiteSpiner
+        spinnerHealth = binding.textInputHealthSpiner
+
+
         texts = ArrayList(
             Arrays.asList(
                 textInputHeight,
@@ -110,22 +134,39 @@ class CalendarFragment : Fragment() {
             throw RuntimeException(e)
         }
         checkdate(currentYear, currentMonth, currentDay)
-        if (!(notes == null || notes.isEmpty())) {
-            textInputHeight.setText(if (notes["HEIGHT"] == null) "Нет данных" else notes["HEIGHT"])
-            textInputWeight.setText(if (notes["WEIGHT"] == null) "Нет данных" else notes["WEIGHT"])
-            textInputPulse.setText(if (notes["PULSE"] == null) "Нет данных" else notes["PULSE"])
-            textInputPressure.setText(if (notes["PRESSURE"] == null) "Нет данных" else notes["PRESSURE"])
-            textInputAppetite.setText(if (notes["APPETITE"] == null) "Нет данных" else notes["APPETITE"])
-            textInputSlepping.setText(if (notes["SLEEP"] == null) "Нет данных" else notes["SLEEP"])
-            textInputHealth.setText(if (notes["HEALTH"] == null) "Нет данных" else notes["HEALTH"])
+        if (!(notes == null || notes!!.isEmpty())) {
+            textInputHeight.setText(if (notes!!["HEIGHT"] == null) "Нет данных" else notes!!["HEIGHT"])
+            textInputWeight.setText(if (notes!!["WEIGHT"] == null) "Нет данных" else notes!!["WEIGHT"])
+            textInputPulse.setText(if (notes!!["PULSE"] == null) "Нет " else notes!!["PULSE"])
+            textInputPressure.setText(if (notes!!["PRESSURE"] == null) "Нет данных" else notes!!["PRESSURE"])
+            textInputSlepping.setText(if (notes!!["SLEEP"] == null) "Нет данных" else notes!!["SLEEP"])
+            when(notes!!["APPETITE"])
+            {
+                "NO_APPETITE"->spinnerAppetite.setSelection(1)
+                "GOOD"->spinnerAppetite.setSelection(2)
+                "BAD"->spinnerAppetite.setSelection(3)
+                "NORMAL"->spinnerAppetite.setSelection(4)
+                else->spinnerAppetite.setSelection(0)
+            }
+
+            when(notes!!["HEALTH"])
+            {
+                "GOOD"->spinnerHealth.setSelection(1)
+                "BAD"->spinnerHealth.setSelection(3)
+                "NORMAL"->spinnerHealth.setSelection(2)
+                else->spinnerHealth.setSelection(0)
+            }
+
         } else {
             textInputHeight.setText("Нет данных")
             textInputWeight.setText("Нет данных")
             textInputPulse.setText("Нет данных")
             textInputPressure.setText("Нет данных")
-            textInputAppetite.setText("Нет данных")
+            spinnerAppetite.setSelection(0)
             textInputSlepping.setText("Нет данных")
+            spinnerHealth.setSelection(0)
         }
+
         calendarView.setOnDayClickListener(object : OnDayClickListener {
             override fun onDayClick(eventDay: EventDay) {
                 val cal = eventDay.calendar
@@ -155,9 +196,9 @@ class CalendarFragment : Fragment() {
                                         textInputWeight.setText(calendarStrings[i + 1])
                                         textInputPulse.setText(calendarStrings[i + 2])
                                         textInputPressure.setText(calendarStrings[i + 3])
-                                        textInputAppetite.setText(calendarStrings[i + 4])
+                                        //textInputAppetite.setText(calendarStrings[i + 4])
                                         textInputSlepping.setText(calendarStrings[i + 5])
-                                        textInputHealth.setText(calendarStrings[i + 6])
+                                        //textInputHealth.setText(calendarStrings[i + 6])
                                         return
                                     }
                                 }
@@ -166,29 +207,43 @@ class CalendarFragment : Fragment() {
                     }
                 }
                 var notes: Map<String?, String?>? = null
-                notes = try {
-                    fetchDate(currentYear, currentMonth, currentDay) // все записи за текущий день
-                } catch (e: InterruptedException) {
-                    throw RuntimeException(e)
-                }
+                notes = fetchDate(currentYear, currentMonth, currentDay) // все записи за текущий день
+
                 checkdate(currentYear, currentMonth, currentDay)
                 if (!(notes == null || notes!!.isEmpty())) {
                     textInputHeight.setText(if (notes!!["HEIGHT"] == null) "Нет данных" else notes!!["HEIGHT"])
                     textInputWeight.setText(if (notes!!["WEIGHT"] == null) "Нет данных" else notes!!["WEIGHT"])
-                    textInputPulse.setText(if (notes!!["PULSE"] == null) "Нет данных" else notes!!["PULSE"])
+                    textInputPulse.setText(if (notes!!["PULSE"] == null) "Нет " else notes!!["PULSE"])
                     textInputPressure.setText(if (notes!!["PRESSURE"] == null) "Нет данных" else notes!!["PRESSURE"])
-                    textInputAppetite.setText(if (notes!!["APPETITE"] == null) "Нет данных" else notes!!["APPETITE"])
                     textInputSlepping.setText(if (notes!!["SLEEP"] == null) "Нет данных" else notes!!["SLEEP"])
-                    textInputHealth.setText(if (notes!!["HEALTH"] == null) "Нет данных" else notes!!["HEALTH"])
+                    when(notes!!["APPETITE"])
+                    {
+                        "NO_APPETITE"->spinnerAppetite.setSelection(1)
+                        "GOOD"->spinnerAppetite.setSelection(2)
+                        "BAD"->spinnerAppetite.setSelection(3)
+                        "NORMAL"->spinnerAppetite.setSelection(4)
+                        else->spinnerAppetite.setSelection(0)
+                    }
+
+                    when(notes!!["HEALTH"])
+                    {
+                        "GOOD"->spinnerHealth.setSelection(1)
+                        "BAD"->spinnerHealth.setSelection(3)
+                        "NORMAL"->spinnerHealth.setSelection(2)
+                        else->spinnerHealth.setSelection(0)
+                    }
+
                 } else {
                     textInputHeight.setText("Нет данных")
                     textInputWeight.setText("Нет данных")
                     textInputPulse.setText("Нет данных")
                     textInputPressure.setText("Нет данных")
-                    textInputAppetite.setText("Нет данных")
+                    spinnerAppetite.setSelection(0)
                     textInputSlepping.setText("Нет данных")
-                    textInputHealth.setText("Нет данных")
+                    spinnerHealth.setSelection(0)
                 }
+
+
             }
         })
         calendarView.setOnForwardPageChangeListener(object : OnCalendarPageChangeListener {
@@ -216,7 +271,7 @@ class CalendarFragment : Fragment() {
             "Плохой",
             "Нормальный"
         )
-        val spinnerAppetite = binding.textInputAppetiteSpiner
+        spinnerAppetite = binding.textInputAppetiteSpiner
         val appetiteAdapter: ArrayAdapter<Any?> =
             ArrayAdapter<Any?>(
                 requireContext(),
@@ -231,7 +286,8 @@ class CalendarFragment : Fragment() {
             "Нормальное",
             "Плохое",
         )
-        val spinnerHealth = binding.textInputHealthSpiner
+
+        spinnerHealth = binding.textInputHealthSpiner
         val appetiteHealth: ArrayAdapter<Any?> =
             ArrayAdapter<Any?>(
                 requireContext(),
