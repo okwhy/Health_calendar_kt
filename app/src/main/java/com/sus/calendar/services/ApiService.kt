@@ -1,4 +1,5 @@
 package com.sus.calendar.services
+import com.sus.calendar.dtos.DateWithIdNotesUidDto
 import com.sus.calendar.dtos.GroupforUserDto
 
 
@@ -28,4 +29,6 @@ interface ApiService {
     fun delete_user(@Path("user_id") userid:Long,@Query("id") id:Long):Call<Void>
     @DELETE("api/groups/delete/{id}")
     fun delete_group(@Path("id") id:Long):Call<Void>
+    @GET("api/dates/user/{id}")
+    fun getUserDats(@Path("id") id:Long):Call<List<DateWithIdNotesUidDto>>
 }

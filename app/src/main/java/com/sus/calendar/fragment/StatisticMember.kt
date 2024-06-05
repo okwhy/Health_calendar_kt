@@ -32,16 +32,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 
-/*private const val ARG_PARAM2 = "param2"
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"*/
 
-/**
- * A simple [Fragment] subclass.
- * Use the [StatisticMember.newInstance] factory method to
- * create an instance of this fragment.
- */
 class StatisticMember : Fragment() {
     private lateinit var binding: FragmentStatisticMemberBinding
 
@@ -408,7 +399,6 @@ class StatisticMember : Fragment() {
         endDate: LocalDate,
         dataType: DataType
     ) {
-        // Фильтрация записей по заданному периоду
         val filteredRecords = healthRecords.filter { it.date in startDate..endDate }
 
         if (filteredRecords.isEmpty()) {

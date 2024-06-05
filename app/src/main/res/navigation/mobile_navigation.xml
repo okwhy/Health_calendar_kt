@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation.xml"
-    app:startDestination="@id/nav_calendar">
+    app:startDestination="@id/nav_account">
 
     <fragment
         android:id="@+id/nav_calendar"
@@ -60,6 +60,9 @@
         <action
             android:id="@+id/action_nav_user_page_to_nav_created_groups"
             app:destination="@id/nav_created_groups" />
+        <action
+            android:id="@+id/action_nav_user_page_to_nav_joined"
+            app:destination="@id/nav_joined" />
     </fragment>
     <fragment
         android:id="@+id/nav_created_groups"
@@ -85,5 +88,9 @@
             android:id="@+id/action_usersOfGroup_to_statisticMember"
             app:destination="@id/statisticMember" />
     </fragment>
+    <fragment
+        android:id="@+id/nav_joined"
+        android:name="com.sus.calendar.fragment.JoinedGroupsFragment"
+        android:label="JoinedGroupsFragment" />
 
 </navigation>

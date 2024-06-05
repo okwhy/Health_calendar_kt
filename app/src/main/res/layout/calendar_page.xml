@@ -1,6 +1,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -40,12 +41,10 @@
 
 
                 <LinearLayout
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                    xmlns:tools="http://schemas.android.com/tools"
                     android:orientation="vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
+
 
                     <LinearLayout
                         android:id="@+id/dayHeight"
@@ -234,15 +233,15 @@
                 android:layout_height="40dp"
                 android:layout_marginLeft="5dp"
                 android:hint="Введите свое самочувствие"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:textColor="@color/black" />
 
             <Spinner
                 android:id="@+id/textInputHealth_Spiner"
-                android:layout_width="327dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/black_line"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </LinearLayout>
@@ -269,17 +268,18 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:hint="Введите аппетит"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:textColor="@color/black" />
 
             <Spinner
                 android:id="@+id/textInputAppetite_Spiner"
-                android:layout_width="327dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 android:background="@drawable/black_line"
-                android:visibility="gone"/>
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+<!--                android:visibility="gone"-->
+
         </LinearLayout>
 
         <LinearLayout

@@ -49,7 +49,9 @@ class AccountPageFragment: Fragment() {
         accountPageBinding.Help.setOnClickListener{
             showPopup()
         }
-       
+        accountPageBinding.MyGroup.setOnClickListener{
+            findNavController().navigate(R.id.action_nav_user_page_to_nav_joined)
+        }
         accountPageBinding.MyGroups.setOnClickListener{
 
             val call_creator_groups = apiService.get_creator_groups(args.id)

@@ -16,6 +16,7 @@ import com.sus.calendar.R
 import com.sus.calendar.RetrofitClient
 import com.sus.calendar.databinding.EnterBinding
 import com.sus.calendar.dtos.UserDTO
+import org.apache.log4j.chainsaw.Main
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,9 +27,15 @@ class EnterFragment: Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?
     ): View {
-        val apiService=RetrofitClient.instance
+
         enterBinding=EnterBinding.inflate(inflater,container,false)
         val root =enterBinding.root
+        val apiService=RetrofitClient.instance
+        if(MainActivity.DataManager.getUserData() != null) {
+            val user=MainActivity.DataManager.getUserData()
+            val action=EnterFragmentDirections.actionNavAccountToNavUserPage(user!!.id)
+            findNavController().navigate(action)
+        }
         enterBinding.buttonRegister.setOnClickListener(){
             val calllogin = apiService.login(enterBinding.editTextEmail.text.toString(),enterBinding.editTextPassword.text.toString())
             calllogin.enqueue(object : Callback<UserDTO> {
