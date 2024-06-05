@@ -71,6 +71,9 @@ class EnterFragment: Fragment() {
                 }
             })
         }
+        enterBinding.helpButtonInAuth.setOnClickListener{
+            showPopup()
+        }
         enterBinding.regist.setOnClickListener{
             findNavController().navigate(R.id.action_enterFragment_to_registrationFragment)
         }

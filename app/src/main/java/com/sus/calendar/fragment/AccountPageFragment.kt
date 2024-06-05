@@ -1,10 +1,13 @@
 package com.sus.calendar.fragment
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.media3.common.util.Log
@@ -23,6 +26,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class AccountPageFragment: Fragment() {
+    private lateinit var alertDialog: AlertDialog
     private lateinit var accountPageBinding: AccountPageBinding
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,6 +45,9 @@ class AccountPageFragment: Fragment() {
                 .remove("key_name")*/
                 .apply()
             findNavController().navigateUp()
+        }
+        accountPageBinding.Help.setOnClickListener{
+            showPopup()
         }
        
         accountPageBinding.MyGroups.setOnClickListener{
@@ -70,5 +77,18 @@ class AccountPageFragment: Fragment() {
             })
         }
         return root
+    }
+    private fun showPopup() {
+        val context = requireContext()
+        val builder = AlertDialog.Builder(context)
+        val inflater = LayoutInflater.from(context)
+        val popupView = inflater.inflate(R.layout.popup_layout, null)
+        val popupText = popupView.findViewById<TextView>(R.id.popupText)
+        val closeButton = popupView.findViewById<Button>(R.id.closeButton)
+        popupText.text = getString(R.string.help_desc).trimIndent()
+        closeButton.setOnClickListener { alertDialog!!.dismiss() }
+        builder.setView(popupView)
+        alertDialog = builder.create()
+        alertDialog.show()
     }
 }
