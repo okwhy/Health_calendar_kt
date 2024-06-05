@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#F1F1F1"
+    android:id="@+id/MyGroupLayout"
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
