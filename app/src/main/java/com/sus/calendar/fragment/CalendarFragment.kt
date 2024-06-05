@@ -114,7 +114,7 @@ class CalendarFragment : Fragment() {
             textInputHeight.setText(if (notes["HEIGHT"] == null) "Нет данных" else notes["HEIGHT"])
             textInputWeight.setText(if (notes["WEIGHT"] == null) "Нет данных" else notes["WEIGHT"])
             textInputPulse.setText(if (notes["PULSE"] == null) "Нет данных" else notes["PULSE"])
-            textInputPressure.setText(if (notes["PRESSURE"] == null) "Нет данных" else notes["PRESSURE"]) // Артем
+            textInputPressure.setText(if (notes["PRESSURE"] == null) "Нет данных" else notes["PRESSURE"])
             textInputAppetite.setText(if (notes["APPETITE"] == null) "Нет данных" else notes["APPETITE"])
             textInputSlepping.setText(if (notes["SLEEP"] == null) "Нет данных" else notes["SLEEP"])
             textInputHealth.setText(if (notes["HEALTH"] == null) "Нет данных" else notes["HEALTH"])
@@ -125,7 +125,6 @@ class CalendarFragment : Fragment() {
             textInputPressure.setText("Нет данных")
             textInputAppetite.setText("Нет данных")
             textInputSlepping.setText("Нет данных")
-            textInputHealth.setText("Нет данных")
         }
         calendarView.setOnDayClickListener(object : OnDayClickListener {
             override fun onDayClick(eventDay: EventDay) {
@@ -325,10 +324,10 @@ class CalendarFragment : Fragment() {
 //                dataService!!.getDate(year, month, date)
 //            }
 //        }
-        var dateSQL: DateWithIdNotesUidDto? = null
+        var dateSQL: DateWithIdNotesUidDto?
         dateSQL=data.filter { it.year==year
                 &&it.month==month
-                &&it.day==date }[0]
+                &&it.day==date }.firstOrNull()
 
 
         if (dateSQL == null) {
