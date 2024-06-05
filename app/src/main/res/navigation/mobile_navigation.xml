@@ -84,9 +84,16 @@
         <argument
             android:name="id"
             app:argType="long" />
+
         <action
             android:id="@+id/action_usersOfGroup_to_statisticMember"
             app:destination="@id/statisticMember" />
+        <argument
+            android:name="grName"
+            app:argType="string" />
+        <argument
+            android:name="grCode"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/nav_joined"

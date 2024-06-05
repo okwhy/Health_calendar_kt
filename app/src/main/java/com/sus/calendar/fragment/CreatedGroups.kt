@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.sus.calendar.MainActivity
 import com.sus.calendar.RetrofitClient
 import com.sus.calendar.adapters.CreatorsGroupRecyclerViewAdapter
-import com.sus.calendar.adapters.GroupMembersNoPhotosRecyclerViewAdapter
+
 import com.sus.calendar.databinding.CarGroupForCreaterBinding
 import com.sus.calendar.databinding.CardGroupBinding
 import com.sus.calendar.databinding.CreateGroupBinding

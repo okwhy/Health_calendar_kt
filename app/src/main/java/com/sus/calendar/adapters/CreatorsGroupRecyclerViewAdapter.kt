@@ -71,7 +71,7 @@ class CreatorsGroupRecyclerViewAdapter() :
                 val action=
                     id?.let { it1 ->
                         CreatedGroupsDirections.actionNavCreatedGroupsToUsersOfGroup(element.groupMembers.map { x->x.fkUser }
-                            .toTypedArray(), it1)
+                            .toTypedArray(), it1,element.groupName,element.accessKey)
                     }
                 if (action != null) {
                     it.findNavController().navigate(action)

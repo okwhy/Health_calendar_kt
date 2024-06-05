@@ -25,6 +25,8 @@ class UsersOfGroup:Fragment() {
         binding=GroupCardForCreatorBinding.inflate(inflater,container,false)
         val root=binding.root
         val args:UsersOfGroupArgs by navArgs()
+        binding.textMygroup.text=args.grName
+        binding.passwordOfGroup.setText(args.grCode)
         binding.recyclerMygroup.layoutManager=LinearLayoutManager(requireContext())
 
         val adapter = GroupMembersNoPhotosRecyclerViewAdapter(args.id)
