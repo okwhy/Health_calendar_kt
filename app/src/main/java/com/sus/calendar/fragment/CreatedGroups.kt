@@ -3,6 +3,7 @@ package com.sus.calendar.fragment
 import android.R
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.sus.calendar.MainActivity
 import com.sus.calendar.RetrofitClient
 import com.sus.calendar.adapters.CreatorsGroupRecyclerViewAdapter
+import com.sus.calendar.adapters.GroupMembersNoPhotosRecyclerViewAdapter
 import com.sus.calendar.databinding.CarGroupForCreaterBinding
 import com.sus.calendar.databinding.CardGroupBinding
 import com.sus.calendar.databinding.CreateGroupBinding
@@ -60,11 +62,9 @@ class CreatedGroups:Fragment() {
     }
 
     private fun showInputDialog() {
-        val inflater = layoutInflater
         val dialogView = enter_for_group.enterForGroup
         val editTextInput = enter_for_group.nameForGroup
         val apiService= RetrofitClient.instance
-        val args:CreatedGroupsArgs by navArgs()
 
         AlertDialog.Builder(requireContext())
             .setTitle("Введите значение")
@@ -72,20 +72,24 @@ class CreatedGroups:Fragment() {
             .setPositiveButton("Создать") { dialog, which ->
                 var userInputValue = editTextInput.text.toString()
 
-                val user_id = MainActivity.DataManager.getUserData()?.id?.toLong()
-                val create_group = user_id?.let { apiService.create_group(it,userInputValue) }
+                val user_id = MainActivity.DataManager.getUserData()!!.id
+                val create_group = apiService.create_group(user_id,
+                    enter_for_group.nameForGroup.text.toString()
+                )
 
                 if (create_group != null) {
-                    create_group.enqueue(object : Callback<String> {
+                    create_group.enqueue(object : Callback<GroupCreatorForCreatorDto> {
+
                         override fun onResponse(
-                            call: Call<String>,
-                            response: Response<String>
+                            call: Call<GroupCreatorForCreatorDto>,
+                            response: Response<GroupCreatorForCreatorDto>
                         ) {
                             if (response.isSuccessful) {
                                 val code = response.body()
-
-                                val code_temp = 0
-
+                                val adapter=createGroupBinding.recyclerAllGroup.adapter as CreatorsGroupRecyclerViewAdapter
+                                adapter.data.add(code!!)
+                                createGroupBinding.recyclerAllGroup.adapter=adapter
+                                dialog.dismiss()
 
                             } else {
                                 Toast.makeText(
@@ -95,13 +99,16 @@ class CreatedGroups:Fragment() {
                                 ).show()
                             }
                         }
-                        override fun onFailure(call: Call<String>, t: Throwable) {
-                            TODO("Not yet implemented")
+                        override fun onFailure(call: Call<GroupCreatorForCreatorDto>, t: Throwable) {
+                            Log.d("ser", "onFailure: "+t.message)
+                            dialog.dismiss()
                         }
                     })
                 }
             }
-            .setNegativeButton("Отмена", null)
+            .setNegativeButton("Отмена") { dialog, which ->
+                dialog.dismiss()
+            }
             .show()
     }
 }

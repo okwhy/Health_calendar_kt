@@ -26,7 +26,7 @@ interface ApiService {
     fun register(@Query("login") login: String,@Query("password") password: String,@Query("name") name: String): Call<Boolean>
 
     @POST("/api/groups/add")
-    fun create_group(@Query("creator_id") creator_id: Long,@Query("name") name: String): Call<String>
+    fun create_group(@Query("creator_id") creator_id: Long,@Query("name") name: String): Call<GroupCreatorForCreatorDto>
 
     @DELETE("api/groups/users/{user_id}")
     fun delete_user(@Path("user_id") userid:Long,@Query("id") id:Long):Call<Void>
