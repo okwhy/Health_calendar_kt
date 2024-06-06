@@ -59,7 +59,8 @@ class CreatedGroups:Fragment() {
     private fun showInputDialog() {
         val dialogView = enter_for_group.enterForGroup
         val apiService= RetrofitClient.instance
-
+        val parent = dialogView.parent as? ViewGroup
+        parent?.removeView(dialogView)
         AlertDialog.Builder(requireContext())
             .setTitle("Введите название группы")
             .setView(dialogView)

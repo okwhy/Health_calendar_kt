@@ -65,7 +65,8 @@ class JoinedGroupsFragment:Fragment() {
     private fun showInputDialog() {
         val dialogView = bindingdiag.root
         val apiService = RetrofitClient.instance
-
+        val parent = dialogView.parent as? ViewGroup
+        parent?.removeView(dialogView)
         AlertDialog.Builder(requireContext())
             .setTitle("Введите код")
             .setView(dialogView)
