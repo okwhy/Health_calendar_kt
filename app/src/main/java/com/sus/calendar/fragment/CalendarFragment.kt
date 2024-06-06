@@ -259,7 +259,39 @@ class CalendarFragment : Fragment() {
                             textInputSlepping,
                         )
                     )
-                    var notes: Map<String?, String?>? =
+                    val stateOfAppetite = arrayOf<String?>(
+                        "Введите аппетит",
+                        "Нет аппетита",
+                        "Хороший",
+                        "Плохой",
+                        "Нормальный"
+                    )
+                    spinnerAppetite = binding.textInputAppetiteSpiner
+                    val appetiteAdapter: ArrayAdapter<Any?> =
+                        ArrayAdapter<Any?>(
+                            requireContext(),
+                            android.R.layout.simple_spinner_item,
+                            stateOfAppetite
+                        )
+                    appetiteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    spinnerAppetite.adapter = appetiteAdapter
+                    val stateOfHealth = arrayOf<String?>(
+                        "Введите самочувствие",
+                        "Хорошее",
+                        "Нормальное",
+                        "Плохое",
+                    )
+
+                    spinnerHealth = binding.textInputHealthSpiner
+                    val appetiteHealth: ArrayAdapter<Any?> =
+                        ArrayAdapter<Any?>(
+                            requireContext(),
+                            android.R.layout.simple_spinner_item,
+                            stateOfHealth
+                        )
+                    appetiteHealth.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    spinnerHealth.adapter = appetiteHealth
+                    val notes: Map<String?, String?>? =
                         fetchDate(currentYear, currentMonth, currentDay)
                     checkdate(currentYear, currentMonth, currentDay)
                     if (!(notes == null || notes!!.isEmpty())) {
@@ -269,7 +301,7 @@ class CalendarFragment : Fragment() {
                         textInputPressure.setText(if (notes!!["PRESSURE"] == null) "Нет данных" else notes!!["PRESSURE"])
                         textInputSlepping.setText(if (notes!!["SLEEP"] == null) "Нет данных" else notes!!["SLEEP"])
                         dayid.text=notes["dateid"]
-                        when(notes!!["APPETITE"])
+                        when(notes["APPETITE"])
                         {
                             "NO_APPETITE"->spinnerAppetite.setSelection(1)
                             "GOOD"->spinnerAppetite.setSelection(2)
@@ -278,7 +310,7 @@ class CalendarFragment : Fragment() {
                             else->spinnerAppetite.setSelection(0)
                         }
 
-                        when(notes!!["HEALTH"])
+                        when(notes["HEALTH"])
                         {
                             "GOOD"->spinnerHealth.setSelection(1)
                             "BAD"->spinnerHealth.setSelection(3)
@@ -356,38 +388,7 @@ class CalendarFragment : Fragment() {
                             addmarks(calendarView)
                         }
                     })
-                    val stateOfAppetite = arrayOf<String?>(
-                        "Введите аппетит",
-                        "Нет аппетита",
-                        "Хороший",
-                        "Плохой",
-                        "Нормальный"
-                    )
-                    spinnerAppetite = binding.textInputAppetiteSpiner
-                    val appetiteAdapter: ArrayAdapter<Any?> =
-                        ArrayAdapter<Any?>(
-                            requireContext(),
-                            android.R.layout.simple_spinner_item,
-                            stateOfAppetite
-                        )
-                    appetiteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    spinnerAppetite.adapter = appetiteAdapter
-                    val stateOfHealth = arrayOf<String?>(
-                        "Введите самочувствие",
-                        "Хорошее",
-                        "Нормальное",
-                        "Плохое",
-                    )
 
-                    spinnerHealth = binding.textInputHealthSpiner
-                    val appetiteHealth: ArrayAdapter<Any?> =
-                        ArrayAdapter<Any?>(
-                            requireContext(),
-                            android.R.layout.simple_spinner_item,
-                            stateOfHealth
-                        )
-                    appetiteHealth.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    spinnerHealth.adapter = appetiteHealth
                     val saveTextButton = binding.saveTextButton1
                     saveTextButton.setOnClickListener { v: View? ->
                         val notes1: MutableMap<String, String> = HashMap()
@@ -403,10 +404,10 @@ class CalendarFragment : Fragment() {
                         if (textInputPressure.text.toString() != "Нет данных") {
                             notes1["PRESSURE"] = textInputPressure.text.toString()
                         }
-                        if (spinnerAppetite.getItemAtPosition(spinnerAppetite.selectedItemPosition)
-                                .toString() != "Введите аппетит"
+                        if (spinnerHealth.getItemAtPosition(spinnerHealth.selectedItemPosition)
+                                .toString() != "Введите самочувствие"
                         ) {
-                            notes1["APPETITE"] =selffeelings_map[spinnerHealth.selectedItemPosition].toString()
+                            notes1["HEALTH"] =selffeelings_map[spinnerHealth.selectedItemPosition].toString()
                         }
                         if (textInputSlepping.text.toString() != "Нет данных") {
                             notes1["SLEEP"] = textInputSlepping.text.toString()
@@ -414,7 +415,7 @@ class CalendarFragment : Fragment() {
                         if (spinnerAppetite.getItemAtPosition(spinnerAppetite.selectedItemPosition)
                                 .toString() != "Введите аппетит"
                         ) {
-                            notes1["HEALTH"] =appetite_map[spinnerAppetite.selectedItemPosition].toString()
+                            notes1["APPETITE"] =appetite_map[spinnerAppetite.selectedItemPosition].toString()
 
                         }
                         if(notes1.isNotEmpty()){
