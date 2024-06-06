@@ -11,6 +11,7 @@ import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.BarChart
@@ -26,6 +27,7 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.sus.calendar.R
 import com.sus.calendar.databinding.FragmentStatisticMemberBinding
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -154,6 +156,9 @@ class StatisticMember : Fragment() {
         var dateFrom = binding.dateOtMember
         var dateTo = binding.dateDoMember
 
+        binding.bacKToGroups.setOnClickListener{
+            findNavController().navigateUp()
+        }
         btnNext.setOnClickListener {
             Log.d("d", "${simpleViewFlipper.displayedChild}")
             val startDate = getDateFromEditText(dateFrom)
@@ -191,7 +196,7 @@ class StatisticMember : Fragment() {
 
             val datePickerDialogFrom = DatePickerDialog(
                 requireContext(),
-                DatePickerDialog.OnDateSetListener { view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
+                 { view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
                     val dateString =
                         String.format("%02d-%02d-%d", dayOfMonth, monthOfYear + 1, year)
                     dateFrom.setText(dateString)
@@ -441,11 +446,11 @@ class StatisticMember : Fragment() {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
         val entries = listOf(
-            PieEntry(healthRecords.count { it.wellbeing == Wellbeing.GOOD }
+            PieEntry(healthRecords.filter { it.date in startDate..endDate }.count { it.wellbeing == Wellbeing.GOOD }
                 .toFloat(), "Хорошее"),
-            PieEntry(healthRecords.count { it.wellbeing == Wellbeing.NORMAL }
+            PieEntry(healthRecords.filter { it.date in startDate..endDate }.count { it.wellbeing == Wellbeing.NORMAL }
                 .toFloat(), "Нормальное"),
-            PieEntry(healthRecords.count { it.wellbeing == Wellbeing.BAD }
+            PieEntry(healthRecords.filter { it.date in startDate..endDate }.count { it.wellbeing == Wellbeing.BAD }
                 .toFloat(), "Плохое")
         )
         val dataSet = PieDataSet(entries.filter { it.value !=0f }, text)
@@ -478,17 +483,17 @@ class StatisticMember : Fragment() {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
         val entries = listOf(
-            PieEntry(healthRecords.count { it.appetite == Appetite.NO_APPETITE }
+            PieEntry(healthRecords.filter { it.date in startDate..endDate }.count { it.appetite == Appetite.NO_APPETITE }
                 .toFloat(), "Нет аппетита"),
             PieEntry(
-                healthRecords.count { it.appetite == Appetite.GOOD }.toFloat(),
+                healthRecords.filter { it.date in startDate..endDate }.count { it.appetite == Appetite.GOOD }.toFloat(),
                 "Хороший"
             ),
             PieEntry(
-                healthRecords.count { it.appetite == Appetite.BAD }.toFloat(),
+                healthRecords.filter { it.date in startDate..endDate }.count { it.appetite == Appetite.BAD }.toFloat(),
                 "Плохой"
             ),
-            PieEntry(healthRecords.count { it.appetite == Appetite.NORMAL }
+            PieEntry(healthRecords.filter { it.date in startDate..endDate }.count { it.appetite == Appetite.NORMAL }
                 .toFloat(), "Нормальный")
         )
         val dataSet = PieDataSet(entries.filter { it.value !=0f }, text)
@@ -519,7 +524,7 @@ class StatisticMember : Fragment() {
     ) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
-        val entries = healthRecords.mapIndexed { index, record ->
+        val entries = healthRecords.filter { it.date in startDate..endDate }.mapIndexed { index, record ->
             val value = when (dataType) {
                 DataType.WEIGHT -> record.weight.toFloat()
                 DataType.HEIGHT -> record.height.toFloat()
@@ -558,7 +563,7 @@ class StatisticMember : Fragment() {
     ) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
-        val entries = healthRecords.mapIndexed { index, record ->
+        val entries = healthRecords.filter { it.date in startDate..endDate }.mapIndexed { index, record ->
             BarEntry(index.toFloat(), record.height.toFloat())
         }.filter { it.y != 0f }
 
@@ -580,7 +585,7 @@ class StatisticMember : Fragment() {
         val systolicEntries = mutableListOf<Entry>()
         val diastolicEntries = mutableListOf<Entry>()
 
-        healthRecords.forEachIndexed { index, record ->
+        healthRecords.filter { it.date in startDate..endDate }.forEachIndexed { index, record ->
             val pressure_temp = record.bloodPressure
             val regex = "\\d+/\\d+".toRegex()
             if (pressure_temp.matches(regex)) {

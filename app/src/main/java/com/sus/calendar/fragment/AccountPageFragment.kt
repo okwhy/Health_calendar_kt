@@ -35,7 +35,6 @@ class AccountPageFragment: Fragment() {
     ): View? {
         accountPageBinding=AccountPageBinding.inflate(inflater,container,false)
         val root=accountPageBinding.root
-        val apiService=RetrofitClient.instance
         val args:AccountPageFragmentArgs by navArgs()
         accountPageBinding.Registration.setOnClickListener{
             MainActivity.DataManager.setUserData(null)
@@ -53,30 +52,8 @@ class AccountPageFragment: Fragment() {
             findNavController().navigate(R.id.action_nav_user_page_to_nav_joined)
         }
         accountPageBinding.MyGroups.setOnClickListener{
-
-            val call_creator_groups = apiService.get_creator_groups(args.id)
-
-            call_creator_groups.enqueue(object : Callback<List<GroupCreatorForCreatorDto>> {
-                override fun onResponse(call: Call<List<GroupCreatorForCreatorDto>>, response: Response<List<GroupCreatorForCreatorDto>>) {
-                    if (response.isSuccessful) {
-                        val groups = response.body()
-                        val action= groups?.let { it1 ->
-                            AccountPageFragmentDirections.actionNavUserPageToNavCreatedGroups(
-                                it1.toTypedArray())
-                        }
-                        if (action != null) {
-                            findNavController().navigate(action)
-                        }
-
-                    } else {
-                        Toast.makeText(requireContext(), "Error: ${response.message()}", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                override fun onFailure(call: Call<List<GroupCreatorForCreatorDto>>, t: Throwable) {
-                    Toast.makeText(requireContext(), "Ошибка: ${t.message}", Toast.LENGTH_SHORT).show()
-                }
-            })
+            val action=AccountPageFragmentDirections.actionNavUserPageToNavCreatedGroups(args.id)
+            findNavController().navigate(action)
         }
         return root
     }
@@ -88,7 +65,7 @@ class AccountPageFragment: Fragment() {
         val popupText = popupView.findViewById<TextView>(R.id.popupText)
         val closeButton = popupView.findViewById<Button>(R.id.closeButton)
         popupText.text = getString(R.string.help_desc).trimIndent()
-        closeButton.setOnClickListener { alertDialog!!.dismiss() }
+        closeButton.setOnClickListener { alertDialog.dismiss() }
         builder.setView(popupView)
         alertDialog = builder.create()
         alertDialog.show()

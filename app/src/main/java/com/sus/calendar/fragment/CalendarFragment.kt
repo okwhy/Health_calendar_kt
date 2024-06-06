@@ -83,194 +83,10 @@ class CalendarFragment : Fragment() {
         val calendarView = binding.calendarView
 
         calendarView.setSwipeEnabled(false)
-        dataService = this.context?.let { DataService.initial(it) }
         loaddata(calendarView)
 //        addmarks(calendarView)
 
 
-        val textInputHeight = binding.textInputHeight
-        val textInputWeight = binding.textInputWeight
-        val textInputPulse = binding.textInputPulse
-        val textInputPressure = binding.textInputPressure
-        val textInputSlepping = binding.textInputSlepping
-        dayid=binding.dayid
-        spinnerAppetite = binding.textInputAppetiteSpiner
-        spinnerHealth = binding.textInputHealthSpiner
-        texts = ArrayList(
-            Arrays.asList(
-                textInputHeight,
-                textInputWeight,
-                textInputPulse,
-                textInputPressure,
-                textInputSlepping,
-            )
-        )
-        var notes: Map<String?, String?>? =
-            fetchDate(currentYear, currentMonth, currentDay)
-        checkdate(currentYear, currentMonth, currentDay)
-        if (!(notes == null || notes!!.isEmpty())) {
-            textInputHeight.setText(if (notes!!["HEIGHT"] == null) "Нет данных" else notes!!["HEIGHT"])
-            textInputWeight.setText(if (notes!!["WEIGHT"] == null) "Нет данных" else notes!!["WEIGHT"])
-            textInputPulse.setText(if (notes!!["PULSE"] == null) "Нет " else notes!!["PULSE"])
-            textInputPressure.setText(if (notes!!["PRESSURE"] == null) "Нет данных" else notes!!["PRESSURE"])
-            textInputSlepping.setText(if (notes!!["SLEEP"] == null) "Нет данных" else notes!!["SLEEP"])
-            dayid.text=notes["dateid"]
-            when(notes!!["APPETITE"])
-            {
-                "NO_APPETITE"->spinnerAppetite.setSelection(1)
-                "GOOD"->spinnerAppetite.setSelection(2)
-                "BAD"->spinnerAppetite.setSelection(3)
-                "NORMAL"->spinnerAppetite.setSelection(4)
-                else->spinnerAppetite.setSelection(0)
-            }
-
-            when(notes!!["HEALTH"])
-            {
-                "GOOD"->spinnerHealth.setSelection(1)
-                "BAD"->spinnerHealth.setSelection(3)
-                "NORMAL"->spinnerHealth.setSelection(2)
-                else->spinnerHealth.setSelection(0)
-            }
-
-        } else {
-            textInputHeight.setText("Нет данных")
-            textInputWeight.setText("Нет данных")
-            textInputPulse.setText("Нет данных")
-            textInputPressure.setText("Нет данных")
-            spinnerAppetite.setSelection(0)
-            textInputSlepping.setText("Нет данных")
-            spinnerHealth.setSelection(0)
-            dayid.text=""
-        }
-
-        calendarView.setOnDayClickListener(object : OnDayClickListener {
-            override fun onDayClick(eventDay: EventDay) {
-                val cal = eventDay.calendar
-                val year = cal[1]
-                val month = cal[2]
-                val dayOfMonth = cal[5]
-                currentYear = year
-                currentMonth = month + 1
-                currentDay = dayOfMonth
-
-                var currentdayNotes: Map<String?, String?>? = fetchDate(currentYear, currentMonth, currentDay) // все записи за текущий день
-
-                checkdate(currentYear, currentMonth, currentDay)
-                if (!(currentdayNotes == null || currentdayNotes!!.isEmpty())) {
-                    textInputHeight.setText(if (currentdayNotes!!["HEIGHT"] == null) "Нет данных" else currentdayNotes!!["HEIGHT"])
-                    textInputWeight.setText(if (currentdayNotes!!["WEIGHT"] == null) "Нет данных" else currentdayNotes!!["WEIGHT"])
-                    textInputPulse.setText(if (currentdayNotes!!["PULSE"] == null) "Нет " else currentdayNotes!!["PULSE"])
-                    textInputPressure.setText(if (currentdayNotes!!["PRESSURE"] == null) "Нет данных" else currentdayNotes!!["PRESSURE"])
-                    textInputSlepping.setText(if (currentdayNotes!!["SLEEP"] == null) "Нет данных" else currentdayNotes!!["SLEEP"])
-                    dayid.text=currentdayNotes["dateid"]
-                    when(currentdayNotes["APPETITE"])
-                    {
-                        "NO_APPETITE"->spinnerAppetite.setSelection(1)
-                        "GOOD"->spinnerAppetite.setSelection(2)
-                        "BAD"->spinnerAppetite.setSelection(3)
-                        "NORMAL"->spinnerAppetite.setSelection(4)
-                        else->spinnerAppetite.setSelection(0)
-                    }
-
-                    when(currentdayNotes["HEALTH"])
-                    {
-                        "GOOD"->spinnerHealth.setSelection(1)
-                        "BAD"->spinnerHealth.setSelection(3)
-                        "NORMAL"->spinnerHealth.setSelection(2)
-                        else->spinnerHealth.setSelection(0)
-                    }
-
-                } else {
-                    textInputHeight.setText("Нет данных")
-                    textInputWeight.setText("Нет данных")
-                    textInputPulse.setText("Нет данных")
-                    textInputPressure.setText("Нет данных")
-                    spinnerAppetite.setSelection(0)
-                    textInputSlepping.setText("Нет данных")
-                    spinnerHealth.setSelection(0)
-                    dayid.text=""
-                }
-            }
-        })
-        calendarView.setOnForwardPageChangeListener(object : OnCalendarPageChangeListener {
-            override fun onChange() {
-                    addmarks(calendarView)
-            }
-        })
-        calendarView.setOnPreviousPageChangeListener(object : OnCalendarPageChangeListener {
-            override fun onChange() {
-                    addmarks(calendarView)
-            }
-        })
-        val stateOfAppetite = arrayOf<String?>(
-            "Введите аппетит",
-            "Нет аппетита",
-            "Хороший",
-            "Плохой",
-            "Нормальный"
-        )
-        spinnerAppetite = binding.textInputAppetiteSpiner
-        val appetiteAdapter: ArrayAdapter<Any?> =
-            ArrayAdapter<Any?>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                stateOfAppetite
-            )
-        appetiteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerAppetite.adapter = appetiteAdapter
-        val stateOfHealth = arrayOf<String?>(
-            "Введите самочувствие",
-            "Хорошее",
-            "Нормальное",
-            "Плохое",
-        )
-
-        spinnerHealth = binding.textInputHealthSpiner
-        val appetiteHealth: ArrayAdapter<Any?> =
-            ArrayAdapter<Any?>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                stateOfHealth
-            )
-        appetiteHealth.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerHealth.adapter = appetiteHealth
-        val saveTextButton = binding.saveTextButton1
-        saveTextButton.setOnClickListener { v: View? ->
-            val notes1: MutableMap<String, String> = HashMap()
-            if (textInputHeight.text.toString() != "Нет данных") {
-                notes1["HEIGHT"] = textInputHeight.text.toString()
-            }
-            if (textInputWeight.text.toString() != "Нет данных") {
-                notes1["WEIGHT"] = textInputWeight.text.toString()
-            }
-            if (textInputPulse.text.toString() != "Нет данных") {
-                notes1["PULSE"] = textInputPulse.text.toString()
-            }
-            if (textInputPressure.text.toString() != "Нет данных") {
-                notes1["PRESSURE"] = textInputPressure.text.toString()
-            }
-            if (spinnerAppetite.getItemAtPosition(spinnerAppetite.selectedItemPosition)
-                    .toString() != "Введите аппетит"
-            ) {
-                notes1["APPETITE"] =selffeelings_map[spinnerHealth.selectedItemPosition].toString()
-            }
-            if (textInputSlepping.text.toString() != "Нет данных") {
-                notes1["SLEEP"] = textInputSlepping.text.toString()
-            }
-            if (spinnerAppetite.getItemAtPosition(spinnerAppetite.selectedItemPosition)
-                    .toString() != "Введите аппетит"
-            ) {
-                notes1["HEALTH"] =appetite_map[spinnerAppetite.selectedItemPosition].toString()
-
-            }
-            if(notes1.isNotEmpty()){
-                insertorupdateDate(notes1, currentYear, currentMonth, currentDay,dayid.text.toString())
-            }
-        }
-
-        val showPopupButton = binding.showPopupButton
-
-        showPopupButton.setOnClickListener { showPopup() }
         return binding.root
     }
 
@@ -425,6 +241,190 @@ class CalendarFragment : Fragment() {
                 if (response.isSuccessful) {
                     data.addAll(response.body()!!)
                     addmarks(calendarView)
+
+                    val textInputHeight = binding.textInputHeight
+                    val textInputWeight = binding.textInputWeight
+                    val textInputPulse = binding.textInputPulse
+                    val textInputPressure = binding.textInputPressure
+                    val textInputSlepping = binding.textInputSlepping
+                    dayid=binding.dayid
+                    spinnerAppetite = binding.textInputAppetiteSpiner
+                    spinnerHealth = binding.textInputHealthSpiner
+                    texts = ArrayList(
+                        Arrays.asList(
+                            textInputHeight,
+                            textInputWeight,
+                            textInputPulse,
+                            textInputPressure,
+                            textInputSlepping,
+                        )
+                    )
+                    var notes: Map<String?, String?>? =
+                        fetchDate(currentYear, currentMonth, currentDay)
+                    checkdate(currentYear, currentMonth, currentDay)
+                    if (!(notes == null || notes!!.isEmpty())) {
+                        textInputHeight.setText(if (notes!!["HEIGHT"] == null) "Нет данных" else notes!!["HEIGHT"])
+                        textInputWeight.setText(if (notes!!["WEIGHT"] == null) "Нет данных" else notes!!["WEIGHT"])
+                        textInputPulse.setText(if (notes!!["PULSE"] == null) "Нет " else notes!!["PULSE"])
+                        textInputPressure.setText(if (notes!!["PRESSURE"] == null) "Нет данных" else notes!!["PRESSURE"])
+                        textInputSlepping.setText(if (notes!!["SLEEP"] == null) "Нет данных" else notes!!["SLEEP"])
+                        dayid.text=notes["dateid"]
+                        when(notes!!["APPETITE"])
+                        {
+                            "NO_APPETITE"->spinnerAppetite.setSelection(1)
+                            "GOOD"->spinnerAppetite.setSelection(2)
+                            "BAD"->spinnerAppetite.setSelection(3)
+                            "NORMAL"->spinnerAppetite.setSelection(4)
+                            else->spinnerAppetite.setSelection(0)
+                        }
+
+                        when(notes!!["HEALTH"])
+                        {
+                            "GOOD"->spinnerHealth.setSelection(1)
+                            "BAD"->spinnerHealth.setSelection(3)
+                            "NORMAL"->spinnerHealth.setSelection(2)
+                            else->spinnerHealth.setSelection(0)
+                        }
+
+                    } else {
+                        textInputHeight.setText("Нет данных")
+                        textInputWeight.setText("Нет данных")
+                        textInputPulse.setText("Нет данных")
+                        textInputPressure.setText("Нет данных")
+                        spinnerAppetite.setSelection(0)
+                        textInputSlepping.setText("Нет данных")
+                        spinnerHealth.setSelection(0)
+                        dayid.text=""
+                    }
+
+                    calendarView.setOnDayClickListener(object : OnDayClickListener {
+                        override fun onDayClick(eventDay: EventDay) {
+                            val cal = eventDay.calendar
+                            val year = cal[1]
+                            val month = cal[2]
+                            val dayOfMonth = cal[5]
+                            currentYear = year
+                            currentMonth = month + 1
+                            currentDay = dayOfMonth
+
+                            var currentdayNotes: Map<String?, String?>? = fetchDate(currentYear, currentMonth, currentDay) // все записи за текущий день
+
+                            checkdate(currentYear, currentMonth, currentDay)
+                            if (!(currentdayNotes == null || currentdayNotes!!.isEmpty())) {
+                                textInputHeight.setText(if (currentdayNotes!!["HEIGHT"] == null) "Нет данных" else currentdayNotes!!["HEIGHT"])
+                                textInputWeight.setText(if (currentdayNotes!!["WEIGHT"] == null) "Нет данных" else currentdayNotes!!["WEIGHT"])
+                                textInputPulse.setText(if (currentdayNotes!!["PULSE"] == null) "Нет " else currentdayNotes!!["PULSE"])
+                                textInputPressure.setText(if (currentdayNotes!!["PRESSURE"] == null) "Нет данных" else currentdayNotes!!["PRESSURE"])
+                                textInputSlepping.setText(if (currentdayNotes!!["SLEEP"] == null) "Нет данных" else currentdayNotes!!["SLEEP"])
+                                dayid.text=currentdayNotes["dateid"]
+                                when(currentdayNotes["APPETITE"])
+                                {
+                                    "NO_APPETITE"->spinnerAppetite.setSelection(1)
+                                    "GOOD"->spinnerAppetite.setSelection(2)
+                                    "BAD"->spinnerAppetite.setSelection(3)
+                                    "NORMAL"->spinnerAppetite.setSelection(4)
+                                    else->spinnerAppetite.setSelection(0)
+                                }
+
+                                when(currentdayNotes["HEALTH"])
+                                {
+                                    "GOOD"->spinnerHealth.setSelection(1)
+                                    "BAD"->spinnerHealth.setSelection(3)
+                                    "NORMAL"->spinnerHealth.setSelection(2)
+                                    else->spinnerHealth.setSelection(0)
+                                }
+
+                            } else {
+                                textInputHeight.setText("Нет данных")
+                                textInputWeight.setText("Нет данных")
+                                textInputPulse.setText("Нет данных")
+                                textInputPressure.setText("Нет данных")
+                                spinnerAppetite.setSelection(0)
+                                textInputSlepping.setText("Нет данных")
+                                spinnerHealth.setSelection(0)
+                                dayid.text=""
+                            }
+                        }
+                    })
+                    calendarView.setOnForwardPageChangeListener(object : OnCalendarPageChangeListener {
+                        override fun onChange() {
+                            addmarks(calendarView)
+                        }
+                    })
+                    calendarView.setOnPreviousPageChangeListener(object : OnCalendarPageChangeListener {
+                        override fun onChange() {
+                            addmarks(calendarView)
+                        }
+                    })
+                    val stateOfAppetite = arrayOf<String?>(
+                        "Введите аппетит",
+                        "Нет аппетита",
+                        "Хороший",
+                        "Плохой",
+                        "Нормальный"
+                    )
+                    spinnerAppetite = binding.textInputAppetiteSpiner
+                    val appetiteAdapter: ArrayAdapter<Any?> =
+                        ArrayAdapter<Any?>(
+                            requireContext(),
+                            android.R.layout.simple_spinner_item,
+                            stateOfAppetite
+                        )
+                    appetiteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    spinnerAppetite.adapter = appetiteAdapter
+                    val stateOfHealth = arrayOf<String?>(
+                        "Введите самочувствие",
+                        "Хорошее",
+                        "Нормальное",
+                        "Плохое",
+                    )
+
+                    spinnerHealth = binding.textInputHealthSpiner
+                    val appetiteHealth: ArrayAdapter<Any?> =
+                        ArrayAdapter<Any?>(
+                            requireContext(),
+                            android.R.layout.simple_spinner_item,
+                            stateOfHealth
+                        )
+                    appetiteHealth.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    spinnerHealth.adapter = appetiteHealth
+                    val saveTextButton = binding.saveTextButton1
+                    saveTextButton.setOnClickListener { v: View? ->
+                        val notes1: MutableMap<String, String> = HashMap()
+                        if (textInputHeight.text.toString() != "Нет данных") {
+                            notes1["HEIGHT"] = textInputHeight.text.toString()
+                        }
+                        if (textInputWeight.text.toString() != "Нет данных") {
+                            notes1["WEIGHT"] = textInputWeight.text.toString()
+                        }
+                        if (textInputPulse.text.toString() != "Нет данных") {
+                            notes1["PULSE"] = textInputPulse.text.toString()
+                        }
+                        if (textInputPressure.text.toString() != "Нет данных") {
+                            notes1["PRESSURE"] = textInputPressure.text.toString()
+                        }
+                        if (spinnerAppetite.getItemAtPosition(spinnerAppetite.selectedItemPosition)
+                                .toString() != "Введите аппетит"
+                        ) {
+                            notes1["APPETITE"] =selffeelings_map[spinnerHealth.selectedItemPosition].toString()
+                        }
+                        if (textInputSlepping.text.toString() != "Нет данных") {
+                            notes1["SLEEP"] = textInputSlepping.text.toString()
+                        }
+                        if (spinnerAppetite.getItemAtPosition(spinnerAppetite.selectedItemPosition)
+                                .toString() != "Введите аппетит"
+                        ) {
+                            notes1["HEALTH"] =appetite_map[spinnerAppetite.selectedItemPosition].toString()
+
+                        }
+                        if(notes1.isNotEmpty()){
+                            insertorupdateDate(notes1, currentYear, currentMonth, currentDay,dayid.text.toString())
+                        }
+                    }
+
+                    val showPopupButton = binding.showPopupButton
+
+                    showPopupButton.setOnClickListener { showPopup() }
                 } else {
                     Toast.makeText(
                         context,

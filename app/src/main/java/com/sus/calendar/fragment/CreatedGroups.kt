@@ -27,7 +27,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class CreatedGroups:Fragment() {
+class CreatedGroups : Fragment() {
     private lateinit var createGroupBinding: CreateGroupBinding
     private lateinit var enter_for_group: EnterForGroupBinding
     override fun onCreateView(
@@ -35,30 +35,54 @@ class CreatedGroups:Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        createGroupBinding = CreateGroupBinding.inflate(inflater,container,false)
-        enter_for_group = EnterForGroupBinding.inflate(inflater,container,false)
-        val root=createGroupBinding.root
-        val args:CreatedGroupsArgs by navArgs()
-        val manager=LinearLayoutManager(requireContext())
-        val adapter=CreatorsGroupRecyclerViewAdapter()
-        adapter.data= args.groups.toMutableList()
-        createGroupBinding.recyclerAllGroup.layoutManager=manager
-        createGroupBinding.recyclerAllGroup.adapter=adapter
-        createGroupBinding.backListMyGroups.setOnClickListener{
-            findNavController().navigateUp()
-        }
-
-
-        createGroupBinding.createGroup.setOnClickListener{
-            showInputDialog()
-        }
-
+        createGroupBinding = CreateGroupBinding.inflate(inflater, container, false)
+        enter_for_group = EnterForGroupBinding.inflate(inflater, container, false)
+        loaddata()
+        val root = createGroupBinding.root
         return root
+    }
+
+    private fun loaddata() {
+        val args:CreatedGroupsArgs by navArgs()
+        val apiService = RetrofitClient.instance
+        val call_creator_groups = apiService.get_creator_groups(args.id)
+
+        call_creator_groups.enqueue(object : Callback<List<GroupCreatorForCreatorDto>> {
+            override fun onResponse(
+                call: Call<List<GroupCreatorForCreatorDto>>,
+                response: Response<List<GroupCreatorForCreatorDto>>
+            ) {
+                if (response.isSuccessful) {
+                    val groups = response.body()
+                    val manager = LinearLayoutManager(requireContext())
+                    val adapter = CreatorsGroupRecyclerViewAdapter()
+                    adapter.data= groups as MutableList<GroupCreatorForCreatorDto>
+                    createGroupBinding.recyclerAllGroup.layoutManager = manager
+                    createGroupBinding.recyclerAllGroup.adapter = adapter
+                    createGroupBinding.backListMyGroups.setOnClickListener {
+                        findNavController().navigateUp()
+                    }
+                    createGroupBinding.createGroup.setOnClickListener {
+                        showInputDialog()
+                    }
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Error: ${response.message()}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<GroupCreatorForCreatorDto>>, t: Throwable) {
+                Toast.makeText(requireContext(), "Ошибка: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun showInputDialog() {
         val dialogView = enter_for_group.enterForGroup
-        val apiService= RetrofitClient.instance
+        val apiService = RetrofitClient.instance
         val parent = dialogView.parent as? ViewGroup
         parent?.removeView(dialogView)
         AlertDialog.Builder(requireContext())
@@ -66,7 +90,8 @@ class CreatedGroups:Fragment() {
             .setView(dialogView)
             .setPositiveButton("Создать") { dialog, _ ->
                 val user_id = MainActivity.DataManager.getUserData()!!.id
-                val create_group = apiService.create_group(user_id,
+                val create_group = apiService.create_group(
+                    user_id,
                     enter_for_group.nameForGroup.text.toString()
                 )
 
@@ -78,9 +103,10 @@ class CreatedGroups:Fragment() {
                     ) {
                         if (response.isSuccessful) {
                             val code = response.body()
-                            val adapter=createGroupBinding.recyclerAllGroup.adapter as CreatorsGroupRecyclerViewAdapter
+                            val adapter =
+                                createGroupBinding.recyclerAllGroup.adapter as CreatorsGroupRecyclerViewAdapter
                             adapter.data.add(code!!)
-                            createGroupBinding.recyclerAllGroup.adapter=adapter
+                            createGroupBinding.recyclerAllGroup.adapter = adapter
                             dialog.dismiss()
 
                         } else {
@@ -91,8 +117,9 @@ class CreatedGroups:Fragment() {
                             ).show()
                         }
                     }
+
                     override fun onFailure(call: Call<GroupCreatorForCreatorDto>, t: Throwable) {
-                        Log.d("ser", "onFailure: "+t.message)
+                        Log.d("ser", "onFailure: " + t.message)
                     }
                 })
             }

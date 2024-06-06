@@ -7,10 +7,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.ViewFlipper
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.github.mikephil.charting.animation.Easing
@@ -30,6 +32,7 @@ import com.github.mikephil.charting.utils.ColorTemplate
 import com.sus.calendar.MainActivity
 import com.sus.calendar.RetrofitClient
 import com.sus.calendar.databinding.FragmentStatisticMemberBinding
+import com.sus.calendar.databinding.StatisticPageBinding
 import com.sus.calendar.dtos.DateWithIdNotesUidDto
 import retrofit2.Call
 import retrofit2.Callback
@@ -40,7 +43,7 @@ import java.util.Calendar
 import java.util.Locale
 
 class StatisticFragment : Fragment() {
-    private lateinit var binding: FragmentStatisticMemberBinding
+    private lateinit var binding: StatisticPageBinding
 
     data class HealthRecord(
         val date: LocalDate,
@@ -68,59 +71,6 @@ class StatisticFragment : Fragment() {
 
     var healthRecords = mutableListOf<HealthRecord>()
 
-    /*var healthRecords = listOf(
-        HealthRecord(
-            date = LocalDate.of(2024, 5, 17),
-            height = 175,
-            weight = 70.5,
-            heartRate = 72,
-            bloodPressure = "120/80",
-            sleepHours = 7.5,
-            wellbeing = Wellbeing.GOOD,
-            appetite = Appetite.GOOD
-        ),
-        HealthRecord(
-            date = LocalDate.of(2024, 5, 18),
-            height = 175,
-            weight = 70.0,
-            heartRate = 70,
-            bloodPressure = "118/78",
-            sleepHours = 8.0,
-            wellbeing = Wellbeing.NORMAL,
-            appetite = Appetite.NORMAL
-        ),
-        HealthRecord(
-            date = LocalDate.of(2024, 5, 19),
-            height = 176,
-            weight = 71.0,
-            heartRate = 68,
-            bloodPressure = "118/80",
-            sleepHours = 10.0,
-            wellbeing = Wellbeing.NORMAL,
-            appetite = Appetite.NORMAL
-        ),
-        HealthRecord(
-            date = LocalDate.of(2024, 5, 20),
-            height = 174,
-            weight = 69.0,
-            heartRate = 780,
-            bloodPressure = "140/70",
-            sleepHours = 5.0,
-            wellbeing = Wellbeing.BAD,
-            appetite = Appetite.NO_APPETITE
-        ),
-        HealthRecord(
-            date = LocalDate.of(2024, 5, 21),
-            height = 175,
-            weight = 67.0,
-            heartRate = 69,
-            bloodPressure = "120/80",
-            sleepHours = 12.0,
-            wellbeing = Wellbeing.NORMAL,
-            appetite = Appetite.NORMAL
-        ),
-    )*/
-
     private var uptHeight: Boolean = false
     private var uptWeight: Boolean = false
     private var uptBPM: Boolean = false
@@ -132,165 +82,58 @@ class StatisticFragment : Fragment() {
     private var boolDateFrom: Boolean = false
     private var boolDateTo: Boolean = false
 
+    private lateinit var avgHeight:BarChart
+
+    private lateinit var avgWeight:LineChart
+    private lateinit var avgCHSS:LineChart
+    private lateinit var avgPressure:LineChart
+    private lateinit var avgSleep:LineChart
+    private lateinit var avgFellings: PieChart
+    private lateinit var avgAppetite: PieChart
+
+    private lateinit var btnNext: Button
+    private lateinit var avgHeightText: TextView
+    private lateinit var avgWeightText: TextView
+    private lateinit var avgCHSSText: TextView
+    private lateinit var avgSleepText: TextView
+    private lateinit var avgFeelingsText: TextView
+    private lateinit var avgPressureText: TextView
+    private lateinit var avgAppetitText: TextView
+    private lateinit var simpleViewFlipper: ViewFlipper
+
+    private lateinit var dateTo:EditText
+    private lateinit var dateFrom:EditText
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentStatisticMemberBinding.inflate(inflater, container, false)
+        binding = StatisticPageBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        val avgHeight = binding.averageHeightMember
-        val avgWeight = binding.averageWeightMember
-        val avgCHSS = binding.averageCHSSMember
-        val avgPressure = binding.averagePressureMember
-        val avgSleep = binding.averageSleepMember
-        val avgFellings = binding.averageHealthMember
-        val avgAppetite = binding.averageAppetiteMember
+        avgHeight = binding.averageHeightMember
+        avgWeight = binding.averageWeightMember
+        avgCHSS = binding.averageCHSSMember
+        avgPressure = binding.averagePressureMember
+        avgSleep = binding.averageSleepMember
+        avgFellings = binding.averageHealthMember
+        avgAppetite = binding.averageAppetiteMember
 
-        var btnNext = binding.buttonNextMember
-        var avgHeightText = binding.AverageValueHeightMember
-        var avgWeightText = binding.AverageValueWeightMember
-        var avgCHSSText = binding.AverageValueCHSSMember
-        var avgSleepText = binding.AverageValueSleepMember
-        var avgFeelingsText = binding.AverageValueHealthMember
-        var avgPressureText = binding.AverageValuePressureMember
-        var avgAppetitText = binding.AverageValueAppetiteMember
-        var simpleViewFlipper = binding.simpleViewFlipperMember
+        btnNext = binding.buttonNextMember
+        avgHeightText = binding.AverageValueHeightMember
+        avgWeightText = binding.AverageValueWeightMember
+        avgCHSSText = binding.AverageValueCHSSMember
+        avgSleepText = binding.AverageValueSleepMember
+        avgFeelingsText = binding.AverageValueHealthMember
+        avgPressureText = binding.AverageValuePressureMember
+        avgAppetitText = binding.AverageValueAppetiteMember
+        simpleViewFlipper = binding.simpleViewFlipperMember
 
-        var dateFrom = binding.dateOtMember
-        var dateTo = binding.dateDoMember
-
-        btnNext.setOnClickListener {
-            Log.d("d", "${simpleViewFlipper.displayedChild}")
-            val startDate = getDateFromEditText(dateFrom)
-            val endDate = getDateFromEditText(dateTo)
-            var ref = simpleViewFlipper.displayedChild
-            if (simpleViewFlipper.displayedChild == 6) {
-                ref = 0
-                update(
-                    -1, true, avgPressure, avgAppetitText, avgFeelingsText, avgHeight,
-                    avgWeight, avgCHSS, avgSleep, avgHeightText, avgWeightText, avgCHSSText,
-                    avgSleepText, avgPressureText, avgFellings, avgAppetite, startDate, endDate
-                )
-            }
-            try {
-                if (getbool(ref + 1)) {
-                    update(
-                        ref, true, avgPressure, avgAppetitText, avgFeelingsText, avgHeight,
-                        avgWeight, avgCHSS, avgSleep, avgHeightText, avgWeightText, avgCHSSText,
-                        avgSleepText, avgPressureText, avgFellings, avgAppetite, startDate, endDate
-                    )
-                }
-            } catch (e: InterruptedException) {
-                throw RuntimeException(e)
-            }
-            chooseBool(ref)
-            simpleViewFlipper.showNext()
-        }
-
-        dateFrom.setOnClickListener {
-            val calendar = Calendar.getInstance()
-            val day = calendar.get(Calendar.DAY_OF_MONTH)
-            val month = calendar.get(Calendar.MONTH)
-            val year = calendar.get(Calendar.YEAR)
-
-
-            val datePickerDialogFrom = DatePickerDialog(
-                requireContext(),
-                { view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
-                    val dateString =
-                        String.format("%02d-%02d-%d", dayOfMonth, monthOfYear + 1, year)
-                    dateFrom.setText(dateString)
-                    boolDateFrom = true
-                    if (boolDateFrom == true && boolDateTo == true) {
-                        val startDate = getDateFromEditText(dateFrom)
-                        val endDate = getDateFromEditText(dateTo)
-                        update(
-                            -1,
-                            true,
-                            avgPressure,
-                            avgAppetitText,
-                            avgFeelingsText,
-                            avgHeight,
-                            avgWeight,
-                            avgCHSS,
-                            avgSleep,
-                            avgHeightText,
-                            avgWeightText,
-                            avgCHSSText,
-                            avgSleepText,
-                            avgPressureText,
-                            avgFellings,
-                            avgAppetite,
-                            startDate,
-                            endDate
-                        )
-                    }
-                    uptFellings = true
-                    uptAppetit = true
-                    uptBPM = true
-                    uptHeight = true
-                    uptSleep = true
-                    uptWeight = true
-                    uptPressure = true
-                    chooseBool(simpleViewFlipper.displayedChild)
-                },
-                year, month, day
-            )
-            datePickerDialogFrom.show()
-        }
-
-        dateTo.setOnClickListener {
-            val calendar = Calendar.getInstance()
-            val day = calendar.get(Calendar.DAY_OF_MONTH)
-            val month = calendar.get(Calendar.MONTH)
-            val year = calendar.get(Calendar.YEAR)
-
-            val datePickerDialogTo = DatePickerDialog(
-                requireContext(),
-                { view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
-                    val dateString =
-                        String.format("%02d-%02d-%d", dayOfMonth, monthOfYear + 1, year)
-                    dateTo.setText(dateString)
-                    boolDateTo = true
-                    if (boolDateFrom == true && boolDateTo == true) {
-                        val startDate = getDateFromEditText(dateFrom)
-                        val endDate = getDateFromEditText(dateTo)
-                        update(
-                            -1,
-                            true,
-                            avgPressure,
-                            avgAppetitText,
-                            avgFeelingsText,
-                            avgHeight,
-                            avgWeight,
-                            avgCHSS,
-                            avgSleep,
-                            avgHeightText,
-                            avgWeightText,
-                            avgCHSSText,
-                            avgSleepText,
-                            avgPressureText,
-                            avgFellings,
-                            avgAppetite,
-                            startDate,
-                            endDate
-                        )
-                    }
-                    uptFellings = true
-                    uptAppetit = true
-                    uptBPM = true
-                    uptHeight = true
-                    uptSleep = true
-                    uptWeight = true
-                    uptPressure = true
-                    chooseBool(simpleViewFlipper.displayedChild)
-                },
-                year, month, day
-            )
-            datePickerDialogTo.show()
-        }
-
+        dateFrom = binding.dateOtMember
+        dateTo = binding.dateDoMember
+        dateTo.text.clear()
+        dateFrom.text.clear()
+        loaddata()
         return view
     }
 
@@ -348,6 +191,136 @@ class StatisticFragment : Fragment() {
                             )
                         )
                     }
+                    btnNext.setOnClickListener {
+                        Log.d("d", "${simpleViewFlipper.displayedChild}")
+                        val startDate = getDateFromEditText(dateFrom)
+                        val endDate = getDateFromEditText(dateTo)
+                        var ref = simpleViewFlipper.displayedChild
+                        if (simpleViewFlipper.displayedChild == 6) {
+                            ref = 0
+                            update(
+                                -1, true, avgPressure, avgAppetitText, avgFeelingsText, avgHeight,
+                                avgWeight, avgCHSS, avgSleep, avgHeightText, avgWeightText, avgCHSSText,
+                                avgSleepText, avgPressureText, avgFellings, avgAppetite, startDate, endDate
+                            )
+                        }
+                        try {
+                            if (getbool(ref + 1)) {
+                                update(
+                                    ref, true, avgPressure, avgAppetitText, avgFeelingsText, avgHeight,
+                                    avgWeight, avgCHSS, avgSleep, avgHeightText, avgWeightText, avgCHSSText,
+                                    avgSleepText, avgPressureText, avgFellings, avgAppetite, startDate, endDate
+                                )
+                            }
+                        } catch (e: InterruptedException) {
+                            throw RuntimeException(e)
+                        }
+                        chooseBool(ref)
+                        simpleViewFlipper.showNext()
+                    }
+
+                    dateFrom.setOnClickListener {
+                        val calendar = Calendar.getInstance()
+                        val day = calendar.get(Calendar.DAY_OF_MONTH)
+                        val month = calendar.get(Calendar.MONTH)
+                        val year = calendar.get(Calendar.YEAR)
+
+
+                        val datePickerDialogFrom = DatePickerDialog(
+                            requireContext(),
+                            { view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
+                                val dateString =
+                                    String.format("%02d-%02d-%d", dayOfMonth, monthOfYear + 1, year)
+                                dateFrom.setText(dateString)
+                                boolDateFrom = true
+                                if (boolDateFrom == true && boolDateTo == true) {
+                                    val startDate = getDateFromEditText(dateFrom)
+                                    val endDate = getDateFromEditText(dateTo)
+                                    update(
+                                        -1,
+                                        true,
+                                        avgPressure,
+                                        avgAppetitText,
+                                        avgFeelingsText,
+                                        avgHeight,
+                                        avgWeight,
+                                        avgCHSS,
+                                        avgSleep,
+                                        avgHeightText,
+                                        avgWeightText,
+                                        avgCHSSText,
+                                        avgSleepText,
+                                        avgPressureText,
+                                        avgFellings,
+                                        avgAppetite,
+                                        startDate,
+                                        endDate
+                                    )
+                                }
+                                uptFellings = true
+                                uptAppetit = true
+                                uptBPM = true
+                                uptHeight = true
+                                uptSleep = true
+                                uptWeight = true
+                                uptPressure = true
+                                chooseBool(simpleViewFlipper.displayedChild)
+                            },
+                            year, month, day
+                        )
+                        datePickerDialogFrom.show()
+                    }
+
+                    dateTo.setOnClickListener {
+                        val calendar = Calendar.getInstance()
+                        val day = calendar.get(Calendar.DAY_OF_MONTH)
+                        val month = calendar.get(Calendar.MONTH)
+                        val year = calendar.get(Calendar.YEAR)
+
+                        val datePickerDialogTo = DatePickerDialog(
+                            requireContext(),
+                            { view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
+                                val dateString =
+                                    String.format("%02d-%02d-%d", dayOfMonth, monthOfYear + 1, year)
+                                dateTo.setText(dateString)
+                                boolDateTo = true
+                                if (boolDateFrom == true && boolDateTo == true) {
+                                    val startDate = getDateFromEditText(dateFrom)
+                                    val endDate = getDateFromEditText(dateTo)
+                                    update(
+                                        -1,
+                                        true,
+                                        avgPressure,
+                                        avgAppetitText,
+                                        avgFeelingsText,
+                                        avgHeight,
+                                        avgWeight,
+                                        avgCHSS,
+                                        avgSleep,
+                                        avgHeightText,
+                                        avgWeightText,
+                                        avgCHSSText,
+                                        avgSleepText,
+                                        avgPressureText,
+                                        avgFellings,
+                                        avgAppetite,
+                                        startDate,
+                                        endDate
+                                    )
+                                }
+                                uptFellings = true
+                                uptAppetit = true
+                                uptBPM = true
+                                uptHeight = true
+                                uptSleep = true
+                                uptWeight = true
+                                uptPressure = true
+                                chooseBool(simpleViewFlipper.displayedChild)
+                            },
+                            year, month, day
+                        )
+                        datePickerDialogTo.show()
+                    }
                 } else {
                     Toast.makeText(
                         context,
@@ -365,7 +338,6 @@ class StatisticFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loaddata()
     }
 
     private fun calculateAverages(
@@ -441,15 +413,14 @@ class StatisticFragment : Fragment() {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
         val entries = listOf(
-            PieEntry(healthRecords.count { it.wellbeing == Wellbeing.GOOD }
+            PieEntry(healthRecords.filter { it.date in startDate..endDate }.count { it.wellbeing == Wellbeing.GOOD }
                 .toFloat(), "Хорошее"),
-            PieEntry(healthRecords.count { it.wellbeing == Wellbeing.NORMAL }
+            PieEntry(healthRecords.filter { it.date in startDate..endDate }.count { it.wellbeing == Wellbeing.NORMAL }
                 .toFloat(), "Нормальное"),
-            PieEntry(healthRecords.count { it.wellbeing == Wellbeing.BAD }
+            PieEntry(healthRecords.filter { it.date in startDate..endDate }.count { it.wellbeing == Wellbeing.BAD }
                 .toFloat(), "Плохое")
         )
         val dataSet = PieDataSet(entries.filter { it.value !=0f }, text)
-        // Задание цветов для сегментов диаграммы
         val customColors = listOf(
             Color.rgb(76, 175, 80),  // Зеленый для "Хорошее"
             Color.rgb(255, 193, 7),  // Желтый для "Нормальное"
@@ -460,7 +431,6 @@ class StatisticFragment : Fragment() {
         val pieData = PieData(dataSet)
         pie.data = pieData
 
-        // Настройки отображения
         pie.description.isEnabled = false
         pie.isDrawHoleEnabled = false
         pie.setEntryLabelColor(Color.BLACK)
@@ -478,17 +448,17 @@ class StatisticFragment : Fragment() {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
         val entries = listOf(
-            PieEntry(healthRecords.count { it.appetite == Appetite.NO_APPETITE }
+            PieEntry(healthRecords.filter { it.date in startDate..endDate }.count { it.appetite == Appetite.NO_APPETITE }
                 .toFloat(), "Нет аппетита"),
             PieEntry(
-                healthRecords.count { it.appetite == Appetite.GOOD }.toFloat(),
+                healthRecords.filter { it.date in startDate..endDate }.count { it.appetite == Appetite.GOOD }.toFloat(),
                 "Хороший"
             ),
             PieEntry(
-                healthRecords.count { it.appetite == Appetite.BAD }.toFloat(),
+                healthRecords.filter { it.date in startDate..endDate }.count { it.appetite == Appetite.BAD }.toFloat(),
                 "Плохой"
             ),
-            PieEntry(healthRecords.count { it.appetite == Appetite.NORMAL }
+            PieEntry(healthRecords.filter { it.date in startDate..endDate }.count { it.appetite == Appetite.NORMAL }
                 .toFloat(), "Нормальный")
         )
         val dataSet = PieDataSet(entries.filter { it.value !=0f }, text)
@@ -519,7 +489,7 @@ class StatisticFragment : Fragment() {
     ) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
-        val entries = healthRecords.mapIndexed { index, record ->
+        val entries = healthRecords.filter { it.date in startDate..endDate }.mapIndexed { index, record ->
             val value = when (dataType) {
                 DataType.WEIGHT -> record.weight.toFloat()
                 DataType.HEIGHT -> record.height.toFloat()
@@ -558,7 +528,7 @@ class StatisticFragment : Fragment() {
     ) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
-        val entries = healthRecords.mapIndexed { index, record ->
+        val entries = healthRecords.filter { it.date in startDate..endDate }.mapIndexed { index, record ->
             BarEntry(index.toFloat(), record.height.toFloat())
         }.filter { it.y != 0f }
 
@@ -580,7 +550,7 @@ class StatisticFragment : Fragment() {
         val systolicEntries = mutableListOf<Entry>()
         val diastolicEntries = mutableListOf<Entry>()
 
-        healthRecords.forEachIndexed { index, record ->
+        healthRecords.filter { it.date in startDate..endDate }.forEachIndexed { index, record ->
             val pressure_temp = record.bloodPressure
             val regex = "\\d+/\\d+".toRegex()
             if (pressure_temp.matches(regex)) {

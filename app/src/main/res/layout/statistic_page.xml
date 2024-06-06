@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,7 +7,7 @@
 
 
     <TextView
-        android:id="@+id/Statistic_Label"
+        android:id="@+id/Statistic_Label_member"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
@@ -22,16 +21,16 @@
         android:textAlignment="center"
         android:textColor="#673AB7"
         android:textSize="28sp"
-        app:layout_constraintBottom_toTopOf="@+id/simpleViewFlipper"
+        app:layout_constraintBottom_toTopOf="@+id/simpleViewFlipper_member"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.037"
         tools:ignore="MissingConstraints" />
 
     <EditText
-        android:id="@+id/dateOt"
+        android:id="@+id/dateOt_member"
         android:layout_width="155dp"
         android:layout_height="54dp"
         android:layout_centerHorizontal="true"
@@ -52,7 +51,7 @@
         tools:ignore="MissingConstraints" />
 
     <EditText
-        android:id="@+id/dateDo"
+        android:id="@+id/dateDo_member"
         android:layout_width="155dp"
         android:layout_height="54dp"
         android:layout_centerHorizontal="true"
@@ -73,14 +72,14 @@
         tools:ignore="MissingConstraints" />
 
     <ViewFlipper
-        android:id="@+id/simpleViewFlipper"
+        android:id="@+id/simpleViewFlipper_member"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="165dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Statistic_Label"
+        app:layout_constraintTop_toBottomOf="@+id/Statistic_Label_member"
         tools:ignore="MissingConstraints">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -89,7 +88,7 @@
             tools:context=".MainActivity">
 
             <TextView
-                android:id="@+id/AverageValueHeight"
+                android:id="@+id/AverageValueHeight_member"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginEnd="17dp"
@@ -97,15 +96,15 @@
                 android:textColor="@color/black"
                 android:textSize="17sp"
                 android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="@+id/AverageHeight"
+                app:layout_constraintBottom_toBottomOf="@+id/AverageHeight_member"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/AverageHeight"
-                app:layout_constraintTop_toTopOf="@+id/AverageHeight"
+                app:layout_constraintStart_toEndOf="@+id/AverageHeight_member"
+                app:layout_constraintTop_toTopOf="@+id/AverageHeight_member"
                 app:layout_constraintVertical_bias="0.0"
                 tools:ignore="MissingConstraints" />
 
             <TextView
-                android:id="@+id/AverageHeight"
+                android:id="@+id/AverageHeight_member"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -122,14 +121,14 @@
                 tools:ignore="MissingConstraints" />
 
             <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/averageHeight"
+                android:id="@+id/averageHeight_member"
                 android:layout_width="411dp"
                 android:layout_height="333dp"
                 android:layout_marginTop="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/AverageValueHeight" />
+                app:layout_constraintTop_toBottomOf="@+id/AverageValueHeight_member" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -138,7 +137,7 @@
             tools:context=".MainActivity">
 
             <TextView
-                android:id="@+id/AverageWeight"
+                android:id="@+id/AverageWeight_member"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="315dp"
@@ -153,7 +152,7 @@
                 tools:ignore="MissingConstraints" />
 
             <TextView
-                android:id="@+id/AverageValueWeight"
+                android:id="@+id/AverageValueWeight_member"
                 android:layout_width="179dp"
                 android:layout_height="22dp"
                 android:layout_marginBottom="315dp"
@@ -168,14 +167,14 @@
                 tools:ignore="MissingConstraints" />
 
             <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/averageWeight"
+                android:id="@+id/averageWeight_member"
                 android:layout_width="411dp"
                 android:layout_height="333dp"
                 android:layout_marginTop="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/AverageValueWeight"/>
+                app:layout_constraintTop_toBottomOf="@+id/AverageValueWeight_member"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -184,7 +183,7 @@
             tools:context=".MainActivity">
 
             <TextView
-                android:id="@+id/AverageCHSS"
+                android:id="@+id/AverageCHSS_member"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="315dp"
@@ -199,7 +198,7 @@
                 tools:ignore="MissingConstraints" />
 
             <TextView
-                android:id="@+id/AverageValueCHSS"
+                android:id="@+id/AverageValueCHSS_member"
                 android:layout_width="179dp"
                 android:layout_height="22dp"
 
@@ -216,14 +215,14 @@
                 tools:ignore="MissingConstraints" />
 
             <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/averageCHSS"
+                android:id="@+id/averageCHSS_member"
                 android:layout_width="411dp"
                 android:layout_height="333dp"
                 android:layout_marginTop="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/AverageValueCHSS"/>
+                app:layout_constraintTop_toBottomOf="@+id/AverageValueCHSS_member"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -232,7 +231,7 @@
             tools:context=".MainActivity">
 
             <TextView
-                android:id="@+id/AveragePressure"
+                android:id="@+id/AveragePressure_member"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="315dp"
@@ -247,7 +246,7 @@
                 tools:ignore="MissingConstraints" />
 
             <TextView
-                android:id="@+id/AverageValuePressure"
+                android:id="@+id/AverageValuePressure_member"
                 android:layout_width="179dp"
                 android:layout_height="22dp"
 
@@ -264,25 +263,25 @@
                 tools:ignore="MissingConstraints" />
 
             <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/averagePressure"
+                android:id="@+id/averagePressure_member"
                 android:layout_width="411dp"
                 android:layout_height="333dp"
                 android:layout_marginTop="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/AverageValuePressure" />
+                app:layout_constraintTop_toBottomOf="@+id/AverageValuePressure_member" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="357dp"
-            app:layout_constraintEnd_toStartOf="@+id/AverageAppetite"
-            app:layout_constraintStart_toStartOf="@+id/AverageAppetite"
+            app:layout_constraintEnd_toStartOf="@+id/AverageAppetite_member"
+            app:layout_constraintStart_toStartOf="@+id/AverageAppetite_member"
             tools:context=".MainActivity">
 
             <TextView
-                android:id="@+id/AverageAppetite"
+                android:id="@+id/AverageAppetite_member"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="315dp"
@@ -297,7 +296,7 @@
                 tools:ignore="MissingConstraints" />
 
             <TextView
-                android:id="@+id/AverageValueAppetite"
+                android:id="@+id/AverageValueAppetite_member"
                 android:layout_width="179dp"
                 android:layout_height="22dp"
 
@@ -313,14 +312,14 @@
                 app:layout_constraintRight_toRightOf="parent"
                 tools:ignore="MissingConstraints" />
             <com.github.mikephil.charting.charts.PieChart
-                android:id="@+id/averageAppetite"
+                android:id="@+id/averageAppetite_member"
                 android:layout_width="411dp"
                 android:layout_height="333dp"
                 android:layout_marginTop="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/AverageValueAppetite" />
+                app:layout_constraintTop_toBottomOf="@+id/AverageValueAppetite_member" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -329,7 +328,7 @@
             tools:context=".MainActivity">
 
             <TextView
-                android:id="@+id/AverageSleep"
+                android:id="@+id/AverageSleep_member"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="315dp"
@@ -345,7 +344,7 @@
                 tools:ignore="MissingConstraints" />
 
             <TextView
-                android:id="@+id/AverageValueSleep"
+                android:id="@+id/AverageValueSleep_member"
                 android:layout_width="179dp"
                 android:layout_height="22dp"
 
@@ -362,14 +361,14 @@
                 tools:ignore="MissingConstraints" />
 
             <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/averageSleep"
+                android:id="@+id/averageSleep_member"
                 android:layout_width="411dp"
                 android:layout_height="333dp"
                 android:layout_marginTop="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/AverageValueSleep"  />
+                app:layout_constraintTop_toBottomOf="@+id/AverageValueSleep_member"  />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -378,7 +377,7 @@
             tools:context=".MainActivity">
 
             <TextView
-                android:id="@+id/AverageHealth"
+                android:id="@+id/AverageHealth_member"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="315dp"
@@ -393,7 +392,7 @@
                 tools:ignore="MissingConstraints" />
 
             <TextView
-                android:id="@+id/AverageValueHealth"
+                android:id="@+id/AverageValueHealth_member"
                 android:layout_width="179dp"
                 android:layout_height="22dp"
                 android:layout_marginBottom="325dp"
@@ -407,19 +406,19 @@
                 app:layout_constraintRight_toRightOf="parent"
                 tools:ignore="MissingConstraints" />
             <com.github.mikephil.charting.charts.PieChart
-                android:id="@+id/averageHealth"
+                android:id="@+id/averageHealth_member"
                 android:layout_width="411dp"
                 android:layout_height="333dp"
                 android:layout_marginTop="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/AverageValueHealth" />
+                app:layout_constraintTop_toBottomOf="@+id/AverageValueHealth_member" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ViewFlipper>
 
     <Button
-        android:id="@+id/buttonNext"
+        android:id="@+id/buttonNext_member"
         android:layout_width="154dp"
         android:layout_height="56dp"
         android:layout_gravity="center"

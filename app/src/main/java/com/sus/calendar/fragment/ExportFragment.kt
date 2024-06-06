@@ -120,20 +120,6 @@ class ExportFragment : Fragment() {
             val currentdate=LocalDate.of(it.year,it.month,it.day)
             currentdate.isAfter(startdate)&&currentdate.isBefore(enddate)
         }.sortedByDescending { LocalDate.of(it.year, it.month, it.day) }
-//        val dateWithNotes: Array<List<DateWithNotes>?> = arrayOfNulls(1)
-//        val runnable = Runnable {
-//            dateWithNotes[0] = dataService?.getBetween(
-//                byear,
-//                ayear,
-//                bmonth,
-//                amonth,
-//                bday,
-//                aday
-//            ) as List<DateWithNotes>?
-//        }
-//        val thread = Thread(runnable)
-//        thread.start()
-//        thread.join()
         if (filtereddates.isEmpty()) {
             Toast.makeText(activity, "Записи за данный день отсутствуют", Toast.LENGTH_SHORT)
                 .show()

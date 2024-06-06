@@ -32,16 +32,6 @@ class JoinedGroupsFragment:Fragment() {
         bindingdiag=EnterPasswordForGroupBinding.inflate(inflater,container,false)
         val root = joinedBinding.root
         loaddata()
-        joinedBinding.recyclerJoinedGroups.layoutManager=LinearLayoutManager(requireContext())
-        val adapter=JoinedGroupsRecyclerViewAdapter()
-        adapter.data=data
-        joinedBinding.recyclerJoinedGroups.adapter=adapter
-        joinedBinding.backToMain.setOnClickListener{
-            findNavController().navigateUp()
-        }
-        joinedBinding.joinGroup.setOnClickListener{
-            showInputDialog()
-        }
         return root
     }
     private fun loaddata(){
@@ -55,6 +45,16 @@ class JoinedGroupsFragment:Fragment() {
             ) {
                 if (response.isSuccessful) {
                     data.addAll(response.body()!!)
+                    joinedBinding.recyclerJoinedGroups.layoutManager=LinearLayoutManager(requireContext())
+                    val adapter=JoinedGroupsRecyclerViewAdapter()
+                    adapter.data=data
+                    joinedBinding.recyclerJoinedGroups.adapter=adapter
+                    joinedBinding.backToMain.setOnClickListener{
+                        findNavController().navigateUp()
+                    }
+                    joinedBinding.joinGroup.setOnClickListener{
+                        showInputDialog()
+                    }
                 }
             }
             override fun onFailure(call: Call<List<GroupforUserDto>>, t: Throwable) {

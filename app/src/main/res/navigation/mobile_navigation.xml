@@ -69,8 +69,8 @@
         android:name="com.sus.calendar.fragment.CreatedGroups"
         android:label="CreatedGroups" >
         <argument
-            android:name="groups"
-            app:argType="com.sus.calendar.dtos.getgroupcreator.GroupCreatorForCreatorDto[]"/>
+            android:name="id"
+            app:argType="long" />
         <action
             android:id="@+id/action_nav_created_groups_to_usersOfGroup"
             app:destination="@id/usersOfGroup" />
