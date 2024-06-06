@@ -1,5 +1,6 @@
 package com.sus.calendar.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
@@ -38,6 +39,7 @@ class JoinedGroupsRecyclerViewAdapter:RecyclerView.Adapter<JoinedGroupsRecyclerV
             exitGroup.setOnClickListener{
                 val id_user= MainActivity.DataManager.getUserData()!!.id
                 val call_delete_user=apiService.delete_user(id_user,element.id)
+                Log.d("as", "onBindViewHolder: "+element.id)
                 call_delete_user.enqueue(object : Callback<Void> {
                     override fun onResponse(call: Call<Void>, response: Response<Void>) {
                         if(response.isSuccessful){

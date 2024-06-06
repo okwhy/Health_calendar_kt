@@ -28,6 +28,9 @@ interface ApiService {
     @POST("/api/groups/add")
     fun create_group(@Query("creator_id") creator_id: Long,@Query("name") name: String): Call<GroupCreatorForCreatorDto>
 
+    @POST("/api/groups/users/add")
+    fun addUser(@Query("id") id:Long,@Query("key") key:String):Call<GroupforUserDto>
+
     @DELETE("api/groups/users/{user_id}")
     fun delete_user(@Path("user_id") userid:Long,@Query("id") id:Long):Call<Void>
     @DELETE("api/groups/delete/{id}")

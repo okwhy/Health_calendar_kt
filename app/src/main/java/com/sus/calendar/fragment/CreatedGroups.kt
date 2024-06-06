@@ -30,7 +30,6 @@ import retrofit2.Response
 class CreatedGroups:Fragment() {
     private lateinit var createGroupBinding: CreateGroupBinding
     private lateinit var enter_for_group: EnterForGroupBinding
-    private lateinit var card: CarGroupForCreaterBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,9 +37,6 @@ class CreatedGroups:Fragment() {
     ): View {
         createGroupBinding = CreateGroupBinding.inflate(inflater,container,false)
         enter_for_group = EnterForGroupBinding.inflate(inflater,container,false)
-        card = CarGroupForCreaterBinding.inflate(inflater,container,false)
-
-
         val root=createGroupBinding.root
         val args:CreatedGroupsArgs by navArgs()
         val manager=LinearLayoutManager(requireContext())
@@ -54,8 +50,7 @@ class CreatedGroups:Fragment() {
 
 
         createGroupBinding.createGroup.setOnClickListener{
-
-            showInputDialog();
+            showInputDialog()
         }
 
         return root
@@ -63,48 +58,42 @@ class CreatedGroups:Fragment() {
 
     private fun showInputDialog() {
         val dialogView = enter_for_group.enterForGroup
-        val editTextInput = enter_for_group.nameForGroup
         val apiService= RetrofitClient.instance
 
         AlertDialog.Builder(requireContext())
-            .setTitle("Введите значение")
+            .setTitle("Введите название группы")
             .setView(dialogView)
-            .setPositiveButton("Создать") { dialog, which ->
-                var userInputValue = editTextInput.text.toString()
-
+            .setPositiveButton("Создать") { dialog, _ ->
                 val user_id = MainActivity.DataManager.getUserData()!!.id
                 val create_group = apiService.create_group(user_id,
                     enter_for_group.nameForGroup.text.toString()
                 )
 
-                if (create_group != null) {
-                    create_group.enqueue(object : Callback<GroupCreatorForCreatorDto> {
+                create_group.enqueue(object : Callback<GroupCreatorForCreatorDto> {
 
-                        override fun onResponse(
-                            call: Call<GroupCreatorForCreatorDto>,
-                            response: Response<GroupCreatorForCreatorDto>
-                        ) {
-                            if (response.isSuccessful) {
-                                val code = response.body()
-                                val adapter=createGroupBinding.recyclerAllGroup.adapter as CreatorsGroupRecyclerViewAdapter
-                                adapter.data.add(code!!)
-                                createGroupBinding.recyclerAllGroup.adapter=adapter
-                                dialog.dismiss()
-
-                            } else {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Error: ${response.message()}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-                        override fun onFailure(call: Call<GroupCreatorForCreatorDto>, t: Throwable) {
-                            Log.d("ser", "onFailure: "+t.message)
+                    override fun onResponse(
+                        call: Call<GroupCreatorForCreatorDto>,
+                        response: Response<GroupCreatorForCreatorDto>
+                    ) {
+                        if (response.isSuccessful) {
+                            val code = response.body()
+                            val adapter=createGroupBinding.recyclerAllGroup.adapter as CreatorsGroupRecyclerViewAdapter
+                            adapter.data.add(code!!)
+                            createGroupBinding.recyclerAllGroup.adapter=adapter
                             dialog.dismiss()
+
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                "Error: ${response.message()}",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-                    })
-                }
+                    }
+                    override fun onFailure(call: Call<GroupCreatorForCreatorDto>, t: Throwable) {
+                        Log.d("ser", "onFailure: "+t.message)
+                    }
+                })
             }
             .setNegativeButton("Отмена") { dialog, which ->
                 dialog.dismiss()
