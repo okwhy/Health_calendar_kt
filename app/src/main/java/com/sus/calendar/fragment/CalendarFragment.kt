@@ -2,7 +2,6 @@ package com.sus.calendar.fragment
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,6 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.applandeo.materialcalendarview.CalendarView
 import com.applandeo.materialcalendarview.EventDay
 import com.applandeo.materialcalendarview.listeners.OnCalendarPageChangeListener
@@ -23,15 +21,11 @@ import com.sus.calendar.R
 import com.sus.calendar.RetrofitClient
 import com.sus.calendar.databinding.CalendarPageBinding
 import com.sus.calendar.dtos.DateWithIdNotesUidDto
-import com.sus.calendar.dtos.getgroupcreator.DateDto
+import com.sus.calendar.dtos.tmpSolution.DataWithNotesTmp
+import com.sus.calendar.dtos.tmpSolution.NoteTmp
 import com.sus.calendar.entities.DateSQL
-import com.sus.calendar.entities.DateWithNotes
-import com.sus.calendar.entities.Note
 import com.sus.calendar.services.ApiService
 import com.sus.calendar.services.DataService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -40,28 +34,28 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.Arrays
 import java.util.Calendar
+import java.util.UUID
 
 class CalendarFragment : Fragment() {
 
-    private val appetite_map = hashMapOf<String,String>(
-        "GOOD" to "Хороший",
-        "BAD" to "Плохой",
-        "NORMAL" to "Нормальный",
-        "NO_APPETITE" to "Нет аппетита"
+    private val appetite_map = hashMapOf<Int,String>(
+        2 to "GOOD",
+        3 to "BAD",
+        4 to "NORMAL",
+        1 to "NO_APPETITE"
     )
 
-    private val selffeelings_map = hashMapOf<String,String>(
+    private val selffeelings_map = hashMapOf<Int,String>(
 
-        "GOOD" to "Хорошее",
-        "BAD" to "Плохое",
-        "NORMAL" to "Нормальное"
+        1 to "GOOD",
+        3 to "BAD",
+        2 to "NORMAL"
 
     )
 
 
     private lateinit var spinnerAppetite:Spinner
     private lateinit var spinnerHealth:Spinner
-
     private lateinit var curdate: LocalDate
     private var calendar: Calendar? = null
     private var currentYear = 0
@@ -72,6 +66,7 @@ class CalendarFragment : Fragment() {
     private lateinit var alertDialog: AlertDialog
     private lateinit var binding: CalendarPageBinding
     private lateinit var apiService: ApiService
+    private lateinit var dayid:TextView
     private var data:MutableList<DateWithIdNotesUidDto> = mutableListOf()
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -89,50 +84,29 @@ class CalendarFragment : Fragment() {
 
         calendarView.setSwipeEnabled(false)
         dataService = this.context?.let { DataService.initial(it) }
-        loaddata()
-        addmarks(calendarView)
+        loaddata(calendarView)
+//        addmarks(calendarView)
 
-        val calendarStrings: List<String> = ArrayList()
-        val days = IntArray(31)
-        val months = IntArray(12)
-        val years = IntArray(10)
+
         val textInputHeight = binding.textInputHeight
         val textInputWeight = binding.textInputWeight
         val textInputPulse = binding.textInputPulse
         val textInputPressure = binding.textInputPressure
-        val textInputAppetite = binding.textInputAppetite
         val textInputSlepping = binding.textInputSlepping
-        val textInputHealth = binding.textInputHealth
-
+        dayid=binding.dayid
         spinnerAppetite = binding.textInputAppetiteSpiner
         spinnerHealth = binding.textInputHealthSpiner
-
-
         texts = ArrayList(
             Arrays.asList(
                 textInputHeight,
                 textInputWeight,
                 textInputPulse,
                 textInputPressure,
-                textInputAppetite,
                 textInputSlepping,
-                textInputHealth
             )
         )
-        val dayInfo = binding.dayInfo
-        val dayHeight = binding.dayHeight
-        val dayWeight = binding.dayWeight
-        val dayPulse = binding.dayPulse
-        val dayPressure = binding.dayPressure
-        val dayAppetite = binding.dayAppetite
-        val daySlepping = binding.daySlepping
-        val dayHealth = binding.dayHealth
-        var notes: Map<String?, String?>? = null
-        notes = try {
+        var notes: Map<String?, String?>? =
             fetchDate(currentYear, currentMonth, currentDay)
-        } catch (e: InterruptedException) {
-            throw RuntimeException(e)
-        }
         checkdate(currentYear, currentMonth, currentDay)
         if (!(notes == null || notes!!.isEmpty())) {
             textInputHeight.setText(if (notes!!["HEIGHT"] == null) "Нет данных" else notes!!["HEIGHT"])
@@ -140,6 +114,7 @@ class CalendarFragment : Fragment() {
             textInputPulse.setText(if (notes!!["PULSE"] == null) "Нет " else notes!!["PULSE"])
             textInputPressure.setText(if (notes!!["PRESSURE"] == null) "Нет данных" else notes!!["PRESSURE"])
             textInputSlepping.setText(if (notes!!["SLEEP"] == null) "Нет данных" else notes!!["SLEEP"])
+            dayid.text=notes["dateid"]
             when(notes!!["APPETITE"])
             {
                 "NO_APPETITE"->spinnerAppetite.setSelection(1)
@@ -165,6 +140,7 @@ class CalendarFragment : Fragment() {
             spinnerAppetite.setSelection(0)
             textInputSlepping.setText("Нет данных")
             spinnerHealth.setSelection(0)
+            dayid.text=""
         }
 
         calendarView.setOnDayClickListener(object : OnDayClickListener {
@@ -176,47 +152,18 @@ class CalendarFragment : Fragment() {
                 currentYear = year
                 currentMonth = month + 1
                 currentDay = dayOfMonth
-                if (dayInfo.visibility == View.INVISIBLE) {
-                    dayInfo.visibility = View.VISIBLE
-                    dayHeight.visibility = View.VISIBLE
-                    dayWeight.visibility = View.VISIBLE
-                    dayPulse.visibility = View.VISIBLE
-                    dayPressure.visibility = View.VISIBLE
-                    dayAppetite.visibility = View.VISIBLE
-                    daySlepping.visibility = View.VISIBLE
-                    dayHealth.visibility = View.VISIBLE
-                }
-                for (i in 0..30) {
-                    if (days[i] == currentDay) {
-                        for (j in 0..11) {
-                            if (months[j] == currentMonth) {
-                                for (k in 0..9) {
-                                    if (years[k] == currentYear) {
-                                        textInputHeight.setText(calendarStrings[i])
-                                        textInputWeight.setText(calendarStrings[i + 1])
-                                        textInputPulse.setText(calendarStrings[i + 2])
-                                        textInputPressure.setText(calendarStrings[i + 3])
-                                        //textInputAppetite.setText(calendarStrings[i + 4])
-                                        textInputSlepping.setText(calendarStrings[i + 5])
-                                        //textInputHealth.setText(calendarStrings[i + 6])
-                                        return
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                var notes: Map<String?, String?>? = null
-                notes = fetchDate(currentYear, currentMonth, currentDay) // все записи за текущий день
+
+                var currentdayNotes: Map<String?, String?>? = fetchDate(currentYear, currentMonth, currentDay) // все записи за текущий день
 
                 checkdate(currentYear, currentMonth, currentDay)
-                if (!(notes == null || notes!!.isEmpty())) {
-                    textInputHeight.setText(if (notes!!["HEIGHT"] == null) "Нет данных" else notes!!["HEIGHT"])
-                    textInputWeight.setText(if (notes!!["WEIGHT"] == null) "Нет данных" else notes!!["WEIGHT"])
-                    textInputPulse.setText(if (notes!!["PULSE"] == null) "Нет " else notes!!["PULSE"])
-                    textInputPressure.setText(if (notes!!["PRESSURE"] == null) "Нет данных" else notes!!["PRESSURE"])
-                    textInputSlepping.setText(if (notes!!["SLEEP"] == null) "Нет данных" else notes!!["SLEEP"])
-                    when(notes!!["APPETITE"])
+                if (!(currentdayNotes == null || currentdayNotes!!.isEmpty())) {
+                    textInputHeight.setText(if (currentdayNotes!!["HEIGHT"] == null) "Нет данных" else currentdayNotes!!["HEIGHT"])
+                    textInputWeight.setText(if (currentdayNotes!!["WEIGHT"] == null) "Нет данных" else currentdayNotes!!["WEIGHT"])
+                    textInputPulse.setText(if (currentdayNotes!!["PULSE"] == null) "Нет " else currentdayNotes!!["PULSE"])
+                    textInputPressure.setText(if (currentdayNotes!!["PRESSURE"] == null) "Нет данных" else currentdayNotes!!["PRESSURE"])
+                    textInputSlepping.setText(if (currentdayNotes!!["SLEEP"] == null) "Нет данных" else currentdayNotes!!["SLEEP"])
+                    dayid.text=currentdayNotes["dateid"]
+                    when(currentdayNotes["APPETITE"])
                     {
                         "NO_APPETITE"->spinnerAppetite.setSelection(1)
                         "GOOD"->spinnerAppetite.setSelection(2)
@@ -225,7 +172,7 @@ class CalendarFragment : Fragment() {
                         else->spinnerAppetite.setSelection(0)
                     }
 
-                    when(notes!!["HEALTH"])
+                    when(currentdayNotes["HEALTH"])
                     {
                         "GOOD"->spinnerHealth.setSelection(1)
                         "BAD"->spinnerHealth.setSelection(3)
@@ -241,27 +188,18 @@ class CalendarFragment : Fragment() {
                     spinnerAppetite.setSelection(0)
                     textInputSlepping.setText("Нет данных")
                     spinnerHealth.setSelection(0)
+                    dayid.text=""
                 }
-
-
             }
         })
         calendarView.setOnForwardPageChangeListener(object : OnCalendarPageChangeListener {
             override fun onChange() {
-                try {
                     addmarks(calendarView)
-                } catch (e: InterruptedException) {
-                    throw RuntimeException(e)
-                }
             }
         })
         calendarView.setOnPreviousPageChangeListener(object : OnCalendarPageChangeListener {
             override fun onChange() {
-                try {
                     addmarks(calendarView)
-                } catch (e: InterruptedException) {
-                    throw RuntimeException(e)
-                }
             }
         })
         val stateOfAppetite = arrayOf<String?>(
@@ -314,9 +252,7 @@ class CalendarFragment : Fragment() {
             if (spinnerAppetite.getItemAtPosition(spinnerAppetite.selectedItemPosition)
                     .toString() != "Введите аппетит"
             ) {
-                notes1["APPETITE"] =
-                    spinnerAppetite.getItemAtPosition(spinnerAppetite.selectedItemPosition)
-                        .toString()
+                notes1["APPETITE"] =selffeelings_map[spinnerHealth.selectedItemPosition].toString()
             }
             if (textInputSlepping.text.toString() != "Нет данных") {
                 notes1["SLEEP"] = textInputSlepping.text.toString()
@@ -324,12 +260,12 @@ class CalendarFragment : Fragment() {
             if (spinnerAppetite.getItemAtPosition(spinnerAppetite.selectedItemPosition)
                     .toString() != "Введите аппетит"
             ) {
-                notes1["HEALTH"] =
-                    spinnerAppetite.getItemAtPosition(spinnerAppetite.selectedItemPosition)
-                        .toString()
+                notes1["HEALTH"] =appetite_map[spinnerAppetite.selectedItemPosition].toString()
+
             }
-            Log.d("dafa", "$notes1 $currentYear")
-            insertorupdateDate(notes1, currentYear, currentMonth, currentDay)
+            if(notes1.isNotEmpty()){
+                insertorupdateDate(notes1, currentYear, currentMonth, currentDay,dayid.text.toString())
+            }
         }
 
         val showPopupButton = binding.showPopupButton
@@ -352,36 +288,78 @@ class CalendarFragment : Fragment() {
         alertDialog.show()
     }
 
-    private fun insertorupdateDate(notes: Map<String, String>, year: Int, month: Int, date: Int) {
+    private fun insertorupdateDate(notes: Map<String, String>, year: Int, month: Int, date: Int,id:String) {
         var ref: DateSQL?
-        var id: Long?
-        val noteslist: MutableList<Note> = ArrayList()
-        viewLifecycleOwner.lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                ref = dataService!!.getDateNoNotes(year, month, date)
-                if (ref == null) {
-                    id = dataService!!.insertDate(year, month, date)
-                } else id = ref!!.id
-                for (n in notes.keys) {
-                    noteslist.add(Note(n, notes[n], id!!))
-                }
-                for (n in noteslist) {
-                    val a = dataService!!.insertOrUpdateNote(n)
-                }
+        val noteslist: MutableList<NoteTmp> = mutableListOf()
+        if(id==""){
+            for (n in notes.keys){
+                noteslist.add(NoteTmp(n, notes[n]!!))
             }
+            val uid= UUID.randomUUID().toString().replace("-", "").take(10)
+            val tmp=DataWithNotesTmp(year,month,date, noteslist.toSet(),uid)
+            val callAddDate=apiService.addDate(MainActivity.DataManager.getUserData()!!.id,tmp)
+            callAddDate.enqueue(object :Callback<DateWithIdNotesUidDto>{
+                override fun onResponse(
+                    call: Call<DateWithIdNotesUidDto>,
+                    response: Response<DateWithIdNotesUidDto>
+                ) {
+                    if(response.isSuccessful){
+                        data.add(response.body()!!)
+                        dayid.text= response.body()!!.uid
+//                        dayid.visibility=View.INVISIBLE
+                    }
+                }
+
+                override fun onFailure(call: Call<DateWithIdNotesUidDto>, t: Throwable) {
+                    Toast.makeText(context, "Ошибка: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+
+            }
+            )
+        }else{
+            for (n in notes.keys){
+                noteslist.add(NoteTmp(n, notes[n]!!))
+            }
+            val tmp=DataWithNotesTmp(year,month,date, noteslist.toSet(),id)
+            val callUpdateDate=apiService.updateDate(MainActivity.DataManager.getUserData()!!.id,tmp)
+            callUpdateDate.enqueue(object :Callback<DateWithIdNotesUidDto>{
+                override fun onResponse(
+                    call: Call<DateWithIdNotesUidDto>,
+                    response: Response<DateWithIdNotesUidDto>
+                ) {
+                    if(response.isSuccessful){
+                        val tmp2=response.body()
+                        data.find { it.uid == tmp2!!.uid }?.let { existingItem ->
+                            data[data.indexOf(existingItem)] = tmp2!!
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<DateWithIdNotesUidDto>, t: Throwable) {
+                    Toast.makeText(context, "Ошибка: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+
+            })
         }
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            withContext(Dispatchers.IO) {
+//                ref = dataService!!.getDateNoNotes(year, month, date)
+//                if (ref == null) {
+//                    id = dataService!!.insertDate(year, month, date)
+//                } else id = ref!!.id
+//                for (n in notes.keys) {
+//                    noteslist.add(Note(n, notes[n], id!!))
+//                }
+//                for (n in noteslist) {
+//                    val a = dataService!!.insertOrUpdateNote(n)
+//                }
+//            }
+//        }
 
     }
 
     private fun fetchDate(year: Int, month: Int, date: Int): Map<String?, String?>? {
-//        var dateSQL: DateWithNotes? = null
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            dateSQL = withContext(Dispatchers.IO) {
-//                dataService!!.getDate(year, month, date)
-//            }
-//        }
-        var dateSQL: DateWithIdNotesUidDto?
-        dateSQL=data.filter { it.year==year
+        val dateSQL: DateWithIdNotesUidDto? = data.filter { it.year==year
                 &&it.month==month
                 &&it.day==date }.firstOrNull()
 
@@ -389,11 +367,12 @@ class CalendarFragment : Fragment() {
         if (dateSQL == null) {
             return null
         }
-        val notes = dateSQL!!.notes
+        val notes = dateSQL.notes
         val notesRes: MutableMap<String?, String?> = HashMap()
-        for (n in notes!!) {
+        for (n in notes) {
             notesRes[n.type] = n.value
         }
+        notesRes["dateid"]=dateSQL.uid
         return notesRes
     }
 
@@ -405,31 +384,25 @@ class CalendarFragment : Fragment() {
         val day = cal[5]
         var noedit: Boolean
         var seldate: LocalDate
-        val daysWithData: MutableList<Int> = mutableListOf()
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            withContext(Dispatchers.IO) {
-//                daysWithData.addAll(dataService!!.getDaysByMonth(year, month))
-//            }
-//        }
-        daysWithData.addAll(data.filter { it.year==year&&it.month==month }.map { it.day })
+        val daysWithData: MutableList<Int> = data.filter { it.year==year && it.month==month }.map { it.day }.toMutableList()
         val events: MutableList<EventDay> = mutableListOf()
-        for (iter in 0 until days_amount) {
-            val calendar_temp = Calendar.getInstance()
-            seldate = LocalDate.of(year, month, day + iter)
-            noedit = seldate.isAfter(curdate) || ChronoUnit.DAYS.between(curdate, seldate) < -3
-            calendar_temp[year, month - 1] = day + iter
-            if (noedit) {
+            for (iter in 0 until days_amount) {
+                val calendartemp = Calendar.getInstance()
+                seldate = LocalDate.of(year, month, day + iter)
+                noedit = seldate.isAfter(curdate) || ChronoUnit.DAYS.between(curdate, seldate) < -3
+                calendartemp[year, month - 1] = day + iter
+                if (noedit) {
+                    if (daysWithData.contains(day + iter)) {
+                        events.add(EventDay(calendartemp, R.drawable.ic_line2))
+                    } else {
+                        events.add(EventDay(calendartemp, R.drawable.ic_line))
+                    }
+                }
                 if (daysWithData.contains(day + iter)) {
-                    events.add(EventDay(calendar_temp, R.drawable.ic_line2))
-                } else {
-                    events.add(EventDay(calendar_temp, R.drawable.ic_line))
+                    events.add(EventDay(calendartemp, R.drawable.ic_line2))
                 }
             }
-            if (daysWithData.contains(day + iter)) {
-                events.add(EventDay(calendar_temp, R.drawable.ic_line2))
-            }
-        }
-        calendarView.setEvents(events)
+            calendarView.setEvents(events)
     }
 
     private fun checkdate(year: Int, month: Int, date: Int) {
@@ -442,13 +415,16 @@ class CalendarFragment : Fragment() {
             t.isLongClickable = !noedit
             t.isCursorVisible = !noedit
         }
+        spinnerAppetite.isClickable=!noedit
+        spinnerHealth.isClickable=!noedit
     }
-    private fun loaddata(){
+    private fun loaddata(calendarView: CalendarView){
         val callGetDates=apiService.getUserDats(MainActivity.DataManager.getUserData()!!.id)
         callGetDates.enqueue(object : Callback<List<DateWithIdNotesUidDto>> {
             override fun onResponse(call: Call<List<DateWithIdNotesUidDto>>, response: Response<List<DateWithIdNotesUidDto>>) {
                 if (response.isSuccessful) {
                     data.addAll(response.body()!!)
+                    addmarks(calendarView)
                 } else {
                     Toast.makeText(
                         context,
@@ -461,5 +437,6 @@ class CalendarFragment : Fragment() {
                 Toast.makeText(context, "Ошибка: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
+
     }
 }

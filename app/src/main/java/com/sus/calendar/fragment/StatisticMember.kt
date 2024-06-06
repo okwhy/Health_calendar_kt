@@ -287,31 +287,6 @@ class StatisticMember : Fragment() {
 
         return view
     }
-
-    fun createHealthRecordFromString(data: String): HealthRecord {
-        val parts = data.split(",")
-
-        val date = LocalDate.parse(parts[0].trim(), DateTimeFormatter.ISO_LOCAL_DATE)
-        val height = parts[1].trim().toInt()
-        val weight = parts[2].trim().toDouble()
-        val heartRate = parts[3].trim().toInt()
-        val bloodPressure = parts[4].trim()
-        val sleepHours = parts[5].trim().toDouble()
-        val wellbeing = Wellbeing.valueOf(parts[6].trim().uppercase(Locale.getDefault()))
-        val appetite = Appetite.valueOf(parts[7].trim().uppercase(Locale.getDefault()))
-
-        return HealthRecord(
-            date = date,
-            height = height,
-            weight = weight,
-            heartRate = heartRate,
-            bloodPressure = bloodPressure,
-            sleepHours = sleepHours,
-            wellbeing = wellbeing,
-            appetite = appetite
-        )
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -427,13 +402,13 @@ class StatisticMember : Fragment() {
             }
 
             DataType.WELLBEING -> {
-                val mostCommonWellbeing = filteredRecords.groupBy { it.wellbeing }
+                val mostCommonWellbeing = filteredRecords.filter { it.wellbeing!= Wellbeing.NOT_STATED }.groupBy { it.wellbeing }
                     .maxByOrNull { it.value.size }?.key ?: Wellbeing.NORMAL
                 text.text = mostCommonWellbeing.toString()
             }
 
             DataType.APPETITE -> {
-                val mostCommonAppetite = filteredRecords.groupBy { it.appetite }
+                val mostCommonAppetite = filteredRecords.filter { it.appetite!= Appetite.NOT_STATED }.groupBy { it.appetite }
                     .maxByOrNull { it.value.size }?.key ?: Appetite.NO_APPETITE
                 text.text = mostCommonAppetite.toString()
             }
@@ -585,7 +560,7 @@ class StatisticMember : Fragment() {
 
         val entries = healthRecords.mapIndexed { index, record ->
             BarEntry(index.toFloat(), record.height.toFloat())
-        }
+        }.filter { it.y != 0f }
 
         val dataSet = BarDataSet(entries, text)
         dataSet.colors = ColorTemplate.MATERIAL_COLORS.toList()

@@ -5,7 +5,9 @@ import com.sus.calendar.dtos.GroupforUserDto
 
 import com.sus.calendar.dtos.UserDTO
 import com.sus.calendar.dtos.getgroupcreator.GroupCreatorForCreatorDto
+import com.sus.calendar.dtos.tmpSolution.DataWithNotesTmp
 import retrofit2.Call
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -37,4 +39,8 @@ interface ApiService {
     fun delete_group(@Path("id") id:Long):Call<Void>
     @GET("api/dates/user/{id}")
     fun getUserDats(@Path("id") id:Long):Call<List<DateWithIdNotesUidDto>>
+    @POST("/api/dates/add/{id}")
+    fun addDate(@Path("id") id:Long,@Body datedto:DataWithNotesTmp):Call<DateWithIdNotesUidDto>
+    @POST("/api/dates/update/{id}")
+    fun updateDate(@Path("id") id:Long,@Body datedto:DataWithNotesTmp):Call<DateWithIdNotesUidDto>
 }

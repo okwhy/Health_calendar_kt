@@ -72,15 +72,6 @@
                             android:textColor="@color/black"
                             android:inputType="number"/>
 
-                        <TextView
-                            android:id="@+id/textInputHeight_label"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Текст"
-                            android:textSize="17sp"
-                            android:visibility="gone"
-                            android:textColor="@color/black" />
-
                     </LinearLayout>
 
                     <LinearLayout
@@ -227,15 +218,6 @@
                 android:visibility="visible"
                 android:textColor="@color/black" />
 
-            <EditText
-                android:id="@+id/textInputHealth"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginLeft="5dp"
-                android:hint="Введите свое самочувствие"
-                android:visibility="gone"
-                android:textColor="@color/black" />
-
             <Spinner
                 android:id="@+id/textInputHealth_Spiner"
                 android:layout_width="wrap_content"
@@ -262,15 +244,6 @@
                 android:visibility="visible"
                 android:textColor="@color/black" />
 
-            <EditText
-                android:id="@+id/textInputAppetite"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:hint="Введите аппетит"
-                android:visibility="gone"
-                android:textColor="@color/black" />
-
             <Spinner
                 android:id="@+id/textInputAppetite_Spiner"
                 android:layout_width="wrap_content"
@@ -278,7 +251,15 @@
                 android:background="@drawable/black_line"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-<!--                android:visibility="gone"-->
+
+            <TextView
+                android:id="@+id/dayid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:visibility="visible"
+                tools:visibility="visible" />
+            <!--                android:visibility="gone"-->
 
         </LinearLayout>
 
@@ -309,213 +290,6 @@
             android:text="Button" />
 
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/dayInfoBlock"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        android:layout_weight="5"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        >
-
-        <LinearLayout
-            android:id="@+id/dayHeight_1"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:orientation="horizontal"
-            android:visibility="visible">
-
-            <TextView
-                android:id="@+id/textHeight_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Рост (кг):"
-                android:textSize="17sp"
-                android:visibility="visible"
-                android:textColor="@color/black" />
-
-            <TextView
-                android:id="@+id/textBlock_1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="5dp"
-                android:hint="ВВОД НЕВОЗМОЖЕН"
-                android:textSize="17sp"
-                android:visibility="visible"
-                android:textColor="@color/black" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/dayWeight_1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="visible">
-
-            <TextView
-                android:id="@+id/textWeight_1"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="Вес (кг):"
-                android:textSize="17sp"
-                android:visibility="visible"
-                android:textColor="@color/black" />
-
-            <TextView
-                android:id="@+id/textBlock_2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="5dp"
-                android:hint="ВВОД НЕВОЗМОЖЕН"
-                android:textSize="17sp"
-                android:visibility="visible"
-                android:textColor="@color/black" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/dayPulse_1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="visible">
-
-            <TextView
-                android:id="@+id/textPulse_1"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="ЧСС (уд/мин) в покое:"
-                android:textSize="17sp"
-                android:visibility="visible"
-                android:textColor="@color/black" />
-
-            <TextView
-                android:id="@+id/textBlock_3"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="5dp"
-                android:hint="ВВОД НЕВОЗМОЖЕН"
-                android:textSize="17sp"
-                android:visibility="visible"
-                android:textColor="@color/black" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/dayPressure_1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="visible">
-
-            <TextView
-                android:id="@+id/textPressure_1"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="Давление (А/Д):"
-                android:textSize="17sp"
-                android:visibility="visible"
-                android:textColor="@color/black" />
-
-            <TextView
-                android:id="@+id/textBlock_4"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="5dp"
-                android:hint="ВВОД НЕВОЗМОЖЕН"
-                android:textSize="17sp"
-                android:visibility="visible"
-                android:textColor="@color/black" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/dayAppetite_1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="visible">
-
-            <TextView
-                android:id="@+id/textAppetite_1"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="Аппетит:"
-                android:textSize="17sp"
-                android:visibility="visible"
-                android:textColor="@color/black" />
-
-            <TextView
-                android:id="@+id/textBlock_5"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="5dp"
-                android:hint="ВВОД НЕВОЗМОЖЕН"
-                android:textSize="17sp"
-                android:visibility="visible"
-                android:textColor="@color/black" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/daySlepping_1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="visible">
-
-            <TextView
-                android:id="@+id/textSlepping_1"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="Сон (ч.):"
-                android:textSize="17sp"
-                android:visibility="visible"
-                android:textColor="@color/black" />
-
-            <TextView
-                android:id="@+id/textBlock_6"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="5dp"
-                android:hint="ВВОД НЕВОЗМОЖЕН"
-                android:textSize="17sp"
-                android:visibility="visible"
-                android:textColor="@color/black" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/dayHealth_1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="visible"
-            >
-            <TextView
-                android:id="@+id/textHealth_1"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="Самочувствие:"
-                android:textSize="17sp"
-                android:visibility="visible"
-                android:textColor="@color/black" />
-
-            <TextView
-                android:id="@+id/textBlock_7"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="5dp"
-                android:hint="ВВОД НЕВОЗМОЖЕН"
-                android:textSize="17sp"
-                android:visibility="visible"
-                android:textColor="@color/black" />
-        </LinearLayout>
-
-
-
-    </LinearLayout>
-
 
 
 </LinearLayout>
