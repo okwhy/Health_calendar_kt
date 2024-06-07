@@ -26,6 +26,7 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.sus.calendar.R
 import com.sus.calendar.databinding.FragmentStatisticMemberBinding
@@ -64,58 +65,7 @@ class StatisticMember : Fragment() {
 
     var healthRecords = mutableListOf<HealthRecord>()
 
-    /*var healthRecords = listOf(
-        HealthRecord(
-            date = LocalDate.of(2024, 5, 17),
-            height = 175,
-            weight = 70.5,
-            heartRate = 72,
-            bloodPressure = "120/80",
-            sleepHours = 7.5,
-            wellbeing = Wellbeing.GOOD,
-            appetite = Appetite.GOOD
-        ),
-        HealthRecord(
-            date = LocalDate.of(2024, 5, 18),
-            height = 175,
-            weight = 70.0,
-            heartRate = 70,
-            bloodPressure = "118/78",
-            sleepHours = 8.0,
-            wellbeing = Wellbeing.NORMAL,
-            appetite = Appetite.NORMAL
-        ),
-        HealthRecord(
-            date = LocalDate.of(2024, 5, 19),
-            height = 176,
-            weight = 71.0,
-            heartRate = 68,
-            bloodPressure = "118/80",
-            sleepHours = 10.0,
-            wellbeing = Wellbeing.NORMAL,
-            appetite = Appetite.NORMAL
-        ),
-        HealthRecord(
-            date = LocalDate.of(2024, 5, 20),
-            height = 174,
-            weight = 69.0,
-            heartRate = 780,
-            bloodPressure = "140/70",
-            sleepHours = 5.0,
-            wellbeing = Wellbeing.BAD,
-            appetite = Appetite.NO_APPETITE
-        ),
-        HealthRecord(
-            date = LocalDate.of(2024, 5, 21),
-            height = 175,
-            weight = 67.0,
-            heartRate = 69,
-            bloodPressure = "120/80",
-            sleepHours = 12.0,
-            wellbeing = Wellbeing.NORMAL,
-            appetite = Appetite.NORMAL
-        ),
-    )*/
+
 
     private var uptHeight: Boolean = false
     private var uptWeight: Boolean = false
@@ -329,7 +279,7 @@ class StatisticMember : Fragment() {
                 if (note.type == "APPETITE") {
                     temp_appetite = Appetite.valueOf(note.value)
                 }
-                if (note.type == "WELLBEING") {
+                if (note.type == "HEALTH") {
                     temp_wellbeing = Wellbeing.valueOf(note.value)
                 }
             }
@@ -445,22 +395,29 @@ class StatisticMember : Fragment() {
     ) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
+        val filteredRecords = healthRecords.filter { it.date in startDate..endDate }
+
+        val goodCount = filteredRecords.count { it.wellbeing == Wellbeing.GOOD }.toFloat()
+        val normalCount = filteredRecords.count { it.wellbeing == Wellbeing.NORMAL }.toFloat()
+        val badCount = filteredRecords.count { it.wellbeing == Wellbeing.BAD }.toFloat()
+
         val entries = listOf(
-            PieEntry(healthRecords.filter { it.date in startDate..endDate }.count { it.wellbeing == Wellbeing.GOOD }
-                .toFloat(), "Хорошее"),
-            PieEntry(healthRecords.filter { it.date in startDate..endDate }.count { it.wellbeing == Wellbeing.NORMAL }
-                .toFloat(), "Нормальное"),
-            PieEntry(healthRecords.filter { it.date in startDate..endDate }.count { it.wellbeing == Wellbeing.BAD }
-                .toFloat(), "Плохое")
+            PieEntry(goodCount, if (goodCount == 0f) "" else "Хорошее"),
+            PieEntry(normalCount, if (normalCount == 0f) "" else "Нормальное"),
+            PieEntry(badCount, if (badCount == 0f) "" else "Плохое")
         )
-        val dataSet = PieDataSet(entries.filter { it.value !=0f }, text)
-        // Задание цветов для сегментов диаграммы
-        val customColors = listOf(
-            Color.rgb(76, 175, 80),  // Зеленый для "Хорошее"
-            Color.rgb(255, 193, 7),  // Желтый для "Нормальное"
-            Color.rgb(244, 67, 54)   // Красный для "Плохое"
+        val nonZeroEntries = entries.filter { it.label.isNotEmpty() }
+        val customColors = mapOf(
+            "Хорошее" to Color.rgb(76, 175, 80),
+            "Нормальное" to  Color.rgb(255, 193, 7),
+            "Плохое" to Color.rgb(244, 67, 54)
         )
-        dataSet.colors = customColors
+        val colors = nonZeroEntries.map { entry ->
+            customColors[entry.label] ?: Color.GRAY
+        }
+        val dataSet = PieDataSet(nonZeroEntries, text)
+
+        dataSet.colors = colors
 
         val pieData = PieData(dataSet)
         pie.data = pieData
@@ -482,29 +439,38 @@ class StatisticMember : Fragment() {
     ) {
         calculateAverages(avgtex, startDate, endDate, dataType)
 
-        val entries = listOf(
-            PieEntry(healthRecords.filter { it.date in startDate..endDate }.count { it.appetite == Appetite.NO_APPETITE }
-                .toFloat(), "Нет аппетита"),
-            PieEntry(
-                healthRecords.filter { it.date in startDate..endDate }.count { it.appetite == Appetite.GOOD }.toFloat(),
-                "Хороший"
-            ),
-            PieEntry(
-                healthRecords.filter { it.date in startDate..endDate }.count { it.appetite == Appetite.BAD }.toFloat(),
-                "Плохой"
-            ),
-            PieEntry(healthRecords.filter { it.date in startDate..endDate }.count { it.appetite == Appetite.NORMAL }
-                .toFloat(), "Нормальный")
-        )
-        val dataSet = PieDataSet(entries.filter { it.value !=0f }, text)
+        val filteredRecords = healthRecords.filter { it.date in startDate..endDate }
 
-        val customColors = listOf(
-            Color.rgb(76, 175, 80),
-            Color.rgb(255, 193, 7),
-            Color.rgb(244, 67, 54),
-            Color.rgb(199, 21, 133)
+        val noAppetiteCount = filteredRecords.count { it.appetite == Appetite.NO_APPETITE }.toFloat()
+        val goodAppetiteCount = filteredRecords.count { it.appetite == Appetite.GOOD }.toFloat()
+        val badAppetiteCount = filteredRecords.count { it.appetite == Appetite.BAD }.toFloat()
+        val normalAppetiteCount = filteredRecords.count { it.appetite == Appetite.NORMAL }.toFloat()
+
+        val entries = listOf(
+            PieEntry(noAppetiteCount, if (noAppetiteCount == 0f) "" else "Нет аппетита"),
+            PieEntry(goodAppetiteCount, if (goodAppetiteCount == 0f) "" else "Хороший"),
+            PieEntry(badAppetiteCount, if (badAppetiteCount == 0f) "" else "Плохой"),
+            PieEntry(normalAppetiteCount, if (normalAppetiteCount == 0f) "" else "Нормальный")
         )
-        dataSet.colors = customColors
+
+
+        val nonZeroEntries = entries.filter { it.label.isNotEmpty() }
+
+
+        val colorMap = mapOf(
+            "Нет аппетита" to Color.rgb(244, 67, 54),  // Красный
+            "Хороший" to Color.rgb(76, 175, 80),       // Зеленый
+            "Нормальный" to Color.rgb(255, 193, 7),        // Желтый
+            "Плохой"  to Color.rgb(199, 21, 133)    // Розовый
+        )
+
+
+        val colors = nonZeroEntries.map { entry ->
+            colorMap[entry.label] ?: Color.GRAY
+        }
+
+        val dataSet = PieDataSet(nonZeroEntries, text)
+        dataSet.colors = colors
 
         val pieData = PieData(dataSet)
         pie.data = pieData

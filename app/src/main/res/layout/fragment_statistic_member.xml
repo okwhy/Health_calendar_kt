@@ -50,7 +50,11 @@
         android:layout_centerHorizontal="true"
         android:background="@drawable/rounded_edittext_bg"
         android:hint="От"
-        android:inputType="date"
+
+        android:inputType="none"
+        android:textIsSelectable="true"
+        android:focusable="false"
+
         android:padding="15dp"
         android:textColor="#D9D5E1"
         android:textColorHint="#FFFFFF"
@@ -71,7 +75,11 @@
         android:layout_centerHorizontal="true"
         android:background="@drawable/rounded_edittext_bg"
         android:hint="До"
-        android:inputType="date"
+
+        android:inputType="none"
+        android:textIsSelectable="true"
+        android:focusable="false"
+
         android:padding="15dp"
         android:textColor="#D9D5E1"
         android:textColorHint="#FFFFFF"

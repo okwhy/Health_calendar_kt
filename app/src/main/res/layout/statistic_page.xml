@@ -36,12 +36,17 @@
         android:layout_centerHorizontal="true"
         android:background="@drawable/rounded_edittext_bg"
         android:hint="От"
-        android:inputType="date"
+
         android:padding="15dp"
         android:textColor="#D9D5E1"
         android:textColorHint="#FFFFFF"
         android:textSize="20sp"
         android:textStyle="bold"
+
+        android:inputType="none"
+        android:textIsSelectable="true"
+        android:focusable="false"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.062"
@@ -57,7 +62,11 @@
         android:layout_centerHorizontal="true"
         android:background="@drawable/rounded_edittext_bg"
         android:hint="До"
-        android:inputType="date"
+
+        android:inputType="none"
+        android:textIsSelectable="true"
+        android:focusable="false"
+
         android:padding="15dp"
         android:textColor="#D9D5E1"
         android:textColorHint="#FFFFFF"

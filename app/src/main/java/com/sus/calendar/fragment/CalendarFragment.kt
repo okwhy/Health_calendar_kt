@@ -231,8 +231,8 @@ class CalendarFragment : Fragment() {
             t.isLongClickable = !noedit
             t.isCursorVisible = !noedit
         }
-        spinnerAppetite.isClickable=!noedit
-        spinnerHealth.isClickable=!noedit
+        spinnerAppetite.isEnabled=!noedit
+        spinnerHealth.isEnabled=!noedit
     }
     private fun loaddata(calendarView: CalendarView){
         val callGetDates=apiService.getUserDats(MainActivity.DataManager.getUserData()!!.id)

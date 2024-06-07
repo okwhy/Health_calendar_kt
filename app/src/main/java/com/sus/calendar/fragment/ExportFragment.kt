@@ -114,8 +114,8 @@ class ExportFragment : Fragment() {
         val file = getUniqueFile(downloadsDir, baseFileName, "xls")
         Log.d("Kd", "$byear $ayear $bmonth $amonth $bday $aday")
         val dataService = this.context?.let { DataService.initial(it) }
-        val startdate=LocalDate.of(byear,bmonth,bday)
-        val enddate=LocalDate.of(ayear,amonth,aday)
+        val startdate=LocalDate.of(byear,bmonth,bday).minusDays(1)
+        val enddate=LocalDate.of(ayear,amonth,aday).plusDays(1)
         val filtereddates=data.filter {
             val currentdate=LocalDate.of(it.year,it.month,it.day)
             currentdate.isAfter(startdate)&&currentdate.isBefore(enddate)
@@ -149,7 +149,7 @@ class ExportFragment : Fragment() {
         sheet.addCell(label)
         var rown = 1
         var refDate = LocalDate.of(ayear, amonth, aday)
-        val endDate = LocalDate.of(byear, bmonth, bday)
+        val endDate = LocalDate.of(byear, bmonth, bday).minusDays(1)
         for (dwn in filtereddates) {
             while (!refDate.isEqual(LocalDate.of(dwn.year,dwn.month,dwn.day))) {
                 val dateTimeFormatter = DateTimeFormatter.ofPattern("d-M-yyyy")
